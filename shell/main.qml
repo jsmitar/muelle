@@ -6,17 +6,17 @@ import org.duckdock 1.0
 Window {
   id: window
   visible: true
-  width: iconSize * 16 + iconZoom / 2
+  width: iconSize * 16 + iconZoom
   x: 100
   y: 500
 
   height: iconZoom
   title: qsTr("DuckDock")
 
-  property real iconFactor: 1.5
   property int iconSize: 48
-  property int iconZoom: 87
-  property int iconZoomAmplitude: iconSize / 5
+  property real iconZoomFactor: 1.5
+  property int iconZoom: iconSize * iconZoomFactor
+  property int iconZoomAmplitude: iconSize / 4
 
   function randColor() {
     return Qt.rgba(Math.random(), Math.random(), Math.random(), 1)

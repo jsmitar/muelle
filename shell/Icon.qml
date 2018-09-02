@@ -28,9 +28,17 @@ MouseArea {
     id: initialAnimation
     SequentialAnimation {
       NumberAnimation {
-        duration: 40
+        duration: 10
       }
     }
+  }
+
+  function calcZoom(mousePosition) {
+    return Math.min(
+          Math.max(
+            iconSize + iconZoomAmplitude
+            + (-mousePosition * (iconZoom - iconSize - iconZoomAmplitude)) / (iconZoom / 2),
+            iconSize), iconZoom)
   }
 
   Connections {
@@ -41,7 +49,6 @@ MouseArea {
     onEntered: dock.taskHovered = index
 
     onMouseXChanged: {
-
       _each(_filter(dock.tasksItems, function (task) {
         return Math.abs(task.index - icon.index) > 1
       }), function (task) {
@@ -54,17 +61,20 @@ MouseArea {
       if (!siblings.length)
         return
 
-      var absolute = mouseX
-      var calcSize = function (pos, min, max) {
-        return Math.min(Math.max(pos / 4 + min, min), max) | 0
-      }
+      var relative = -iconZoom / 2 + mouseX | 0
 
-      var size = calcSize(absolute, iconSize, iconZoom)
+      var l = Math.ceil(calcZoom(relative))
+      var r = Math.floor(calcZoom(-relative))
 
-      siblings[0]._size = Math.max(iconZoom - size / 2, iconSize)
-      if (siblings.length > 1) {
-        siblings[1]._size = size
-      }
+      //l = Math.min(iconSize + iconZoomAmplitude, l)
+      //r = Math.min(iconSize + iconZoomAmplitude, r)
+      siblings[0]._size = l
+
+      if (siblings.length > 1)
+        siblings[1]._size = r
+
+      console.log('l:' + siblings[0]._size, 'r:' + siblings[1]._size,
+                  siblings[0]._size + siblings[1]._size)
     }
   }
 
