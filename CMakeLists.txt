@@ -1,9 +1,25 @@
 cmake_minimum_required(VERSION 3.1)
-
 project(DuckDock LANGUAGES CXX)
 
-set(DuckDock_VERSION_MAJOR 0)
-set(DuckDock_VERSION_MINOR 1)
+execute_process(
+  COMMAND git describe --abbrev=0 --tags
+  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+  OUTPUT_VARIABLE GIT_VERSION
+)
+string(STRIP ${GIT_VERSION} GIT_VERSION)
+
+execute_process(
+  COMMAND git rev-parse --short HEAD
+  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+)
+string(STRIP ${GIT_COMMIT_HASH} GIT_COMMIT_HASH)
+
+set(DuckDock_VERSION ${GIT_VERSION})
+set(DuckDock_COMMIT_HASH ${GIT_COMMIT_HASH})
+
+message(STATUS "Version: ${GIT_VERSION}")
+message(STATUS "Commit hash: ${GIT_COMMIT_HASH}")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)

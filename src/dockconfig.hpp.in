@@ -2,7 +2,7 @@
 #ifndef DOCKCONFIG_HPP
 #define DOCKCONFIG_HPP
 
-#define DuckDock_VERSION_MAJOR @DuckDock_VERSION_MAJOR@
-#define DuckDock_VERSION_MINOR @DuckDock_VERSION_MINOR@
+#define DuckDock_VERSION "@DuckDock_VERSION@"
+#define DuckDock_COMMIT_HASH "@DuckDock_COMMIT_HASH@"
 
 #endif // DOCKCONFIG_HPP
