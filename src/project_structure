@@ -1,0 +1,10 @@
+core
+	DockWindow
+		shell > qml.qrc
+		PanelLayout.hpp
+		Screen.hpp
+		Export.hpp
+:
+	DockWindowConfig	
+libtaskmanager
+

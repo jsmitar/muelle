@@ -1,16 +1,22 @@
+#include "./src/dockconfig.hpp"
+#include "./src/docktype.hpp"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlDebuggingEnabler>
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+int main(int argc, char *argv[]) {
+  QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication app(argc, argv);
+  QGuiApplication app(argc, argv);
+  QQmlDebuggingEnabler enabler;
+  QQmlApplicationEngine engine;
+  Dock::qmlRegisterDockType();
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
-        return -1;
+  engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    return app.exec();
+  if (engine.rootObjects().isEmpty()) {
+    return -1;
+  }
+
+  return QGuiApplication::exec();
 }
