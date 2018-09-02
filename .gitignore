@@ -3,6 +3,7 @@
 
 *~
 *.autosave
+*.user
 *.a
 *.core
 *.moc
@@ -19,6 +20,7 @@
 *.*#
 core
 !core/
+build/
 tags
 .DS_Store
 .directory
@@ -34,6 +36,7 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
+
 
 # qtcreator generated files
 *.pro.user*

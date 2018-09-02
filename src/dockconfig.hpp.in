@@ -1,0 +1,8 @@
+// clang-format off
+#ifndef DOCKCONFIG_HPP
+#define DOCKCONFIG_HPP
+
+#define DuckDock_VERSION_MAJOR @DuckDock_VERSION_MAJOR@
+#define DuckDock_VERSION_MINOR @DuckDock_VERSION_MINOR@
+
+#endif // DOCKCONFIG_HPP
