@@ -35,11 +35,13 @@ configure_file(
 
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
-file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}" src/*.cpp)
-file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}" src/*.hpp)
+file(GLOB_RECURSE SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" src/*.cpp)
+file(GLOB_RECURSE HEADERS RELATIVE "${PROJECT_SOURCE_DIR}" src/*.hpp)
+
+message("SOURCES: ${HEADERS}")
+
+add_executable(duckdock ${HEADERS} ${SOURCES} "qml.qrc")
+target_link_libraries(duckdock Qt5::Core Qt5::Quick)
+
 file(GLOB CONFIGURE src/*.*.in)
-
-add_executable(${PROJECT_NAME} "${HEADERS}" "${SOURCES}" "main.cpp" "shell/qml.qrc")
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Quick)
-
-add_custom_target(CONFIGURE SOURCES ${CONFIGURE})
+add_custom_target(Configure SOURCES ${CONFIGURE})

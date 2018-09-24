@@ -1,91 +1,143 @@
 import QtQuick 2.11
 import QtQuick.Layouts 1.1
+import org.duckdock.types 1.0
+import "qrc:/utils.js" as F
 
 MouseArea {
   id: icon
+  objectName: 'icon'
 
   property Item dock
   property int index: modelData.index
   property int taskId: modelData.id
-
-  property real factorSize: 1.0
   property int _size: iconSize
+  property Behavior animation: animation
+  property int orientation: layout.orientation
+  property real pos: 0
+  // [..., l0, center, r0, ...]
+  property var siblings: ({
+                            l0: null,
+                            c: null,
+                            r0: null
+                          })
+
+  signal updated
 
   hoverEnabled: true
 
   width: _size
   height: _size
 
-  Connections {
-    target: dock
-
-    onDisableInitialAnimations: {
-      initialAnimation.enabled = false
-    }
+  StateGroup {
+    states: [
+      State {
+        when: layout.orientation === DockType.Horizontal
+        PropertyChanges {
+          target: icon
+          pos: mouseX
+        }
+      },
+      State {
+        when: layout.orientation === DockType.Vertical
+        PropertyChanges {
+          target: icon
+          pos: mouseY
+        }
+      }
+    ]
   }
 
   Behavior on _size {
-    id: initialAnimation
+    id: animation
+    enabled: false
     SequentialAnimation {
-      NumberAnimation {
-        duration: 10
+      SmoothedAnimation {
+        id: anim
+        alwaysRunToEnd: true
+        duration: 100
       }
     }
   }
 
-  function calcZoom(mousePosition) {
-    return Math.min(
-          Math.max(
-            iconSize + iconZoomAmplitude
-            + (-mousePosition * (iconZoom - iconSize - iconZoomAmplitude)) / (iconZoom / 2),
-            iconSize), iconZoom)
+  Connections {
+    target: view
+
+    onEntered: {
+      animation.enabled = true
+    }
   }
 
-  Connections {
-    target: icon
+  onEntered: {
+    dock.taskHovered = index
+    start()
+  }
 
-    enabled: icon.containsMouse
+  onExited: {
+    posChanged.disconnect(updated)
+    if (_size != iconZoom)
+      return
+    F.each(dock.taskItems, function (task) {
+      task.animation.enabled = false
+    })
+  }
 
-    onEntered: dock.taskHovered = index
+  Timer {
+    id: timer
+    interval: 10
+    running: false
+  }
 
-    onMouseXChanged: {
-      _each(_filter(dock.tasksItems, function (task) {
-        return Math.abs(task.index - icon.index) > 1
-      }), function (task) {
-        if (task._size)
-          task._size = iconSize
-      })
-      _size = iconZoom
+  function start() {
+    _size = iconZoom
+    siblings = dock.siblings(icon)
 
-      var siblings = dock.siblings(icon)
-      if (!siblings.length)
-        return
+    F.each(F.filter(dock.taskItems, function (t) {
+      return Math.abs(index - t.index) > 1
+    }), function (t) {
+      t._size = iconSize
+    })
 
-      var relative = -iconZoom / 2 + mouseX | 0
+    F.timeout(timer, function () {
+      if (containsMouse) {
+        posChanged.connect(updated)
+        updated()
+      }
+    }, 10)
+  }
 
-      var l = Math.ceil(calcZoom(relative))
-      var r = Math.floor(calcZoom(-relative))
+  onUpdated: {
+    var relative = -iconZoom / 2 + F.boundary(0, pos, iconZoom)
+    var z = 0
 
-      //l = Math.min(iconSize + iconZoomAmplitude, l)
-      //r = Math.min(iconSize + iconZoomAmplitude, r)
-      siblings[0]._size = l
+    if (siblings.l0) {
+      z = Math.ceil(zoom(-relative))
+      siblings.l0._size = z
+    } else {
+      z = iconZoom - zoom(relative)
+      dock.offset = Math.ceil(z / 2)
+    }
 
-      if (siblings.length > 1)
-        siblings[1]._size = r
-
-      console.log('l:' + siblings[0]._size, 'r:' + siblings[1]._size,
-                  siblings[0]._size + siblings[1]._size)
+    if (siblings.r0) {
+      z = Math.floor(zoom(relative))
+      siblings.r0._size = z
+    } else {
+      z = iconZoom - zoom(-relative)
+      dock.offset = -Math.floor(z / 2)
     }
   }
 
   Rectangle {
-    property real _sizeProxy: icon._size - 4
+    property real _sizeProxy: icon._size
 
-    color: randColor()
-    radius: iconSize
+    color: F.randColor(.1)
+    border {
+      color: F.randColor()
+      width: 3
+    }
+    radius: width
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom
+      top: parent.top
       alignWhenCentered: false
     }
 
@@ -94,10 +146,18 @@ MouseArea {
 
     Text {
       //text: String.fromCharCode(Math.random() * 25 + 66)
-      text: icon._size | 0
+      smooth: true
+      text: icon._size
+      font.family: "Source Code Pro Black"
+      font.bold: true
+      verticalAlignment: Text.AlignBottom
+      horizontalAlignment: Text.AlignHCenter
+      font.pixelSize: 16
+      fontSizeMode: Text.FixedSize
       anchors.centerIn: parent
       style: Text.Raised
-      color: randColor()
+      styleColor: "#e6e6e6"
+      color: parent.border.color
     }
   }
   //  Image {

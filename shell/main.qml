@@ -1,120 +1,47 @@
 import QtQuick 2.11
-import QtQuick.Window 2.11
 import QtQuick.Layouts 1.1
-import org.duckdock 1.0
+import org.duckdock.types 1.0
+import "qrc:/utils.js" as F
 
-Window {
-  id: window
-  visible: true
-  width: iconSize * 16 + iconZoom
-  x: 100
-  y: 500
-
+Item {
+  id: root
+  width: iconSize * 10 + iconZoom + iconZoomAmplitude * 2
   height: iconZoom
-  title: qsTr("DuckDock")
+  clip: false
+  visible: true
 
-  property int iconSize: 48
-  property real iconZoomFactor: 1.5
+  property int iconSize: 80
+  property real iconZoomFactor: 2
   property int iconZoom: iconSize * iconZoomFactor
-  property int iconZoomAmplitude: iconSize / 4
+  property int iconZoomAmplitude: (iconZoom - iconSize) / 2
 
-  function randColor() {
-    return Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+  property var zoom: F.zoom(iconSize, iconZoom, iconZoomAmplitude)
+
+  property var tasksModel: F.gen(11, function (i) {
+    return {
+      id: i,
+      index: i
+    }
+  })
+
+  Component.onCompleted: {
+    layout.edge = DockType.Top
+    console.log(layout.edge, layout.orientation, layout.alignment,
+                layout.layout, view)
   }
 
-  function _each(collection, iteratee) {
-    for (var i = 0; i < collection.length; i++)
-      iteratee(collection[i], i, collection)
+  Connections {
+    target: layout
 
-    return collection
+    onLayoutChanged: {
+      console.log(layout.layout)
+    }
   }
 
-  function _filter(collection, predicate) {
-    var filtered = []
-    for (var i = 0; i < collection.length; i++)
-      if (predicate(collection[i], i, collection))
-        filtered.push(collection[i])
-
-    return filtered
-  }
-
-  function _gen(size, iteratee) {
-    var gen = []
-
-    for (var i = 0; i < size; i++)
-      gen.push(iteratee(i))
-
-    return gen
-  }
-
-  MouseArea {
+  DockArea {
     id: dockArea
-    hoverEnabled: true
-    acceptedButtons: Qt.NoButton
-    width: window.width
-    height: window.height
-
-    signal disableInitialAnimations
-    signal enabledInitialAnimations
-
-    property var tasksItems: content.children
-    property real mousePosition: 0
-    property int taskHovered: 0
-    property var siblings: function (task) {
-      return _filter([tasks.itemAt(task.index - 1), tasks.itemAt(
-                        task.index + 1)], function (t) {
-                          return t
-                        })
-    }
-
-    onExited: {
-      _each(tasksItems, function (task) {
-        if (task._size)
-          task._size = iconSize
-      })
-    }
-
-    RowLayout {
-      id: content
-      spacing: -1
-
-      anchors.bottom: parent.bottom
-      state: dockArea.tasksItems.length / 2 > dockArea.taskHovered ? 'anchorLeft' : 'anchorRight'
-      states: [
-        State {
-          name: 'anchorLeft'
-          AnchorChanges {
-            target: content
-            anchors.left: parent.left
-          }
-        },
-        State {
-          name: 'anchorRight'
-          AnchorChanges {
-            target: content
-            anchors.right: parent.right
-          }
-        }
-      ]
-
-      Repeater {
-        id: tasks
-
-        model: _gen(16, function (i) {
-          return {
-            id: i,
-            index: i
-          }
-        })
-
-        Icon {
-          id: icon
-          dock: dockArea
-          Layout.minimumWidth: width
-          Layout.minimumHeight: height
-          Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
-        }
-      }
-    }
+    width: root.width
+    height: root.height
+    antialiasing: true
   }
 }

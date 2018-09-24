@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>Icon.qml</file>
-        <file>PanelLayout.qml</file>
-    </qresource>
-</RCC>

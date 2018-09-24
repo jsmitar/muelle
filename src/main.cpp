@@ -1,8 +1,10 @@
-#include "./src/dockconfig.hpp"
-#include "./src/docktype.hpp"
+#include "dockconfig.hpp"
+#include "docktype.hpp"
+#include "dockview.hpp"
+#include "layout.hpp"
+
 #include <QDebug>
 #include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <QQmlDebuggingEnabler>
 
 int main(int argc, char *argv[]) {
@@ -10,14 +12,10 @@ int main(int argc, char *argv[]) {
 
   QGuiApplication app(argc, argv);
   QQmlDebuggingEnabler enabler;
-  QQmlApplicationEngine engine;
   Dock::qmlRegisterDockType();
 
-  engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
-  if (engine.rootObjects().isEmpty()) {
-    return -1;
-  }
+  Dock::View view;
+  view.load();
 
   qDebug() << "Version:" << DuckDock_VERSION;
   qDebug() << "Commit Hash:" << DuckDock_COMMIT_HASH;
