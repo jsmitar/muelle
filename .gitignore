@@ -21,6 +21,7 @@
 core
 !core/
 build/
+build-*/
 tags
 .DS_Store
 .directory

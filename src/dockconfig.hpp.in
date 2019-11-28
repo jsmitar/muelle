@@ -2,7 +2,19 @@
 #ifndef DOCKCONFIG_HPP
 #define DOCKCONFIG_HPP
 
-#define DuckDock_VERSION "@DuckDock_VERSION@"
-#define DuckDock_COMMIT_HASH "@DuckDock_COMMIT_HASH@"
+#define DUCKDOCK_VERSION "@GIT_VERSION@"
+#define DUCKDOCK_COMMIT "@GIT_COMMIT@"
+#define BUILD_TYPE_@CMAKE_BUILD_TYPE@
+#define SOURCE_DIR "@CMAKE_SOURCE_DIR@"
+#define QML_SOURCE_DIR "@CMAKE_SOURCE_DIR@/qml"
+#define QML_QRC "@CMAKE_SOURCE_DIR@/qml/qml.qrc"
+#define QML_RCC "@CMAKE_SOURCE_DIR@/qml.rcc"
+#define RCC "@RCC@"
+
+#ifdef BUILD_TYPE_Debug
+#  ifndef QT_SHAREDPOINTER_TRACK_POINTERS
+#    define QT_SHAREDPOINTER_TRACK_POINTERS
+#  endif
+#endif
 
 #endif // DOCKCONFIG_HPP

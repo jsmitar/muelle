@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file alias="utils.js">utils.js</file>
-        <file alias="main.qml">shell/main.qml</file>
-        <file alias="Icon.qml">shell/Icon.qml</file>
-        <file alias="PanelLayout.qml">shell/PanelLayout.qml</file>
-        <file alias="DockArea.qml">shell/DockArea.qml</file>
-    </qresource>
-</RCC>

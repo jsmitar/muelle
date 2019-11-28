@@ -1,13 +1,13 @@
-#ifndef DOCKTYPE_HPP
-#define DOCKTYPE_HPP
+#ifndef Types_HPP
+#define Types_HPP
 
 #include <QObject>
 #include <QQmlEngine>
 
 namespace Dock { // namespace Dock
-class DockType {
+class Types {
   Q_GADGET
-  Q_DISABLE_COPY(DockType)
+  Q_DISABLE_COPY(Types)
 
 public:
   enum class Edge {
@@ -30,11 +30,14 @@ public:
     End = 1 << 9,
   };
   Q_ENUM(Alignment)
+
+  enum class Behavior { None, AlwaysVisible, AutoHide, DodgeAll, DodgeActive };
+  Q_ENUM(Behavior)
 };
 
-inline void qmlRegisterDockType() {
-  qmlRegisterUncreatableType<DockType>("org.duckdock.types", 1, 0, "DockType",
-                                       "Dock is a uncreatable type");
+inline void qmlRegisterTypes() {
+  qmlRegisterUncreatableType<Types>("org.duckdock.types", 1, 0, "Types",
+                                    "Dock::Types is an uncreatable type");
 }
 } // namespace Dock
-#endif // DOCKTYPE_HPP
+#endif // Types_HPP

@@ -1,9 +1,11 @@
 #ifndef LAYOUT_HPP
 #define LAYOUT_HPP
 
-#include "docktype.hpp"
+#include "docktypes.hpp"
+#include <QDebug>
 #include <QFlags>
 #include <QObject>
+#include <QQmlEngine>
 #include <QtGlobal>
 
 ///*
@@ -19,24 +21,29 @@ namespace Dock {
 class Layout : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY(Layout)
-  Q_PROPERTY(
-      Dock::DockType::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
-  Q_PROPERTY(Dock::DockType::Orientation orientation READ orientation NOTIFY
+  Q_PROPERTY(Dock::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
+  Q_PROPERTY(Dock::Types::Orientation orientation READ orientation NOTIFY
                  orientationChanged)
-  Q_PROPERTY(Dock::DockType::Alignment alignment READ alignment WRITE
-                 setAlignment NOTIFY alignmentChanged)
+  Q_PROPERTY(Dock::Types::Alignment alignment READ alignment WRITE setAlignment
+                 NOTIFY alignmentChanged)
   Q_PROPERTY(uint layout READ layout NOTIFY layoutChanged)
+  Q_PROPERTY(bool isHorizontal READ isHorizontal NOTIFY orientationChanged)
+  Q_PROPERTY(bool isVertical READ isVertical NOTIFY orientationChanged)
 
 public:
   explicit Layout(QObject *parent = nullptr);
+  virtual ~Layout();
 
-  DockType::Edge edge() const;
-  DockType::Orientation orientation() const;
-  DockType::Alignment alignment() const;
-  uint layout() const;
+  constexpr Types::Edge edge() const;
+  constexpr Types::Orientation orientation() const;
+  constexpr Types::Alignment alignment() const;
+  constexpr uint layout() const;
 
-  void setEdge(DockType::Edge edge);
-  void setAlignment(DockType::Alignment alignment);
+  constexpr bool isHorizontal() const;
+  constexpr bool isVertical() const;
+
+  void setEdge(Types::Edge edge);
+  void setAlignment(Types::Alignment alignment);
 
 signals:
   void edgeChanged();
@@ -45,10 +52,30 @@ signals:
   void layoutChanged();
 
 private:
-  DockType::Edge mEdge = DockType::Edge::Bottom;
-  DockType::Orientation mOrientation = DockType::Orientation::Horizontal;
-  DockType::Alignment mAlignment = DockType::Alignment::Center;
+  Types::Orientation mOrientation = Types::Orientation::Horizontal;
+  Types::Edge mEdge = Types::Edge::Bottom;
+  Types::Alignment mAlignment = Types::Alignment::Center;
 };
-} // namespace Dock
 
+constexpr Types::Edge Layout::edge() const { return mEdge; }
+
+constexpr Types::Orientation Layout::orientation() const {
+  return mOrientation;
+}
+
+constexpr Types::Alignment Layout::alignment() const { return mAlignment; }
+
+constexpr uint Layout::layout() const {
+  return static_cast<uint>(mEdge) | static_cast<uint>(mOrientation) |
+         static_cast<uint>(mAlignment);
+}
+
+constexpr bool Layout::isHorizontal() const {
+  return mOrientation == Types::Orientation::Horizontal;
+}
+
+constexpr bool Layout::isVertical() const {
+  return mOrientation == Types::Orientation::Vertical;
+}
+} // namespace Dock
 #endif // LAYOUT_HPP

@@ -1,47 +1,76 @@
 cmake_minimum_required(VERSION 3.1)
 project(DuckDock LANGUAGES CXX)
 
+# escape character
+string(ASCII 27 Esc)
+
 execute_process(
   COMMAND git describe --abbrev=0 --tags
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
   OUTPUT_VARIABLE GIT_VERSION
 )
-string(STRIP ${GIT_VERSION} GIT_VERSION)
-
 execute_process(
   COMMAND git rev-parse --short HEAD
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_VARIABLE GIT_COMMIT
 )
-string(STRIP ${GIT_COMMIT_HASH} GIT_COMMIT_HASH)
+string(STRIP ${GIT_VERSION} GIT_VERSION)
+string(STRIP ${GIT_COMMIT} GIT_COMMIT)
 
-set(DuckDock_VERSION ${GIT_VERSION})
-set(DuckDock_COMMIT_HASH ${GIT_COMMIT_HASH})
+# Extra CMake Modules
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+include(KDEInstallDirs)
+include(KDECMakeSettings)
 
-message(STATUS "Version: ${GIT_VERSION}")
-message(STATUS "Commit hash: ${GIT_COMMIT_HASH}")
-
+# Variables
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
 set(QT_QML_DEBUG ON)
+set(RCC "/usr/bin/rcc-qt5")
+set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml CACHE STRING "" FORCE)
+set(QML2_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml CACHE STRING "" FORCE)
 
+# Packages: Qt-KDE Packages
+find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
+find_package(KF5WindowSystem REQUIRED)
+
+# Packages: xcb
+find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES XINPUT)
+
+# Target: configure
+file(GLOB CONFIGURE src/*.*.in)
+add_custom_target(configure SOURCES ${CONFIGURE})
 configure_file(
-  "${PROJECT_SOURCE_DIR}/src/dockconfig.hpp.in"
-  "${PROJECT_SOURCE_DIR}/src/dockconfig.hpp"
+  "${CMAKE_SOURCE_DIR}/src/dockconfig.hpp.in"
+  "${CMAKE_SOURCE_DIR}/src/dockconfig.hpp"
 )
 
-find_package(Qt5 COMPONENTS Core Quick REQUIRED)
+# Includes: range-v3
+#include_directories("${CMAKE_SOURCE_DIR}/liab/range-v3/include")
 
-file(GLOB_RECURSE SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" src/*.cpp)
-file(GLOB_RECURSE HEADERS RELATIVE "${PROJECT_SOURCE_DIR}" src/*.hpp)
+# Target: duckdock
+file(GLOB_RECURSE SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" src/*.cpp)
+file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_SOURCE_DIR}" src/*.hpp)
+#file(GLOB_RECURSE RANGEV3 RELATIVE "${CMAKE_SOURCE_DIR}" lib/range-v3/include/*.hpp)
 
-message("SOURCES: ${HEADERS}")
+add_executable(duckdock ${HEADERS} ${SOURCES} "main.cpp")
+target_link_libraries(duckdock
+  Qt5::Core
+  Qt5::Quick
+  Qt5::X11Extras
+  KF5::WindowSystem
+  ${XCB_LIBRARIES}
+)
 
-add_executable(duckdock ${HEADERS} ${SOURCES} "qml.qrc")
-target_link_libraries(duckdock Qt5::Core Qt5::Quick)
+# Target: qml
+add_custom_target(qml SOURCES "qml/qml.qrc")
 
-file(GLOB CONFIGURE src/*.*.in)
-add_custom_target(Configure SOURCES ${CONFIGURE})
+# Info Messages
+message(STATUS " ")
+message(STATUS "- DuckDock project")
+message(STATUS "- ${Esc}[34mVersion: ${GIT_VERSION}${Esc}[0m")
+message(STATUS "- Commit: ${GIT_COMMIT}")
+message(STATUS " ")
