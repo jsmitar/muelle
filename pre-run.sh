@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-killall -w duckdock
+killall -w muelle
 exit 0

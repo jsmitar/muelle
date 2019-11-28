@@ -1,5 +1,5 @@
 import QtQuick 2.10
-import org.duckdock.types 1.0
+import org.muelle.types 1.0
 import "./" as Record
 import "../../../Extras"
 

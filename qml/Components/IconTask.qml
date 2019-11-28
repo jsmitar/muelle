@@ -1,6 +1,6 @@
 import QtQuick 2.11
 import QtQuick.Layouts 1.1
-import org.duckdock.types 1.0
+import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 import "../libs/constants.js" as Const
 import "../libs/functional.js" as F

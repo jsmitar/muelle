@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(DuckDock LANGUAGES CXX)
+project(Muelle LANGUAGES CXX)
 
 # escape character
 string(ASCII 27 Esc)
@@ -51,13 +51,13 @@ configure_file(
 # Includes: range-v3
 #include_directories("${CMAKE_SOURCE_DIR}/liab/range-v3/include")
 
-# Target: duckdock
+# Target: muelle
 file(GLOB_RECURSE SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" src/*.cpp)
 file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_SOURCE_DIR}" src/*.hpp)
 #file(GLOB_RECURSE RANGEV3 RELATIVE "${CMAKE_SOURCE_DIR}" lib/range-v3/include/*.hpp)
 
-add_executable(duckdock ${HEADERS} ${SOURCES} "main.cpp")
-target_link_libraries(duckdock
+add_executable(muelle ${HEADERS} ${SOURCES} "main.cpp")
+target_link_libraries(muelle
   Qt5::Core
   Qt5::Quick
   Qt5::X11Extras
@@ -70,7 +70,7 @@ add_custom_target(qml SOURCES "qml/qml.qrc")
 
 # Info Messages
 message(STATUS " ")
-message(STATUS "- DuckDock project")
+message(STATUS "- Muelle project")
 message(STATUS "- ${Esc}[34mVersion: ${GIT_VERSION}${Esc}[0m")
 message(STATUS "- Commit: ${GIT_COMMIT}")
 message(STATUS " ")

@@ -1,6 +1,6 @@
 import QtQuick 2.11
 import QtQml.Models 2.3
-import org.duckdock.types 1.0
+import org.muelle.types 1.0
 import org.kde.taskmanager 0.1 as TaskManager
 import QtQml.Models 2.12
 import "../libs/functional.js" as F
@@ -29,7 +29,7 @@ import "../Extras"
   "IsStartup": undefined,
   "IsLauncher": undefined,
   "HasLauncher": false,
-  "display": "PaintItem.qml (qml/Extras @ DuckDock) - Qt Creator",
+  "display": "PaintItem.qml (qml/Extras @ Muelle) - Qt Creator",
   "IsGroupParent": undefined,
   "decoration": {},
   "ChildCount": undefined,

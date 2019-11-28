@@ -1,7 +1,7 @@
 import QtQuick 2.4
 import QtQml 2.12
 import QtQuick.Controls.Universal 2.3
-import org.duckdock.types 1.0
+import org.muelle.types 1.0
 import "../Extras"
 
 SettingsForm {

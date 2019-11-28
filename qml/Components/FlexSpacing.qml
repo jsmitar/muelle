@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
-import org.duckdock.types 1.0
+import org.muelle.types 1.0
 import "../Extras"
 
 Item {

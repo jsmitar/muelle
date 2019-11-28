@@ -2,8 +2,8 @@ import QtQuick 2.11
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.3
-import org.duckdock.types 1.0
-import org.duckdock.extra 1.0
+import org.muelle.types 1.0
+import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1
 import "Components"
 import "Containers"

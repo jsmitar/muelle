@@ -5,7 +5,7 @@ import "../Extras"
 Window {
   id: win
 
-  title: qsTr('Settings: DuckDock')
+  title: qsTr('Settings: Muelle')
   width: 380
   height: settings.height
   minimumWidth: 380
