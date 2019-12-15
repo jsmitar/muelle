@@ -5,7 +5,7 @@ import "../Extras"
 
 Item {
   id: flex
-  objectName: 'flex-spacing'
+  objectName: 'FlexSpacing'
 
   Layout.minimumWidth: Layout.preferredWidth
   Layout.minimumHeight: Layout.preferredHeight

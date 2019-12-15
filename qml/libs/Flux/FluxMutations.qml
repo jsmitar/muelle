@@ -20,6 +20,9 @@ QtObject {
     [T.NEXT_ALIGNMENT](align) {
       state.panel.nextAlignment = align
     },
+    [T.NEXT_BEHAVIOR](behavior) {
+      state.panel.behavior = behavior
+    },
     [T.UPDATING_POSITION](value) {
       state.panel.updatingPosition = value
     },
@@ -37,6 +40,12 @@ QtObject {
     },
     [T.MASK_GROW](grow) {
       state.geometry.maskGrow = grow
+    },
+    [T.SHOW_SETTINGS](visible) {
+      state.settings.visible = visible
+    },
+    [T.LOCK_VISIBLE](lock) {
+      state.panel.lockVisible = lock
     }
   })
 }

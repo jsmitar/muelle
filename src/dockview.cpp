@@ -24,8 +24,8 @@
 
 namespace Dock {
 View::View(QSharedPointer<EnhancedQmlEngine> &engine)
-    : QQuickView(engine.data(), nullptr), mBehavior(this),
-      mPositionHandler(this), mEngine(engine) {
+    : QQuickView(engine.data(), nullptr), mPositionHandler(this),
+      mEngine(engine) {
   setColor(Qt::transparent);
   setFlag(Qt::WindowStaysOnTopHint, true);
   setFlag(Qt::WindowDoesNotAcceptFocus, true);
@@ -33,8 +33,9 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   setFlag(Qt::FramelessWindowHint, true);
   setResizeMode(QQuickView::SizeRootObjectToView);
   setTextRenderType(QQuickWindow::NativeTextRendering);
-  setPersistentSceneGraph(false);
-  setPersistentOpenGLContext(false);
+  setPersistentSceneGraph(true);
+  setPersistentOpenGLContext(true);
+  setClearBeforeRendering(true);
 
   KWindowSystem::setType(winId(), NET::Dock);
 
@@ -42,19 +43,21 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   connect(this, &QQuickView::heightChanged, this, &View::sizeChanged);
 
   connect(mEngine.data(), &EnhancedQmlEngine::sourceChanged, this, &View::load);
-  connect(mEngine.data(), &EnhancedQmlEngine::clearSource, [&] { setSource({}); });
+  connect(mEngine.data(), &EnhancedQmlEngine::clearSource, [this] {
+    setSource({});
+    rootContext()->setContextProperty("$view", nullptr);
+    rootContext()->setContextProperty("$layout", nullptr);
+    rootContext()->setContextProperty("$positioner", nullptr);
+    releaseResources();
+  });
 }
 
 View::~View() {}
 
 void View::load() {
-  connect(this, &View::statusChanged,
-          [this](auto status) { init = status == QQuickView::Ready; });
   rootContext()->setContextProperty("$view", this);
   rootContext()->setContextProperty("$layout", &mLayout);
-  rootContext()->setContextProperty("$behavior", &mBehavior);
   rootContext()->setContextProperty("$positioner", &mPositionHandler);
-  clearBeforeRendering();
   setSource({"qrc:/main.qml"});
   show();
 }
@@ -79,8 +82,7 @@ QRect View::absolutePanelGeometry() const {
   return {position() + mPanelGeometry.topLeft(), mPanelGeometry.size()};
 }
 
-void View::setPanelGeometry(const QRect &value)
-{
+void View::setPanelGeometry(const QRect &value) {
   mPanelGeometry = value;
   emit panelGeometryChanged();
   mPositionHandler.update(200);
@@ -94,6 +96,7 @@ void View::setMask(const QRect &rect) {
 void View::setPosition(const QPoint &value) {
   QQuickView::setPosition(value);
   emit positionChanged();
+  emit panelGeometryChanged();
 }
 
 void View::setSize(const QSize &size) {

@@ -1,41 +1,61 @@
 .pragma library
 
 (function (global){
-var timerComponent = Qt.createComponent('./TimerComponent.qml')
-var nextId = 0
-var timers = {}
+const timerComponent = Qt.createComponent('./TimerComponent.qml')
+const timers = {}
+let nextId = 0
 
-function clearTimeout(timerId) {
-  if (!timers.hasOwnProperty(timerId)) {
-    return
-  }
-  var timer = timers[timerId]
+function clearTimeout(id) {
+  if (!timers.hasOwnProperty(id)) return
+
+  const timer = timers[id]
   timer.stop()
   timer.destroy()
-  delete timers[timerId]
+  delete timers[id]
 }
 
 function setTimeout(callback, interval = 0) {
-  var timer = timerComponent.createObject(null, { interval });
+  const timer = timerComponent.createObject(null, { interval, repeat: false });
+  const id = ++nextId
+  timers[id] = timer
 
-  timer.triggered.connect(function () {
+  timer.triggered.connect(() => {
     try {
       callback()
     } catch (e) {
       console.warn(e)
     } finally {
       timer.destroy()
-      delete timers[timerId]
+      delete timers[id]
     }
   })
-  var timerId = ++nextId
-  timers[timerId] = timer
   timer.running = true
 
-  return timerId
+  return id
+}
+
+function setInterval(callback, interval = 0) {
+  const timer = timerComponent.createObject(null, { interval, repeat: true });
+  const id = ++nextId
+  timers[id] = timer
+
+  timer.triggered.connect(() => {
+    try {
+      callback()
+    } catch (e) {
+      console.warn(e)
+    }
+  })
+  timer.running = true
+
+  return id
 }
 
 Qt.setTimeout = setTimeout
 Qt.clearTimeout = clearTimeout
+
+Qt.setInterval = setInterval
+Qt.clearInterval = clearTimeout
+
 })(Qt)
 

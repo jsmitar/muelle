@@ -1,4 +1,4 @@
-import QtQuick 2.11
+import QtQuick 2.12
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.3
@@ -10,15 +10,31 @@ import "Containers"
 import "Extras"
 import "Settings"
 import "libs/Flux"
+import "libs/Flux/actions.js" as Action
 import "libs/functional.js" as F
+import "libs/signal.js" as Signal
 import "polyfills/Timer/timer.js" as TimerPolyfill
 import "polyfills/promise.js" as PromisePolyfill
 
 Item {
   id: root
+  objectName: 'root'
 
   width: store.state.geometry.viewSize.width
   height: store.state.geometry.viewSize.height
+
+  Component.onCompleted: {
+    $positioner.centerOffset = 0
+    $view.setOpacity(0)
+
+    Qt.Promise.all([
+      store.dispatch(Action.changeEdge(Types.Bottom)),
+      store.dispatch(Action.changeAlignment(Types.Center)),
+      store.dispatch(Action.changeBehavior(Types.DodgeActive))
+    ])
+
+    console.log(`${Qt.size(0,0)}`)
+  }
 
   PaintItem {
     target: root
@@ -26,10 +42,11 @@ Item {
     showSize: false
   }
 
+  readonly property SettingsWindow settings: SettingsWindow {}
+
   readonly property AnimationSlide slide: AnimationSlide {}
 
   readonly property Store store: Store {
-    debug: true
     id: store
 
     Binding {
@@ -46,20 +63,23 @@ Item {
       target: $view
       property: 'size'
       value: store.state.geometry.viewSize
+      delayed: true
     }
     Binding {
       target: $view
       property: 'mask'
       value: store.state.geometry.maskRect
+      delayed: true
+
+      Component.onCompleted: {
+        console.log(F.tostr(this, 1))
+      }
     }
     Binding {
       target: $view
       property: 'panelGeometry'
       value: store.state.geometry.panelNextRect
-    }
-
-    Connections {
-      target: store.state.geometry
+      delayed: true
     }
 
     contextMenu: DockMenu {
@@ -71,29 +91,6 @@ Item {
     }
   }
 
-  Component.onCompleted: {
-    $positioner.centerOffset = 0
-    $view.setOpacity(0)
-
-    Qt.Promise.all([
-      store.dispatch({ type: "changeEdge", payload: Types.Top }),
-      store.dispatch({ type: "changeAlignment", payload: Types.Center })
-    ])
-    .then(() => {
-      store.dispatch({ type: "showPanel" })
-    })
-  }
-
-  Connections {
-    target: $behavior
-    enabled: !settings.visible
-    onDodgeChanged: {
-      if ($behavior.dodge) {
-        store.dispatch({ type: 'hidePanel' })
-      }
-    }
-  }
-
   DockContainer {
     id: dockArea
     anchors.fill: root
@@ -101,74 +98,5 @@ Item {
 
   DockMenu {}
 
-  PressureDetector {
-    id: pressureDetector
-
-    edge: $layout.edge
-    view: $view
-    threshold: 2
-    enabled: store.state.panel.hidden
-
-    onThresholdReached: {
-      store.dispatch({ type: 'showPanel' })
-    }
-  }
-
-  Connections {
-    target: $view
-
-    property Timer hideTimer: Timer {
-      id: hideTimer
-      repeat: false
-    }
-
-    onExited: {
-      const s = settings
-      if (s.visible) return
-
-      const clear = F.timeout(hideTimer, () => {
-        store.dispatch({ type: 'hidePanel' })
-      }, 1000)
-      F.once($view.entered, () => {
-        clear();
-        if (!s.visible) {
-          root.store.dispatch({ type: 'showPanel' })
-        }
-      })
-      pressureDetector.updateBarrier()
-    }
-
-  }
-
-  Rectangle {
-    id: bg
-    width: store.state.geometry.panelNextRect.width
-    height: store.state.geometry.panelNextRect.height
-
-    Behavior on width {
-      NumberAnimation {
-        duration: store.state.animation.duration / 2
-        easing.type: Easing.InOutQuad
-      }
-    }
-
-    anchors.centerIn: parent
-    antialiasing: true
-    z: -1
-    color: "#34373A"
-    radius: 4
-    transform: Rotation {
-      angle: -60
-      origin.x: bg.width / 2
-      origin.y: 0
-      axis.x: 1
-      axis.y: 0
-      axis.z: 0
-    }
-  }
-
-  SettingsWindow {
-    id: settings
-    flags: Qt.WindowStaysOnTopHint
-  }
+  BehaviorManager {}
 }

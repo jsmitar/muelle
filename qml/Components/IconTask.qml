@@ -9,7 +9,7 @@ import "../Extras"
 
 IconTaskContainer {
   id: icon
-  objectName: 'IconTaskContainer'
+  objectName: 'IconTask'
   iconTarget: innerIcon
 
   Layout.minimumWidth: innerIcon.width
@@ -17,6 +17,7 @@ IconTaskContainer {
 
   Box {
     id: innerIcon
+    objectName: 'innerIcon'
     width: icon.size
     height: icon.size
     paddings: icon.padding
@@ -25,7 +26,6 @@ IconTaskContainer {
       id: iconItem
       source: m.decoration
       roundToIconSize: true
-      anchors.fill: parent
     }
 
     resources: [

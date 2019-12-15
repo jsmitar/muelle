@@ -8,7 +8,7 @@ QObject {
   id: state
   objectName: "FluxState"
 
-  readonly property Settings settings: Settings{}
+  readonly property Settings settings: Settings {}
 
   readonly property Panel panel: Panel {}
 

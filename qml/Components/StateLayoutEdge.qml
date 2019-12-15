@@ -17,25 +17,25 @@ StateGroup {
       id: _top
       extend: 'reset'
       name: 'top'
-      when: $layout.edge === Types.Top
+      when: $layout.edge & Types.Top
     },
     State {
       id: _right
       extend: 'reset'
       name: 'right'
-      when: $layout.edge === Types.Right
+      when: $layout.edge & Types.Right
     },
     State {
       id: _bottom
       extend: 'reset'
       name: 'bottom'
-      when: $layout.edge === Types.Bottom
+      when: $layout.edge & Types.Bottom
     },
     State {
       id: _left
       extend: 'reset'
       name: 'left'
-      when: $layout.edge === Types.Left
+      when: $layout.edge & Types.Left
     }
   ]
 }

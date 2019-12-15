@@ -22,9 +22,11 @@
 #include "qmlsourcewatcher.hpp"
 
 #include <QObject>
+#include <QPixmapCache>
 #include <QPointer>
 #include <QProcess>
 #include <QQmlEngine>
+#include <QQuickWindow>
 #include <QResource>
 
 class EnhancedQmlEngine : public QQmlEngine {

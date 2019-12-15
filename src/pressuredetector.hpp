@@ -46,7 +46,7 @@ class PressureDetector : public QObject,
   Q_INTERFACES(QQmlParserStatus)
   Q_PROPERTY(double threshold MEMBER mThreshold NOTIFY thresholdChanged)
   Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(Dock::View *view WRITE setView)
+  Q_PROPERTY(Dock::View *view MEMBER view)
   Q_PROPERTY(Dock::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
 
 public:
@@ -102,7 +102,7 @@ private:
 };
 
 } // namespace Dock
-inline void qmlRegisterPressureDetector() {
+inline void qmlRegisterPanelBehavior() {
   qmlRegisterType<Dock::PressureDetector>("org.muelle.extra", 1, 0,
                                           "PressureDetector");
 }

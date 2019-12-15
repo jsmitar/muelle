@@ -18,7 +18,6 @@
 #ifndef DOCKVIEW_HPP
 #define DOCKVIEW_HPP
 
-#include "behavior.hpp"
 #include "layout.hpp"
 #include "libs/enhancedqmlengine.hpp"
 #include "positionhandler.hpp"
@@ -35,8 +34,6 @@
 #include <QRect>
 #include <QSharedPointer>
 
-typedef void onEventFunc(QEvent *);
-
 namespace Dock {
 class View : public QQuickView {
   Q_OBJECT
@@ -46,10 +43,11 @@ class View : public QQuickView {
   Q_PROPERTY(QRect panelGeometry READ panelGeometry WRITE setPanelGeometry
                  NOTIFY panelGeometryChanged)
   Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged)
-  Q_PROPERTY(QPoint position READ position WRITE setPosition NOTIFY positionChanged)
+  Q_PROPERTY(
+      QPoint position READ position WRITE setPosition NOTIFY positionChanged)
   Q_PROPERTY(QPoint mousePosition READ mousePosition)
 
-  public:
+public:
   View(QSharedPointer<EnhancedQmlEngine> &engine);
   ~View() override;
   void load();
@@ -77,15 +75,14 @@ signals:
   void positionChanged();
   void sizeChanged();
   void panelGeometryChanged();
+  void release();
 
 protected:
   bool event(QEvent *ev) override;
 
 private:
-  bool init = false;
   bool mContainsMouse = false;
   Dock::Layout mLayout;
-  Dock::Behavior mBehavior;
   Dock::PositionHandler mPositionHandler;
   QSharedPointer<EnhancedQmlEngine> mEngine;
   QRect mPanelGeometry;

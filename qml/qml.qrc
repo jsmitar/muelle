@@ -42,5 +42,7 @@
         <file>Extras/Spy.qml</file>
         <file>libs/Flux/State/Geometry.qml</file>
         <file>libs/signal.js</file>
+        <file>Components/BehaviorManager.qml</file>
+        <file>Components/ConnectionGroup.qml</file>
     </qresource>
 </RCC>

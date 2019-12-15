@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick 2.10
 import org.muelle.types 1.0
-import "./" as S
 import "../../../Extras"
 
 QObject {
@@ -11,11 +10,11 @@ QObject {
 
   readonly property int _panel_width:
       state.icon.size * state.panel.taskCount1 +
-      state.icon.spacing * (state.panel.taskCount1 - 1)
+      state.icon.spacing * Math.max(0, state.panel.taskCount1 - 1)
 
-  readonly property int _panel_height: state.icon.size
+  readonly property int _panel_height: Math.max(0, state.icon.size)
 
-  readonly property int _panel_x: state.icon.size
+  readonly property int _panel_x: Math.max(0, state.icon.size)
 
   readonly property int _panel_y: 0
 
@@ -29,14 +28,14 @@ QObject {
 
   property int _panel_next_width:
       state.icon.size * state.panel.nextTaskCount1 +
-      state.icon.spacing * (state.panel.nextTaskCount1 - 1)
+      state.icon.spacing * Math.max(0, state.panel.nextTaskCount1 - 1)
 
   readonly property int _panel_next_height: _panel_height
 
   property int _panel_next_x:
       state.icon.size +
       ((state.icon.size + state.icon.spacing) *
-       (state.panel.taskCount1 - state.panel.nextTaskCount1)
+       Math.max(0, state.panel.taskCount1 - state.panel.nextTaskCount1)
       ) / 2
 
   readonly property int _panel_next_y: _panel_y
@@ -101,6 +100,12 @@ QObject {
         maskSizeVisible.width, maskSizeVisible.height
     )
 
-  Spy { target: obj; properties: 'panelNextRect,panelRect' }
+  Spy {
+    delayed: true
+    properties: [
+      spy`${obj}.(panelNextRect,panelRect,maskRect,_panel_next_size)`,
+      spy`${state.panel}.(nextTaskCount1,taskCount1)`,
+    ]
+  }
 
 }

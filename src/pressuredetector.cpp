@@ -16,8 +16,8 @@
  */
 
 #include "pressuredetector.hpp"
-#include <X11/extensions/Xfixes.h>
 #include <QGuiApplication>
+#include <X11/extensions/Xfixes.h>
 
 namespace Dock {
 PressureDetector::PressureDetector(QObject *parent) : QObject(parent) {}
@@ -25,7 +25,6 @@ PressureDetector::PressureDetector(QObject *parent) : QObject(parent) {}
 PressureDetector::~PressureDetector() {
   removePointerBarrier();
   qGuiApp->removeNativeEventFilter(this);
-  qDebug() << "destructor PressureDetector";
 }
 
 void PressureDetector::classBegin() { initPointerBarrier(); }
@@ -35,7 +34,7 @@ void PressureDetector::componentComplete() {
     mPressureTimer.setSingleShot(true);
     mPressureTimer.callOnTimeout([&] { mPressure = 0; });
 
-    connect(view, &View::panelGeometry, this,
+    connect(view, &View::panelGeometryChanged, this,
             &PressureDetector::geometryChanged);
 
     auto debouncer = new DebounceSignal(250, this);

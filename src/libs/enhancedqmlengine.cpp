@@ -16,9 +16,9 @@
  */
 
 #include "enhancedqmlengine.hpp"
-#include <malloc.h>
 #include <QDebug>
 #include <QtGlobal>
+#include <malloc.h>
 
 EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
   mRcc = new QProcess(this);
@@ -42,11 +42,14 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 
     qInfo() << "[CLEAR]";
     emit clearSource();
-    clearComponentCache();
-    collectGarbage();
-    malloc_trim(0);
     if (!QResource::unregisterResource(QML_RCC))
       qInfo() << "[HQR] Qml Resources no unloaded";
+
+    trimComponentCache();
+    clearComponentCache();
+    collectGarbage();
+    QPixmapCache::clear();
+    malloc_trim(0);
 
     buildQmlQrc();
   });

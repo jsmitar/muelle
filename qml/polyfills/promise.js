@@ -302,3 +302,4 @@ Promise.reject = function(reason){
 global.Promise = Promise
 
 })(Qt);
+

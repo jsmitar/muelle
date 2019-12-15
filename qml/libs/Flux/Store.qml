@@ -3,6 +3,7 @@ import "../../Components"
 import "../../Extras"
 import "../functional.js" as F
 import "./types.js" as T
+import "./actions.js" as Action
 import org.kde.taskmanager 0.1
 import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
 
@@ -28,15 +29,19 @@ FluxStore {
     filterByActivity: true
 
     onCountChanged: {
-      dispatch({ type: 'updateTaskCount1', payload: count })
+      dispatch(Action.updateTaskCount1(count))
+    }
+
+    Component.onCompleted: {
+      countChanged()
     }
   }
 
-  readonly property ActivityInfo activityInfo: ActivityInfo {
-  }
+  readonly property ActivityInfo activityInfo:
+    ActivityInfo {}
 
-  readonly property VirtualDesktopInfo virtualDesktopInfo: VirtualDesktopInfo {
-  }
+  readonly property VirtualDesktopInfo virtualDesktopInfo:
+    VirtualDesktopInfo {}
 
   readonly property TaskManagerApplet.Backend backend: TaskManagerApplet.Backend {
     taskManagerItem: root

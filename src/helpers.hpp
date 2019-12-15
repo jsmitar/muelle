@@ -18,13 +18,22 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
+#include <QJSValue>
 #include <QObject>
+#include <QQmlEngine>
+#include <QVariant>
 #include <qglobal.h>
 
-class Helpers
-{
-  public:
-  Helpers();
+namespace Dock {
+class Helpers : public QObject {
+  Q_OBJECT
+public:
+  explicit Helpers(QObject *parent = nullptr);
+
+  virtual ~Helpers() override;
+
+  Q_INVOKABLE static bool qReflectSignal(const QVariant &fn);
 };
 
+} // namespace Dock
 #endif // HELPERS_HPP

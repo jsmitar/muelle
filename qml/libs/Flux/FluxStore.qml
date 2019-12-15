@@ -13,7 +13,10 @@ QObject {
   property bool debug: false
 
   function commit(type, payload) {
-    console.assert(type in mutations.mutations, `FluxStore.commit: ${type} did not recognized`)
+    if (!(type in mutations.mutations)) {
+      throw new Error(`FluxStore.commit: ${type} did not recognized`)
+    }
+
     if (debug) {
        console.log(`[COMMIT] - ${type}`, payload !== undefined ? F.tostr(payload) : '')
     }
@@ -21,7 +24,10 @@ QObject {
   }
 
   function dispatch({ type, payload }) {
-    console.assert(type in actions, `FluxStore.dispatch: ${type} did not recognized`)
+    if(!(type in actions)) {
+      throw new Error(`FluxStore.dispatch: ${type} did not recognized`)
+    }
+
     if (debug) {
        console.log(`[ACTION] - ${type}`, payload !== undefined ? F.tostr(payload) : '')
     }

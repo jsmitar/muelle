@@ -3,34 +3,31 @@ import QtQml 2.12
 import QtQuick.Controls.Universal 2.3
 import org.muelle.types 1.0
 import "../Extras"
+import "../libs/functional.js" as F
+import "../libs/Flux/actions.js" as Action
 
 SettingsForm {
   id: settings
 
-  onVisibleChanged: {
-    if (visible) {
-      store.dispatch({ type: 'showPanel' })
-    }
-  }
-
   Instantiator {
     model: alignment.aligns
+
     BindingValue {
       target: modelData
+      property: 'checked'
       initial: $layout.alignment === modelData.value
-      when: 'checked'
-      then: ({ value }) => {
-        store.dispatch({ type: 'changeAlignment', payload: value })
+      then: () => {
+        store.dispatch(Action.changeAlignment(target.value))
       }
     }
   }
 
   BindingValue {
     target: alignment.centerOffset
+    property: 'value'
     initial: $positioner.centerOffset
-    when: 'value'
-    then: ({ value }) => {
-      $positioner.centerOffset = value
+    then: offset => {
+      $positioner.centerOffset = offset
       Qt.callLater(() => $positioner.update(100))
     }
     otherwise: then
@@ -40,11 +37,9 @@ SettingsForm {
     model: edge.edges
     BindingValue {
       target: modelData
+      property: 'checked'
       initial: $layout.edge === modelData.value
-      when: 'checked'
-      then: ({ value }) => {
-        store.dispatch({ type: 'changeEdge', payload: value })
-      }
+      then: () => store.dispatch(Action.changeEdge(target.value))
     }
   }
 
@@ -52,9 +47,11 @@ SettingsForm {
     model: behavior.behaviors
     BindingValue {
       target: modelData
-      initial: $behavior.behavior === modelData.value
-      when: 'checked'
-      then: target => $behavior.behavior = target.value
+      property: 'checked'
+      initial: store.state.panel.behavior === modelData.value
+      then: F.debounce(() => {
+          store.dispatch(Action.changeBehavior(target.value))
+        }, 1000)
     }
   }
 }

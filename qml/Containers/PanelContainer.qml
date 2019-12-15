@@ -24,6 +24,11 @@ Loader {
   Drag.hotSpot.y: store.state.icon.size / 2
   Drag.dragType: Drag.Automatic
 
+
+  Item {
+    Repeater { parent: positioner; model: panelContainer.model }
+  }
+
   children: [
   DropArea {
     id: dropArea
@@ -92,8 +97,6 @@ Loader {
           panelContainer.positioner = row
         }
 
-        Repeater { model: panelContainer.model }
-
         move: Transition {
           NumberAnimation {
             alwaysRunToEnd: true
@@ -145,8 +148,6 @@ Loader {
         Component.onCompleted: {
           panelContainer.positioner = column
         }
-
-        Repeater { model: panelContainer.model }
 
         move: Transition {
           NumberAnimation {

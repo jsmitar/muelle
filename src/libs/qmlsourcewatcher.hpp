@@ -27,8 +27,10 @@
 namespace Dock {
 class QmlSourceWatcher : public QFileSystemWatcher {
   Q_OBJECT
+
 public:
   explicit QmlSourceWatcher(const QString &qmldir, QObject *parent = nullptr);
+
 signals:
   void sourceChanged();
 

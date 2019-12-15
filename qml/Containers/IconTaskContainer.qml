@@ -6,6 +6,7 @@ import QtQml.Models 2.12
 import "../libs/functional.js" as F
 import "../libs/taskHelper.js" as TaskHelper
 import "../libs/constants.js" as Consts
+import "../Components"
 import "../Extras"
 
 /*!
@@ -142,7 +143,6 @@ MouseArea {
   Component.onDestruction: {
     panel.dragging = null
   }
-
   //! END: Drag&Drop
 
   //! BEGIN: MouseHandlers
@@ -183,89 +183,53 @@ MouseArea {
   }
   //! END: Animations
 
-  StateGroup {
-    states: [
-      State {
-        name: 'fill-vertical'
-        when: $view.layout.isHorizontal
-        PropertyChanges {
-          target: task
-          width: size
-          height: parent.height
-        }
-      },
-      State {
-        name: 'fill-horizontal'
-        when: $view.layout.isVertical
-        PropertyChanges {
-          target: task
-          width: parent.width
-          height: size
-        }
-      }
-    ]
+  StateLayoutOrientation {
+    horizontal: PropertyChanges {
+      target: task
+      width: size
+      height: parent.height
+    }
+    vertical: PropertyChanges {
+      target: task
+      width: parent.width
+      height: size
+    }
   }
 
-  StateGroup {
-    states: [
-      State {
-        name: 'reset'
-        AnchorChanges {
-          target: iconTarget
-          anchors {
-            top: undefined
-            right: undefined
-            bottom: undefined
-            left: undefined
-            horizontalCenter: undefined
-            verticalCenter: undefined
-          }
-        }
-        PropertyChanges {
-          target: iconTarget
-          anchors.margins: 0
-        }
-      },
-      State {
-        extend: 'reset'
-        name: 'anchor-top'
-        when: $layout.edge === Types.Top
-        AnchorChanges {
-          target: iconTarget
-          anchors.top: task.top
-          anchors.horizontalCenter: task.horizontalCenter
-        }
-      },
-      State {
-        extend: 'reset'
-        name: 'anchor-right'
-        when: $layout.edge === Types.Right
-        AnchorChanges {
-          target: iconTarget
-          anchors.right: task.right
-          anchors.verticalCenter: task.verticalCenter
-        }
-      },
-      State {
-        extend: 'reset'
-        name: 'anchor-bottom'
-        when: $layout.edge === Types.Bottom
-        AnchorChanges {
-          target: iconTarget
-          anchors.bottom: task.bottom
-          anchors.horizontalCenter: task.horizontalCenter
-        }
-      },
-      State {
-        extend: 'reset'
-        name: 'anchor-left'
-        when: $layout.edge === Types.Left
-        AnchorChanges {
-          target: iconTarget
-          anchors.left: task.left
-          anchors.verticalCenter: task.verticalCenter
+  StateLayoutEdge {
+    reset: [
+      AnchorChanges {
+        target: iconTarget
+        anchors {
+          top: undefined
+          right: undefined
+          bottom: undefined
+          left: undefined
+          horizontalCenter: undefined
+          verticalCenter: undefined
         }
       }
     ]
+    top: AnchorChanges {
+      target: iconTarget
+      anchors.top: task.top
+      anchors.horizontalCenter: task.horizontalCenter
+    }
+    right: AnchorChanges {
+      target: iconTarget
+      anchors.right: task.right
+      anchors.verticalCenter: task.verticalCenter
+    }
+    bottom: AnchorChanges {
+      target: iconTarget
+      anchors.bottom: task.bottom
+      anchors.horizontalCenter: task.horizontalCenter
+    }
+    left: AnchorChanges {
+      target: iconTarget
+      anchors.left: task.left
+      anchors.verticalCenter: task.verticalCenter
+    }
   }
+
 }

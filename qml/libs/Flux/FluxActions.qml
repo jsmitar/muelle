@@ -3,6 +3,7 @@ import "../../Extras"
 import "./types.js" as T
 import "../functional.js" as F
 import "../signal.js" as Signal
+import "./actions.js" as Action
 
 QObject {
   property FluxStore store
@@ -55,59 +56,66 @@ QObject {
 
   function updateLayout() {
     commit(T.UPDATING_POSITION, true)
-    return dispatch({ type: 'hidePanel' })
+    return dispatch(Action.hidePanel())
       .then(() => {
         commit(T.UPDATE_POSITION)
         $positioner.update(0)
       })
       .then(() => {
-        return dispatch({ type: 'showPanel' })
+        return dispatch(Action.showPanel())
       })
       .then(() => commit(T.UPDATING_POSITION, false))
   }
 
   function changeEdge(edge) {
     commit(T.NEXT_EDGE, edge)
-    return dispatch({ type: 'updateLayout' })
+    return dispatch(Action.updateLayout())
   }
 
   function changeAlignment(align) {
     commit(T.NEXT_ALIGNMENT, align)
-    return dispatch({ type: 'updateLayout' })
+    return dispatch(Action.updateLayout())
   }
 
-  Timer {
-    id: maskGrowTimer;
-    repeat: false;
-
-    property var _promiseReject: () => {}
+  function changeBehavior(behavior) {
+    commit(T.NEXT_BEHAVIOR, behavior)
   }
 
-  function maskGrow({duration}) {
-    commit(T.MASK_GROW, true)
-    return new Qt.Promise((resolve, reject) => {
-      Signal.disconnectAll(maskGrowTimer.triggered)
-      maskGrowTimer.stop()
-      maskGrowTimer._promiseReject()
-      maskGrowTimer._promiseReject = reject
-      maskGrowTimer.interval = duration
-      Signal.once(maskGrowTimer.triggered, resolve)
-      maskGrowTimer.restart()
-    })
-    .then(() => {
-      commit(T.MASK_GROW, false)
-    })
+  function maskGrow(duration) {
+    if (Qt.cancelMaskGrow)
+      Qt.cancelMaskGrow()
+
+    if (!store.state.geometry.maskGrow)
+      commit(T.MASK_GROW, true)
+
+    const { cancel, job } = F.makeCancelable(() => F.asyncTimeout(duration))
+    Qt.cancelMaskGrow = cancel
+
+    return job()
+      .then(() => commit(T.MASK_GROW, false))
+      .catch(F.noop)
   }
 
   function updateTaskCount1(count) {
     commit(T.NEXT_TASK_COUNT1, count)
     if (count < state.panel.taskCount1) {
-      return dispatch({
-          type: 'maskGrow',
-          payload: { duration: state.animation.duration }
-        })
+      return dispatch(Action.maskGrow(state.animation.duration))
+
     } else if (count !== state.panel.taskCount1) {
       commit(T.UPDATE_TASK_COUNT_1)
     }
+  }
+
+  function showSettings(visible) {
+    if (visible !== store.state.settings.visible) {
+      commit(T.SHOW_SETTINGS, visible)
+      lockVisible(visible)
+    }
+  }
+
+  function lockVisible(lock) {
+    commit(T.LOCK_VISIBLE, lock)
+    if (lock)
+      return store.dispatch(Action.showPanel())
   }
 }

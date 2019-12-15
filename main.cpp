@@ -17,11 +17,14 @@
 #include "src/dockconfig.hpp"
 #include "src/docktypes.hpp"
 #include "src/dockview.hpp"
+#include "src/helpers.hpp"
 #include "src/layout.hpp"
 #include "src/libs/enhancedqmlengine.hpp"
 #include "src/libs/print_parser.hpp"
 #include "src/libs/propertymap.hpp"
 #include "src/libs/qmlsourcewatcher.hpp"
+#include "src/libs/qobjectpropertyvaluesource.hpp"
+#include "src/panelbehavior.hpp"
 #include "src/pressuredetector.hpp"
 
 #include <cstring>
@@ -49,13 +52,18 @@ int main(int argc, char *argv[]) {
   QQmlDebuggingEnabler qmldebug;
   Dock::qmlRegisterTypes();
   qmlRegisterPressureDetector();
+  qmlRegisterPanelBehavior();
   qmlRegisterPropertyMap();
+  qmlRegisterQObjectPropertyValueSource();
 
   qDebug() << "Version:" << MUELLE_VERSION;
   qDebug() << "Commit:" << MUELLE_COMMIT;
 
   QQuickWindow::setDefaultAlphaBuffer(true);
   auto engine = QSharedPointer<EnhancedQmlEngine>::create();
+  const auto helpers = new Dock::Helpers();
+  engine->rootContext()->setContextProperty("$helpers", helpers);
+  engine->setObjectOwnership(helpers, QQmlEngine::JavaScriptOwnership);
 
   Dock::View view(engine);
 
@@ -70,8 +78,8 @@ inline std::string format(const QMessageLogContext &context) {
     return "";
 
   file = std::strlen(SOURCE_DIR) > file.length()
-           ? file + ":" + line + " "
-           : file.substr(std::strlen(SOURCE_DIR)) + ":" + line + " ";
+             ? file + ":" + line + " "
+             : file.substr(std::strlen(SOURCE_DIR)) + ":" + line + " ";
 
   return file.compare(0, 3, "qrc") == 0 ? file : "file:" + file;
 }

@@ -41,9 +41,25 @@ function filter(collection, predicate) {
 }
 
 function intersect(collectionL, collectionR) {
-  return Array.prototype.filter(collectionL, item => {
-    return Array.prototype.includes(collectionR, item)
+  return Array.prototype.filter.call(collectionL, item => {
+    return Array.prototype.includes.call(collectionR, item)
   })
+}
+
+function zip(collectionL, collectionR) {
+  const shorter = collectionL.length < collectionR.length
+                ? collectionL : collectionR
+
+  return Array.prototype.map.call(shorter, (_, i) => {
+    return [collectionL[i], collectionR[i]]
+  })
+}
+
+function flat(collection) {
+  return Array.prototype.reduce.call(collection,
+    (arr, item) => arr.concat(item),
+    []
+  )
 }
 
 function until(collection, predicate) {
@@ -71,19 +87,6 @@ function range(start = 0, stop = undefined, step = 1) {
         yield i
     }
   }
-}
-
-function zoom(iconSize, iconZoom, iconZoomAmplitude) {
-  // precalculated
-  var X = iconZoom - iconSize - iconZoomAmplitude
-  var A = iconZoom / 2
-  var BASE = iconSize + iconZoomAmplitude
-
-  function calcZoom(position) {
-    return clamp(iconSize, BASE + (position * X) / A, iconZoom)
-  }
-
-  return calcZoom
 }
 
 function timeout(timer, cb, interval) {
@@ -130,6 +133,18 @@ function isObject(value) {
   return value && typeof value === 'object';
 }
 
+function isPoint(value) {
+  return `${value}`.startsWith('QPoint')
+}
+
+function isSize(value) {
+  return `${value}`.startsWith('QSize')
+}
+
+function isRect(value) {
+  return `${value}`.startsWith('QRect')
+}
+
 function isArray(value) {
   return Array.isArray(value);
 }
@@ -143,9 +158,12 @@ function space(length) {
 }
 
 function formatHelper(str, [left, right], indent) {
-  return `${left}\n${space(indent)}${str}\n${space(indent - 2)}${right}`
+  return `${left}${breakLine(indent)}${space(indent)}${str}${breakLine(indent)}${space(indent - 2)}${right}`
 }
 
+function breakLine(indent) {
+  return indent >= 0 ? '\n' : ' '
+}
 
 function atostr(array, deep = 5, indent = 2) {
   if (deep === 0) {
@@ -158,7 +176,7 @@ function atostr(array, deep = 5, indent = 2) {
 
   const str = array
     .map(v => `${tostr(v, deep - 1, indent + 2)}`)
-    .join(`,\n${space(indent)}`)
+    .join(`,${breakLine(indent)}${space(indent)}`)
 
   return formatHelper(str, ['[', ']'], indent);
 }
@@ -166,7 +184,7 @@ function atostr(array, deep = 5, indent = 2) {
 function otostr(object, deep = 5, indent = 2) {
   if (deep === 0) {
     const ostr = String(object) || 'Object'
-    return `[object ${ostr}${object.objectName ? '-' + object.objectName: ''}]`
+    return `${ostr}${object.objectName ? '-' + object.objectName: ''}`
   }
 
   if (!Object.keys(object).length) {
@@ -181,9 +199,9 @@ function otostr(object, deep = 5, indent = 2) {
       if (k === 'parent' || object[k] === object.parent || v === object) {
         nextDeep = 0
       }
-      return `${quote(k)}: ${tostr(v, nextDeep, indent + 2)}`
+      return `${k}: ${tostr(v, nextDeep, indent + 2)}`
     })
-    .join(`,\n${space(indent)}`);
+    .join(`,${breakLine(indent)}${space(indent)}`);
 
   return formatHelper(str, ['{', '}'], indent);
 }
@@ -210,7 +228,27 @@ function tostr(value, deep = 5, indent = 2) {
     return atostr(value, deep, indent);
   }
   if (isCallable(value)) {
-    return ctostr(value);
+    return ctostr(value)
+  }
+  if (isPoint(value)) {
+    return otostr({
+      x: value.x,
+      y: value.y
+    }, deep, indent)
+  }
+  if (isSize(value)) {
+    return otostr({
+      width: value.width,
+      height: value.height
+    }, deep, indent)
+  }
+  if (isRect(value)) {
+    return otostr({
+      x: value.x,
+      y: value.y,
+      width: value.width,
+      height: value.height
+    }, deep, indent)
   }
   if (isObject(value)) {
     return otostr(value, deep, indent);
@@ -383,3 +421,35 @@ class Iter {
     return this
   }
 }
+
+
+class CanceledError extends Error {
+    constructor(message = 'CanceledError') {
+        super(message)
+//        this.name = 'CanceledError'
+    }
+}
+
+function makeCancelable(fnPromise) {
+  let cancel
+  const cancelPromise = new Qt.Promise((_, reject) => {
+    cancel = () => reject(new CanceledError())
+  });
+
+  return {
+    cancel,
+    job(...args) {
+      return Qt.Promise.race([cancelPromise, fnPromise.call({ cancel }, ...args)])
+    },
+  }
+}
+
+function debounce(fn, time) {
+  let timeout = 0
+  return (...args) => {
+    const lastArgs = args
+    Qt.clearTimeout(timeout)
+    timeout = Qt.setTimeout(() => fn(...lastArgs), time)
+  }
+}
+

@@ -18,41 +18,55 @@
 #define BEHAVIOR_H
 
 #include "docktypes.hpp"
+#include "dockview.hpp"
 
 #include <QObject>
+#include <QQmlParserStatus>
 #include <QRect>
 #include <QtGui/qwindowdefs.h>
 
 namespace Dock {
 class View;
-class BehaviorPrivate;
+namespace Private {
+class PanelBehavior;
+};
 
-class Behavior : public QObject {
+class PanelBehavior : public QObject, public QQmlParserStatus {
   Q_OBJECT
   Q_PROPERTY(Dock::Types::Behavior behavior READ behavior WRITE setBehavior
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)
+  Q_PROPERTY(Dock::View *view MEMBER view)
 
 public:
-  explicit Behavior(View *parent = nullptr);
-  ~Behavior();
+  explicit PanelBehavior(QObject *parent = nullptr);
+  virtual ~PanelBehavior() override;
+
+  void classBegin() override;
+  void componentComplete() override;
 
   Types::Behavior behavior() const;
   void setBehavior(Types::Behavior behavior);
 
-  bool dodge() const;
+  Q_INVOKABLE void updateStruts();
 
-  void setParentWindow(WId wid) const;
+  bool dodge() const;
 
 signals:
   void behaviorChanged();
   void dodgeChanged();
-  void showingDesktop(bool showing);
 
 private:
-  BehaviorPrivate *dPtr;
+  Private::PanelBehavior *dPtr;
+  Types::Behavior mBehavior{Types::Behavior::None};
+  View *view;
+
+  friend class Private::PanelBehavior;
 };
 
 } // namespace Dock
-
+inline void qmlRegisterPressureDetector() {
+  qmlRegisterType<Dock::PanelBehavior>("org.muelle.extra", 1, 0,
+                                       "PanelBehavior");
+}
 #endif // BEHAVIOR_H
