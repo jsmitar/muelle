@@ -16,6 +16,8 @@ import "libs/signal.js" as Signal
 import "polyfills/Timer/timer.js" as TimerPolyfill
 import "polyfills/promise.js" as PromisePolyfill
 
+import "libs/saga.js" as Saga
+
 Item {
   id: root
   objectName: 'root'
@@ -25,15 +27,12 @@ Item {
 
   Component.onCompleted: {
     $positioner.centerOffset = 0
-    $view.setOpacity(0)
-
     Qt.Promise.all([
       store.dispatch(Action.changeEdge(Types.Bottom)),
       store.dispatch(Action.changeAlignment(Types.Center)),
       store.dispatch(Action.changeBehavior(Types.DodgeActive))
     ])
-
-    console.log(`${Qt.size(0,0)}`)
+    Saga.run(Saga.test)
   }
 
   PaintItem {
@@ -70,10 +69,6 @@ Item {
       property: 'mask'
       value: store.state.geometry.maskRect
       delayed: true
-
-      Component.onCompleted: {
-        console.log(F.tostr(this, 1))
-      }
     }
     Binding {
       target: $view

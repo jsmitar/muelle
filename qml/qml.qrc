@@ -44,5 +44,8 @@
         <file>libs/signal.js</file>
         <file>Components/BehaviorManager.qml</file>
         <file>Components/ConnectionGroup.qml</file>
+        <file>libs/Flux/FluxActionCreator.qml</file>
+        <file>libs/Flux2/Dispatcher.js</file>
+        <file>libs/saga.js</file>
     </qresource>
 </RCC>

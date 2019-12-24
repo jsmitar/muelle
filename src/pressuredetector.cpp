@@ -195,7 +195,7 @@ void PressureDetector::updateBarrier() {
     }
 
     if (auto error = xcb_request_check(conn, cookie); error) {
-      qWarning() << "fail to create barrier" << error->error_code;
+      qWarning() << "fail to create pointer barrier" << error->error_code;
       mBarrier = 0;
       return;
     }
