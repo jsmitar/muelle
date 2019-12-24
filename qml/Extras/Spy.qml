@@ -6,7 +6,7 @@ QObject {
   id: spy
   property var properties: spy``
   property bool delayed: false
-  property bool _disableAll: false
+  property bool _disableAll: true
 
   function spy(strings, ...targets) {
     const properties = strings

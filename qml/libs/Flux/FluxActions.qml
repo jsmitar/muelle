@@ -24,10 +24,11 @@ QObject {
         })
         .completed(() => {
           commit(T.HIDE_PANEL)
-          $view.setOpacity(0)
+          $view.setOpacity(0.01)
           commit(T.UPDATE_TASK_COUNT_1)
           $positioner.update(0)
           commit(T.SLIDE_STATUS, 'None')
+          $view.enableGlow()
           resolve()
         })
         .cancelled(reject)
@@ -42,8 +43,8 @@ QObject {
     return new Qt.Promise((resolve, reject) => {
       slide.show.cancel()
         .start(() => {
-          $view.setOpacity(1)
           commit(T.SLIDE_STATUS, 'Running')
+          Qt.setTimeout(() => $view.setOpacity(1), 10)
         })
         .completed(() => {
           commit(T.SHOW_PANEL)

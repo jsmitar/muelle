@@ -88,7 +88,7 @@ QObject {
 
   readonly property size maskSizeHidden: Qt.size(1, 1)
 
-  readonly property point maskPointHidden: Qt.point(-1, -1)
+  readonly property point maskPointHidden: Qt.point(1, 1)
 
   readonly property rect maskRect: _hidden
     ? Qt.rect(

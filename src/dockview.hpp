@@ -65,6 +65,7 @@ public:
   void setSize(const QSize &size);
   QPoint mousePosition() const;
 
+  Q_INVOKABLE void enableGlow();
   Q_INVOKABLE void setOpacity(qreal level);
 
 signals:

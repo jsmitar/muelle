@@ -16,11 +16,13 @@
  */
 
 #include "dockview.hpp"
+#include <memory>
 #include <xcb/xcb.h>
 #include <xcb/xinput.h>
 
 #include <KWindowEffects>
 #include <KWindowSystem>
+#include <QX11Info>
 
 namespace Dock {
 View::View(QSharedPointer<EnhancedQmlEngine> &engine)
@@ -50,6 +52,12 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
     rootContext()->setContextProperty("$positioner", nullptr);
     releaseResources();
   });
+
+  connect(this, &QQuickView::visibleChanged, this, &View::enableGlow,
+          Qt::QueuedConnection);
+
+  qDebug() << "winId" << winId();
+  enableGlow();
 }
 
 View::~View() {}
@@ -107,6 +115,37 @@ void View::setSize(const QSize &size) {
 }
 
 QPoint View::mousePosition() const { return QCursor::pos(); }
+
+void View::enableGlow() {
+  //  auto c = QX11Info::connection();
+  //  const auto effectName = QByteArrayLiteral("_KDE_NET_WM_SCREEN_EDGE_SHOW");
+  //  auto atomCookie = xcb_intern_atom_unchecked(
+  //      c, false, static_cast<uint16_t>(effectName.length()),
+  //      effectName.constData());
+
+  //  const std::unique_ptr<xcb_intern_atom_reply_t> atom{
+  //      xcb_intern_atom_reply(c, atomCookie, nullptr)};
+
+  //  uint32_t value = 0;
+  //  using Edge = Types::Edge;
+  //  switch (mLayout.edge()) {
+  //  case Edge::Top:
+  //    value = 0;
+  //    break;
+  //  case Edge::Right:
+  //    value = 1;
+  //    break;
+  //  case Edge::Bottom:
+  //    value = 2;
+  //    break;
+  //  case Edge::Left:
+  //    value = 3;
+  //    break;
+  //  }
+
+  //  xcb_change_property(c, XCB_PROP_MODE_REPLACE, static_cast<uint>(winId()),
+  //                      atom->atom, XCB_ATOM_CARDINAL, 32, 1, &value);
+}
 
 void View::setOpacity(qreal level) { QQuickView::setOpacity(level); }
 

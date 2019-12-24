@@ -19,7 +19,9 @@ QObject {
 
       Rectangle {
         border.width: 1
+        antialiasing: true
         border.color: '#99ffffff'
+        radius: 2
         color: F.randColor(0.4)
         width: target.width
         height: target.height
