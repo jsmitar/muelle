@@ -27,9 +27,11 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
           [&](int exitCode) {
             if (exitCode == 0) {
               if (QResource::registerResource(QML_RCC)) {
-                qInfo() << "[HQR] Qml Resources loaded";
+                qInfo() << "[watch] Qml Resources loaded";
                 emit sourceChanged();
               }
+            } else {
+              qWarning() << "[watch]" << mRcc->readAllStandardError();
             }
           });
 
@@ -42,8 +44,7 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 
     qInfo() << "[CLEAR]";
     emit clearSource();
-    if (!QResource::unregisterResource(QML_RCC))
-      qInfo() << "[HQR] Qml Resources no unloaded";
+    QResource::unregisterResource(QML_RCC);
 
     trimComponentCache();
     clearComponentCache();
@@ -51,6 +52,7 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
     QPixmapCache::clear();
     malloc_trim(0);
 
+    qInfo() << "[watch] Building sources";
     buildQmlQrc();
   });
 

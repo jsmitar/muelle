@@ -32,7 +32,6 @@ public:
 
   virtual ~Helpers() override;
 
-  Q_INVOKABLE static bool qReflectSignal(const QVariant &fn);
 };
 
 } // namespace Dock

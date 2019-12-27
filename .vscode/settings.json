@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "qtglobal": "cpp",
+        "qdebug": "cpp"
+    }
+}

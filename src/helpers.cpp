@@ -17,17 +17,11 @@
 
 #include "helpers.hpp"
 #include "QDebug"
-#include "QMetaMethod"
 
 namespace Dock {
 
 Helpers::Helpers(QObject *parent) : QObject(parent) {}
 
 Helpers::~Helpers() {}
-
-bool Helpers::qReflectSignal(const QVariant &fn) {
-  const auto jsv = fn.value<QJSValue>();
-  return true;
-}
 
 } // namespace Dock

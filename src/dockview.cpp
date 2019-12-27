@@ -56,7 +56,7 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   connect(this, &QQuickView::visibleChanged, this, &View::enableGlow,
           Qt::QueuedConnection);
 
-  qDebug() << "winId" << winId();
+  qInfo() << "winId" << winId();
   enableGlow();
 }
 

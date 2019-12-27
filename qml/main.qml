@@ -5,6 +5,7 @@ import QtQuick.Window 2.3
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1
+
 import "Components"
 import "Containers"
 import "Extras"
@@ -15,8 +16,6 @@ import "libs/functional.js" as F
 import "libs/signal.js" as Signal
 import "polyfills/Timer/timer.js" as TimerPolyfill
 import "polyfills/promise.js" as PromisePolyfill
-
-import "libs/saga.js" as Saga
 
 Item {
   id: root
@@ -32,7 +31,6 @@ Item {
       store.dispatch(Action.changeAlignment(Types.Center)),
       store.dispatch(Action.changeBehavior(Types.DodgeActive))
     ])
-    Saga.run(Saga.test)
   }
 
   PaintItem {

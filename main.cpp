@@ -56,8 +56,8 @@ int main(int argc, char *argv[]) {
   qmlRegisterPropertyMap();
   qmlRegisterQObjectPropertyValueSource();
 
-  qDebug() << "Version:" << MUELLE_VERSION;
-  qDebug() << "Commit:" << MUELLE_COMMIT;
+  qInfo() << "Version:" << MUELLE_VERSION;
+  qInfo() << "Commit:" << MUELLE_COMMIT;
 
   QQuickWindow::setDefaultAlphaBuffer(true);
   auto engine = QSharedPointer<EnhancedQmlEngine>::create();
@@ -88,12 +88,11 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
                          const QString &msg) {
 
   if (msg.startsWith("[CLEAR]")) {
-    // std::cout << "\033c" << std::endl;
-    std::cout << "__________________________________" << std::endl;
+    std::cout << "\033c" << std::endl;
     return;
   }
 
-  auto file = msg.contains("[HQR]") ? "" : format(context);
+  auto file = format(context);
 
   if (file.compare(msg.toStdString()) < 0) {
     file = "";
@@ -104,8 +103,7 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
     std::cout << "[debug] " << msg.toStdString() << " " << file << std::endl;
     break;
   case QtInfoMsg:
-    std::cout << "[info] " << msg.toStdString() << " " << file << std::endl;
-    fflush(stdout);
+    std::cout << "[info] " << msg.toStdString() << " " << std::endl;
     break;
   case QtWarningMsg:
     std::cout << "[warning] " << msg.toStdString() << " " << file << std::endl;
