@@ -47,5 +47,7 @@
         <file>libs/Flux/FluxActionCreator.qml</file>
         <file>libs/Flux2/Dispatcher.js</file>
         <file>libs/saga.js</file>
+        <file>libs/Saga/saga.mjs</file>
+        <file>libs/Saga/effects.js</file>
     </qresource>
 </RCC>
