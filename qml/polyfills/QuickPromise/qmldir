@@ -1,2 +1,0 @@
-module polyfills.QuickPromise
-Q 1.0 promise.js
