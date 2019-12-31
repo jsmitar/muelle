@@ -33,6 +33,7 @@ class PanelBehavior;
 
 class PanelBehavior : public QObject, public QQmlParserStatus {
   Q_OBJECT
+  Q_INTERFACES(QQmlParserStatus)
   Q_PROPERTY(Dock::Types::Behavior behavior READ behavior WRITE setBehavior
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)

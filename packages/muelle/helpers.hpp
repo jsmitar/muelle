@@ -31,7 +31,6 @@ public:
   explicit Helpers(QObject *parent = nullptr);
 
   virtual ~Helpers() override;
-
 };
 
 } // namespace Dock

@@ -29,9 +29,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(QT_QML_DEBUG ON)
-set(RCC "/usr/bin/rcc-qt5")
-set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml CACHE STRING "" FORCE)
-set(QML2_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml CACHE STRING "" FORCE)
+
+set(RCC_BIN "/usr/bin/rcc-qt5")
+set(PACKAGE_DIR "${CMAKE_SOURCE_DIR}/packages")
+set(PACKAGE_MUELLE "${CMAKE_SOURCE_DIR}/packages/muelle")
+set(PACKAGE_SHELL "${CMAKE_SOURCE_DIR}/packages/shell")
+set(PACKAGE_SHARED "${CMAKE_SOURCE_DIR}/packages/shared")
 
 # Packages: Qt-KDE Packages
 find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
@@ -41,22 +44,17 @@ find_package(KF5WindowSystem REQUIRED)
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES XINPUT)
 
 # Target: configure
-file(GLOB CONFIGURE src/*.*.in)
-add_custom_target(configure SOURCES ${CONFIGURE})
+add_custom_target(configure SOURCES "${PACKAGE_MUELLE}/dockconfig.hpp.in")
 configure_file(
-  "${CMAKE_SOURCE_DIR}/src/dockconfig.hpp.in"
-  "${CMAKE_SOURCE_DIR}/src/dockconfig.hpp"
+  "${PACKAGE_MUELLE}/dockconfig.hpp.in" 
+  "${PACKAGE_MUELLE}/dockconfig.hpp"
 )
 
-# Includes: range-v3
-#include_directories("${CMAKE_SOURCE_DIR}/liab/range-v3/include")
-
 # Target: muelle
-file(GLOB_RECURSE SOURCES RELATIVE "${CMAKE_SOURCE_DIR}" src/*.cpp)
-file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_SOURCE_DIR}" src/*.hpp)
-#file(GLOB_RECURSE RANGEV3 RELATIVE "${CMAKE_SOURCE_DIR}" lib/range-v3/include/*.hpp)
+file(GLOB_RECURSE SOURCES RELATIVE "${CMAKE_SOURCE_DIR}/" "${PACKAGE_MUELLE}/*.cpp")
+file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/" "${PACKAGE_MUELLE}/*.hpp")
 
-add_executable(muelle ${HEADERS} ${SOURCES} "main.cpp")
+add_executable(muelle ${HEADERS} ${SOURCES})
 target_link_libraries(muelle
   Qt5::Core
   Qt5::Quick
@@ -65,8 +63,8 @@ target_link_libraries(muelle
   ${XCB_LIBRARIES}
 )
 
-# Target: qml
-add_custom_target(qml SOURCES "qml/qml.qrc")
+# Target: qml targets
+add_custom_target(shell SOURCES "${PACKAGE_SHELL}/qml.qrc")
 
 # Info Messages
 message(STATUS " ")

@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "src/dockconfig.hpp"
-#include "src/docktypes.hpp"
-#include "src/dockview.hpp"
-#include "src/helpers.hpp"
-#include "src/layout.hpp"
-#include "src/libs/enhancedqmlengine.hpp"
-#include "src/libs/print_parser.hpp"
-#include "src/libs/propertymap.hpp"
-#include "src/libs/qmlsourcewatcher.hpp"
-#include "src/libs/qobjectpropertyvaluesource.hpp"
-#include "src/panelbehavior.hpp"
-#include "src/pressuredetector.hpp"
+#include "dockconfig.hpp"
+#include "docktypes.hpp"
+#include "dockview.hpp"
+#include "helpers.hpp"
+#include "layout.hpp"
+#include "libs/enhancedqmlengine.hpp"
+#include "libs/print_parser.hpp"
+#include "libs/propertymap.hpp"
+#include "libs/qmlsourcewatcher.hpp"
+#include "libs/qobjectpropertyvaluesource.hpp"
+#include "panelbehavior.hpp"
+#include "pressuredetector.hpp"
 
 #include <cstring>
 #include <iostream>
@@ -116,3 +116,4 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
     break;
   }
 }
+

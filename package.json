@@ -1,9 +1,11 @@
 {
-  "name": "saga-tiny",
+  "name": "muelle",
   "author": "audoban",
-  "version": "0.1.0",
-  "license": "MIT",
-  "scripts": {},
+  "license": "GPLv3",
+  "scripts": {
+    "build": "gulp build",
+    "watch": "gulp watch"
+  },
   "prettier": {
     "printWidth": 80,
     "semi": true,
@@ -13,9 +15,9 @@
     "useTabs": false
   },
   "devDependencies": {
-    "@types/node": "^13.1.1",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
+    "gulp-execa": "^2.0.0",
     "gulp-just-replace": "^1.0.2",
     "gulp-remove-code": "^3.0.4",
     "gulp-rename": "^2.0.0",

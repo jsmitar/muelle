@@ -1,14 +1,14 @@
 {
-  "include": ["src", "test"],
+  "include": ["packages/shell", "packages/shared"],
   "compilerOptions": {
     "target": "ES2019",
     "module": "ES2015",
     "lib": ["ES2019"],
+    "rootDir": "packages/",
+    "outDir": "packages/dist/",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
-    "rootDir": "./src",
-    "outDir": "dist/",
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
