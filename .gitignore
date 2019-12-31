@@ -76,5 +76,4 @@ node_modules/
 *.dll
 *.exe
 
-
 src/dockconfig\.hpp
