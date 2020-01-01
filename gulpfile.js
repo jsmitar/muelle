@@ -16,7 +16,7 @@ const dirs = {
   shared: 'packages/shared',
   shell: 'packages/shell',
   dist: 'packages/dist',
-  buildDev: 'build-dev',
+  buildDev: 'build',
   resources: {
     shell: {
       watch: [
@@ -43,10 +43,10 @@ async function cleanDist() {
   } catch {}
 }
 async function runCMake() {
-  await execa.exec(`cmake -Wno-dev -S . -B ${dirs.buildDev}`);
+  await execa.exec(`cmake -Wno-dev -G Ninja -S . -B ${dirs.buildDev}`);
 }
 async function runMake() {
-  await execa.exec(`make -C ${dirs.buildDev}`);
+  await execa.exec(`ninja -C ${dirs.buildDev}`);
 }
 async function runMuelle() {
   await runMake();
@@ -124,7 +124,7 @@ function watchTask() {
 }
 
 function buildTask() {
-  return series(runCMake, cleanDist, buildQml);
+  return parallel(series(runCMake, runMake), series(cleanDist, buildQml));
 }
 
 exports.watch = watchTask();

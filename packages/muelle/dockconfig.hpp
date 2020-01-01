@@ -3,7 +3,7 @@
 #define DOCKCONFIG_HPP
 
 #define MUELLE_VERSION "0.0.1"
-#define MUELLE_COMMIT "2a6c7d6"
+#define MUELLE_COMMIT "9947d97"
 #define SHELL_RCC "/home/smith/dev/muelle/packages/dist/shell/qml.rcc"
 #define SOURCE_DIR "/home/smith/dev/muelle"
 

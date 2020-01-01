@@ -17,7 +17,6 @@
 
 #include "rccwatcher.hpp"
 #include "../dockconfig.hpp"
-#include "functions.hpp"
 #include <QDebug>
 
 namespace Dock {
@@ -35,9 +34,10 @@ RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
 
   debounce.setSingleShot(true);
   connect(this, &RCCWatcher::fileChanged, [&] { debounce.start(300); });
-  connect(&debounce, &QTimer::timeout, this, &RCCWatcher::sourceChanged);
+  connect(&debounce, &QTimer::timeout, this, &RCCWatcher::rccChanged);
 
   addPath(rcc);
+  debounce.start();
 }
 
 } // namespace Dock

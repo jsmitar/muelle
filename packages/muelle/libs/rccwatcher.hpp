@@ -32,7 +32,7 @@ public:
   explicit RCCWatcher(const QString &rcc, QObject *parent = nullptr);
 
 signals:
-  void sourceChanged();
+  void rccChanged();
 
 private:
   QTimer debounce;

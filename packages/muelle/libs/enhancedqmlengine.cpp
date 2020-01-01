@@ -21,10 +21,10 @@
 #include <malloc.h>
       
 EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
+
 #ifdef BUILD_TYPE_Debug
-  // enable hot-reloading on debug build
   mWatcher = new Dock::RCCWatcher(SHELL_RCC, this);
-  connect(mWatcher, &Dock::RCCWatcher::sourceChanged, [&] {
+  connect(mWatcher, &Dock::RCCWatcher::rccChanged, [&] {
     qInfo() << "[CLEAR]";
     emit clearSource();
     QResource::unregisterResource(SHELL_RCC);
@@ -35,7 +35,6 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
     QPixmapCache::clear();
     malloc_trim(0);
 
-    qInfo() << "[watch] Building sources";
     if (QResource::registerResource(SHELL_RCC)) {
       qInfo() << "[watch] Qml Resources loaded";
       emit sourceChanged();
