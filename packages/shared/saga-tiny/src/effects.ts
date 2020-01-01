@@ -1,2 +1,2 @@
-export * from './private/baseEffects';
-export * from './private/extraEffects';
+export * from 'private/baseEffects';
+export * from 'private/extraEffects';

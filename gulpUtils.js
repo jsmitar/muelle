@@ -35,3 +35,14 @@ function generateQrc(from, paths = []) {
 
 exports.generateQrc = generateQrc;
 exports.listFiles = listFiles;
+<<<<<<< HEAD
+=======
+
+// console.log(
+//   generateQrc(`${__dirname}/packages/shell`, [
+//     `${__dirname}/packages/shell`,
+//     `${__dirname}/packages/shared`,
+//   ])
+// );
+// console.timeEnd('qrc');
+>>>>>>> 2a6c7d6635808e192764c4c0ddbe46841e06c4ac
