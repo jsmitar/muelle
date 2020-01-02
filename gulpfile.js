@@ -73,14 +73,25 @@ function buildQml(cb) {
                 search: /import (.*) from '(.*)'/g,
                 replacement: "import $1 from '$2.mjs'",
               },
+              {
+                search: /\/\/\s*@pragma-library/g,
+                replacement: '.pragma library',
+              },
             ])
           )
           .pipe(dest(dirs.dist));
       },
       function copyShellQmlResources() {
-        return src(['packages/**/*.qml', 'packages/**/*.js']).pipe(
-          dest(dirs.dist)
-        );
+        return src(['packages/**/*.qml'])
+          .pipe(
+            replace([
+              {
+                search: /import '(.*).ts' as (.*)/g,
+                replacement: "import '$1.mjs' as $2",
+              },
+            ])
+          )
+          .pipe(dest(dirs.dist));
       }
     ),
     function createShellQrc(cb) {
