@@ -3,5 +3,6 @@
         "qtglobal": "cpp",
         "qdebug": "cpp"
     },
-    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
