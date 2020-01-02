@@ -1,3 +1,4 @@
+import Qt from 'qt';
 import { delayed } from './baseEffects';
 
 export function delay(time: number) {

@@ -2,7 +2,6 @@ import QtQuick 2.10
 import "../../Extras"
 import './types.ts' as T
 import '../functional.ts' as F
-import '../signal.ts' as Signal
 import './actions.ts' as Action
 
 QObject {

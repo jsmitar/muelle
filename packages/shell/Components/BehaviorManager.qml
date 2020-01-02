@@ -3,7 +3,6 @@ import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import "../Extras"
 import '../libs/functional.ts' as F
-import '../libs/signal.ts' as Signal
 import '../libs/Flux/actions.ts' as Action
 
 QObject {

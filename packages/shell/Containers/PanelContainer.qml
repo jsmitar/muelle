@@ -5,7 +5,6 @@ import org.muelle.types 1.0
 import "../Extras"
 import "../Components"
 import '../libs/functional.ts' as F
-import '../libs/signal.ts' as Signal
 
 Loader {
   id: panelContainer

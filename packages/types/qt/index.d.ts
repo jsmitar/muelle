@@ -1,26 +1,57 @@
 export = Qt;
 export as namespace Qt;
 
-declare namespace Qt {
-  export const Promise: PromiseConstructor;
+import { type } from './symbols';
+import { Component } from '@qml/QtQml-2.x';
 
-  function callLater<Fn extends (...args: any[]) => any>(
-    callback: Fn,
-    ...args: Parameters<Fn>
-  ): void;
+declare namespace Qt {
+  //START: Qt Namespace
+  export type KeyboardModifier = enumeration<'KeyboardModifier'>;
+  export const NoModifier: KeyboardModifier;
+  export const ShiftModifier: KeyboardModifier;
+  export const ControlModifier: KeyboardModifier;
+  export const AltModifier: KeyboardModifier;
+  export const MetaModifier: KeyboardModifier;
+  export const KeypadModifier: KeyboardModifier;
+  export const GroupSwitchModifier: KeyboardModifier;
+  //END: Qt Namespace
+
+  //START: No standard
+  export const Promise: PromiseConstructor;
   function setTimeout<Fn extends (...args: any[]) => any>(
     handler: Fn,
     ms: number
   ): number;
   function clearTimeout(handle: number): void;
+  //END: No standard
 
+  //START: Qt QML Type
+  function callLater<Fn extends (...args: any[]) => any>(
+    callback: Fn,
+    ...args: Parameters<Fn>
+  ): void;
+  function createComponent<T extends QtObject = QtObject>(
+    url: string,
+    mode?: Component.Status
+  ): Component<T>;
   function rect(x: number, y: number, width: number, height: number): rect;
   function size(width: number, height: number): size;
   function point(x: number, y: number): point;
-
   function rgba(red: number, green: number, blue: number, alpha: number): color;
+  //END: Qt QML Type
 
-  export type rect = size & point;
+  //START: Basic Qt Data Types
+  export type enumeration<T extends string> = number & {
+    [type]: T;
+  };
+  export type url = string;
+  export type rect = size &
+    point & {
+      left: number;
+      right: number;
+      top: number;
+      bottom: number;
+    };
 
   export type size = {
     width: number;
@@ -37,10 +68,13 @@ declare namespace Qt {
     g: number;
     b: number;
   };
+  //END: Basic Qt Data Types
 
-  export interface Signal {
-    connect(slot: (...args: any[]) => any): void;
-    disconnect(slot: (...args: any[]) => any): void;
+  export interface Signal<
+    Fn extends (...args: any[]) => any = (...args: any[]) => any
+  > {
+    connect(slot: Fn): void;
+    disconnect(slot: Fn): void;
     (): void;
   }
 
@@ -53,20 +87,10 @@ declare namespace Qt {
     (): void;
   }
 
-  export type QtObject<T> = { objectName: string } & {
+  export type QtObject<T = any> = {
+    objectName: string;
+    destroy(delay?: number): void;
+  } & {
     [P in keyof T]: T[P];
   };
-
-  export namespace QtQml {
-    export type Timer = QtObject<{
-      interval: number;
-      repeat: boolean;
-      running: boolean;
-      triggeredOnStart: boolean;
-      triggered: Signal;
-      restart: Method;
-      start: Method;
-      stop: Method;
-    }>;
-  }
 }

@@ -1,4 +1,4 @@
-//@pragma-library
+'.pragma library';
 
 const DragAndDrop = {
   mime: [

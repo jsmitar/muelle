@@ -1,5 +1,7 @@
-import Qt, { color, Signal, Slot, QtQml, point, size, rect } from 'qt';
-//@pragma-library
+'.pragma library';
+
+import Qt from 'qt';
+import { Timer } from '@qml/QtQml-2.x';
 
 export function randColor(alpha: number) {
   alpha = alpha || 1;
@@ -11,7 +13,7 @@ export function randColor(alpha: number) {
   );
 }
 
-export function alpha(color: color, alpha: number) {
+export function alpha(color: Qt.color, alpha: number) {
   return Qt.rgba(color.r, color.g, color.b, alpha);
 }
 
@@ -115,7 +117,7 @@ export function range(start = 0, stop: number = 0, step: number = 1) {
   };
 }
 
-export function timeout(timer: QtQml.Timer, slot: Slot, interval?: number) {
+export function timeout(timer: Timer, slot: Qt.Slot, interval?: number) {
   function disconnect() {
     if (timer && timer.triggered) {
       timer.triggered.disconnect(slot);
@@ -159,15 +161,15 @@ function isObject(value: any): value is Record<any, any> {
   return value && typeof value === 'object';
 }
 
-function isPoint(value: any): value is point {
+function isPoint(value: any): value is Qt.point {
   return `${value}`.startsWith('QPoint');
 }
 
-function isSize(value: any): value is size {
+function isSize(value: any): value is Qt.size {
   return `${value}`.startsWith('QSize');
 }
 
-function isRect(value: any): value is rect {
+function isRect(value: any): value is Qt.rect {
   return `${value}`.startsWith('QRect');
 }
 
@@ -303,7 +305,7 @@ function tostr(value: any, deep = 5, indent = 2) {
   return String(value);
 }
 
-export function singleConnect(signal: Signal, slot: Slot) {
+export function singleConnect(signal: Qt.Signal, slot: Qt.Slot) {
   try {
     signal.connect(function _slot(...args: any[]) {
       signal.disconnect(_slot);
@@ -314,7 +316,7 @@ export function singleConnect(signal: Signal, slot: Slot) {
   }
 }
 
-export function on(signal: Signal, slot: Slot) {
+export function on(signal: Qt.Signal, slot: Qt.Slot) {
   try {
     signal.connect(slot);
     return () => signal.disconnect(slot);

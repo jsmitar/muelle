@@ -1,37 +1,39 @@
-//@pragma-library
+'.pragma library';
 
-function showPanel() {
+import Muelle from '@qml/org.muelle.types-1.0';
+
+export function showPanel() {
   return { type: 'showPanel' };
 }
 
-function hidePanel() {
+export function hidePanel() {
   return { type: 'hidePanel' };
 }
 
-function changeAlignment(alignment) {
+export function changeAlignment(alignment: Muelle.Types.Alignment) {
   return { type: 'changeAlignment', payload: alignment };
 }
 
-function changeEdge(edge) {
+export function changeEdge(edge: Muelle.Types.Edge) {
   return { type: 'changeEdge', payload: edge };
 }
 
-function changeBehavior(behavior) {
+export function changeBehavior(behavior: Muelle.Types.Behavior) {
   return { type: 'changeBehavior', payload: behavior };
 }
 
-function showSettings(visible) {
+export function showSettings(visible: boolean) {
   return { type: 'showSettings', payload: visible };
 }
 
-function maskGrow(duration) {
+export function maskGrow(duration: number) {
   return { type: 'maskGrow', payload: duration };
 }
 
-function updateTaskCount1(count) {
+export function updateTaskCount1(count: number) {
   return { type: 'updateTaskCount1', payload: count };
 }
 
-function updateLayout() {
+export function updateLayout() {
   return { type: 'updateLayout' };
 }

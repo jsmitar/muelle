@@ -1,4 +1,4 @@
-//@pragma-library
+'.pragma library';
 
 const CHANGE_EDGE = 'CHANGE_EDGE';
 const CHANGE_ALIGNMENT = 'CHANGE_ALIGNMENT';

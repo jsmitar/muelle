@@ -41,7 +41,8 @@ Window {
 
         onTriggered: trigger(name)
         Component.onCompleted: {
-          F.assign(menuItem, win.model[index])
+          menuItem.name = win.model[index].name
+          menuItem.trigger = win.model[index].trigger
         }
       }
 

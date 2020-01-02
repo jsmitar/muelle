@@ -1,11 +1,13 @@
-//@pragma library
+'.pragma library';
 
-function activate(
-  taskModel,
-  { index, m: { IsActive, IsMinimized } }, // TaskItemModel
-  { modifiers }
+import Qt from 'qt';
+import { TaskItemModel } from 'plasma/org.kde.plasma.private.taskmanager-0.1';
+
+export function activate(
+  taskModel: any,
+  { index, m }: { index: number; m: TaskItemModel },
+  { modifiers }: { modifiers: Qt.KeyboardModifier }
 ) {
-  // MouseArea
   const {
     makeModelIndex,
     requestToggleMinimized,
@@ -15,10 +17,10 @@ function activate(
 
   const modelIndex = makeModelIndex(index);
   if (modifiers === Qt.NoModifier) {
-    if (IsActive) {
+    if (m.IsActive) {
       requestToggleMinimized(modelIndex);
     } else {
-      if (IsMinimized) {
+      if (m.IsMinimized) {
         requestToggleMinimized(modelIndex);
       }
       requestActivate(modelIndex);

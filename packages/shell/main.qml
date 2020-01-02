@@ -13,9 +13,8 @@ import "Settings"
 import "libs/Flux"
 import 'libs/Flux/actions.ts' as Action
 import 'libs/functional.ts' as F
-import 'libs/signal.ts' as Signal
 import 'polyfills/Timer/timer.ts' as TimerPolyfill
-import 'polyfills/promise.ts' as PromisePolyfill
+import 'polyfills/promise.js' as PromisePolyfill
 
 Item {
   id: root
