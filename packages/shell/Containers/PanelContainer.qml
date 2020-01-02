@@ -4,8 +4,8 @@ import QtQml.Models 2.3
 import org.muelle.types 1.0
 import "../Extras"
 import "../Components"
-import "../libs/functional.js" as F
-import "../libs/signal.js" as Signal
+import '../libs/functional.ts' as F
+import '../libs/signal.ts' as Signal
 
 Loader {
   id: panelContainer

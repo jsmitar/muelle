@@ -1,8 +1,9 @@
-import 'qt.globals';
+import '../../types/Qt';
 import { Saga, ITask, SagaFn, Effect } from './types';
 import { TaskStatus } from './private/symbols';
 import genId from './private/genId';
 import { EventEmitter } from './EventEmitter';
+import Qt from 'qt';
 
 const id = genId();
 

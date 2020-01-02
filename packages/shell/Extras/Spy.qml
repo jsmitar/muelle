@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQml 2.12
-import "../libs/functional.js" as F
+import '../libs/functional.ts' as F
 
 QObject {
   id: spy

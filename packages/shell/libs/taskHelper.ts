@@ -1,29 +1,30 @@
-.pragma library
+//@pragma library
 
 function activate(
   taskModel,
   { index, m: { IsActive, IsMinimized } }, // TaskItemModel
-  { modifiers }) // MouseArea
-{
+  { modifiers }
+) {
+  // MouseArea
   const {
     makeModelIndex,
     requestToggleMinimized,
     requestActivate,
-    requestNewInstance
-  } = taskModel
+    requestNewInstance,
+  } = taskModel;
 
-  const modelIndex = makeModelIndex(index)
+  const modelIndex = makeModelIndex(index);
   if (modifiers === Qt.NoModifier) {
     if (IsActive) {
-      requestToggleMinimized(modelIndex)
+      requestToggleMinimized(modelIndex);
     } else {
       if (IsMinimized) {
-        requestToggleMinimized(modelIndex)
+        requestToggleMinimized(modelIndex);
       }
-      requestActivate(modelIndex)
+      requestActivate(modelIndex);
     }
   }
   if (modifiers & Qt.ShiftModifier) {
-    requestNewInstance(modelIndex)
+    requestNewInstance(modelIndex);
   }
 }

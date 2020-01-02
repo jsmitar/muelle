@@ -1,9 +1,9 @@
 import QtQuick 2.11
 import "../../Components"
 import "../../Extras"
-import "../functional.js" as F
-import "./types.js" as T
-import "./actions.js" as Action
+import '../functional.ts' as F
+import './types.ts' as T
+import './actions.ts' as Action
 import org.kde.taskmanager 0.1
 import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
 

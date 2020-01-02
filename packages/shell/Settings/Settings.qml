@@ -3,8 +3,8 @@ import QtQml 2.12
 import QtQuick.Controls.Universal 2.3
 import org.muelle.types 1.0
 import "../Extras"
-import "../libs/functional.js" as F
-import "../libs/Flux/actions.js" as Action
+import '../libs/functional.ts' as F
+import '../libs/Flux/actions.ts' as Action
 
 SettingsForm {
   id: settings

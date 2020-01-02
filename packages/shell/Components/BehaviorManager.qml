@@ -2,9 +2,9 @@ import QtQuick 2.12
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import "../Extras"
-import "../libs/functional.js" as F
-import "../libs/signal.js" as Signal
-import "../libs/Flux/actions.js" as Action
+import '../libs/functional.ts' as F
+import '../libs/signal.ts' as Signal
+import '../libs/Flux/actions.ts' as Action
 
 QObject {
   id: manager

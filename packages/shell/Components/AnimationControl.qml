@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import "../libs/functional.js" as F
+import '../libs/functional.ts' as F
 
 SequentialAnimation {
   id: anim

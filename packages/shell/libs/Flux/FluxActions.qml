@@ -1,9 +1,9 @@
 import QtQuick 2.10
 import "../../Extras"
-import "./types.js" as T
-import "../functional.js" as F
-import "../signal.js" as Signal
-import "./actions.js" as Action
+import './types.ts' as T
+import '../functional.ts' as F
+import '../signal.ts' as Signal
+import './actions.ts' as Action
 
 QObject {
   property FluxStore store

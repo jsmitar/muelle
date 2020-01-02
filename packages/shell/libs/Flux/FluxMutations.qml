@@ -1,6 +1,6 @@
 import QtQuick 2.10
 import org.muelle.types 1.0
-import "./types.js" as T
+import './types.ts' as T
 
 QtObject {
   property FluxStore store

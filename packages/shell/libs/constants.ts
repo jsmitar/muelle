@@ -1,4 +1,4 @@
-.pragma library
+//@pragma-library
 
 const DragAndDrop = {
   mime: [
@@ -6,6 +6,6 @@ const DragAndDrop = {
     'application/x-orgkdeplasmataskmanager_taskbuttonitem',
     'text/x-orgkdeplasmataskmanager_taskurl',
     'text/uri-list',
-    'text/plain'
-  ]
-}
+    'text/plain',
+  ],
+};
