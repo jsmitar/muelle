@@ -28,7 +28,7 @@ function generateQrc(from, paths = []) {
     .flatMap(pathname => listFiles(`${__dirname}/${pathname}`))
     .filter(file => {
       const { ext, name } = path.parse(file);
-      return /.qml|.js/.test(ext) && /\w/.test(name);
+      return /.qml|.js|.mjs/.test(ext) && /\w/.test(name);
     })
     .map(to => path.relative(from, to))}`;
 }

@@ -2,7 +2,7 @@
   "include": ["packages/shell", "packages/shared", "packages/types"],
   "compilerOptions": {
     "target": "ES2019",
-    "module": "ES2015",
+    "module": "ESNext",
     "lib": ["ES2019"],
     "rootDir": "packages/",
     "outDir": "packages/dist/",
@@ -25,6 +25,9 @@
     "baseUrl": "./",
     "paths": {
       "qt": ["packages/types/qt"],
+      "@qml/*": ["packages/types"],
+      "plasma/*": ["packages/types/plasma"],
+      "tslib": ["node_modules/tslib"],
       "*": ["packages/*"]
     },
     "typeRoots": ["packages/types"],

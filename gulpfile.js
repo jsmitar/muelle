@@ -21,11 +21,16 @@ const dirs = {
     shell: {
       watch: [
         'packages/shell/**/*.qml',
+        'packages/shell/**/*.ts',
         'packages/shell/**/*.js',
         'packages/shared/**/*.ts',
       ],
-      qrc: 'packages/dist/shell/qml.qrc',
-      rcc: 'packages/dist/shell/qml.rcc',
+      qrc: {
+        from: 'packages/dist/shell/',
+        input: ['packages/dist/shell/', 'packages/dist/shared'],
+        output: 'packages/dist/shell/qml.qrc',
+        rcc: 'packages/dist/shell/qml.rcc',
+      },
     },
     muelle: {
       watch: [
@@ -70,11 +75,19 @@ function buildQml(cb) {
           .pipe(
             replace([
               {
+                search: /import (.*) from 'qt';?/g,
+                replacement: '',
+              },
+              {
+                search: /import (.*) from '@qml\/(.*)-(.*)'/g,
+                replacement: '.import $2 $3 as $1',
+              },
+              {
                 search: /import (.*) from '(.*)'/g,
                 replacement: "import $1 from '$2.mjs'",
               },
               {
-                search: /\/\/\s*@pragma-library/g,
+                search: /'.pragma-library'/g,
                 replacement: '.pragma library',
               },
             ])
@@ -82,7 +95,7 @@ function buildQml(cb) {
           .pipe(dest(dirs.dist));
       },
       function copyShellQmlResources() {
-        return src(['packages/**/*.qml'])
+        return src(['packages/**/*.qml', 'packages/**/*.js'])
           .pipe(
             replace([
               {
@@ -95,12 +108,15 @@ function buildQml(cb) {
       }
     ),
     function createShellQrc(cb) {
-      const qrc = generateQrc(dirs.shell, [dirs.shell, dirs.shared]);
-      fs.writeFile(dirs.resources.shell.qrc, qrc, { flag: 'w' }, cb);
+      const qrc = generateQrc(
+        dirs.resources.shell.qrc.from,
+        dirs.resources.shell.qrc.input
+      );
+      fs.writeFile(dirs.resources.shell.qrc.output, qrc, { flag: 'w' }, cb);
     },
     async function createShellRcc() {
       await execa.exec(
-        `rcc-qt5 --no-compress --binary -o ${dirs.resources.shell.rcc} ${dirs.resources.shell.qrc}`
+        `rcc-qt5 --no-compress --binary -o ${dirs.resources.shell.qrc.rcc} ${dirs.resources.shell.qrc.output}`
       );
     }
   )(cb);
