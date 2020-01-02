@@ -43,10 +43,10 @@ async function cleanDist() {
   } catch {}
 }
 async function runCMake() {
-  await execa.exec(`cmake -Wno-dev -G Ninja -S . -B ${dirs.buildDev}`);
+  await execa.exec(`cmake -Wno-dev -S . -B ${dirs.buildDev}`);
 }
 async function runMake() {
-  await execa.exec(`ninja -C ${dirs.buildDev}`);
+  await execa.exec(`make -C ${dirs.buildDev}`);
 }
 async function runMuelle() {
   await runMake();

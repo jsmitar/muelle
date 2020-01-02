@@ -58,6 +58,7 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
 
   qInfo() << "winId" << winId();
   enableGlow();
+  
 }
 
 View::~View() {}

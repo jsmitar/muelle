@@ -38,7 +38,7 @@ Thumbs.db
 node_modules/
 packages/dist/**/*.*
 !packages/dist/**/*.rcc
-src/dockconfig.hpp
+packages/muelle/dockconfig.hpp
 
 # qtcreator generated files
 *.pro.user*
@@ -75,4 +75,3 @@ src/dockconfig.hpp
 # --------
 *.dll
 *.exe
-

@@ -1,8 +1,15 @@
 {
-    "files.associations": {
-        "qtglobal": "cpp",
-        "qdebug": "cpp"
-    },
-    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
-    "typescript.tsdk": "node_modules/typescript/lib"
+  "files.associations": {
+    "*.qml": "qml",
+    "qtglobal": "cpp",
+    "qdebug": "cpp",
+    "qobject": "cpp"
+  },
+  "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/packages/muelle",
+    "/usr/include/qt5"
+  ],
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
