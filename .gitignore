@@ -75,3 +75,4 @@ packages/muelle/dockconfig.hpp
 # --------
 *.dll
 *.exe
+out.log

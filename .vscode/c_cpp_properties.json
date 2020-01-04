@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "defines": [],
+      "compilerPath": "/usr/bin/c++",
+      "cStandard": "c11",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "gcc-x64",
+      "configurationProvider": "vector-of-bool.cmake-tools",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+      "includePath": ["${workspaceFolder}/packages/muelle"]
+    }
+  ],
+  "version": 4
+}

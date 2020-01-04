@@ -1,15 +1,16 @@
 {
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.generator": "Ninja",
+  "cmake.buildEnvironment": { "CXX": "/usr/bin/c++" },
+  "typescript.tsdk": "node_modules/typescript/lib",
   "files.associations": {
     "*.qml": "qml",
-    "qtglobal": "cpp",
-    "qdebug": "cpp",
-    "qobject": "cpp"
-  },
-  "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
-  "C_Cpp.default.includePath": [
-    "${workspaceFolder}/packages/muelle",
-    "/usr/include/qt5"
-  ],
-  "cmake.buildDirectory": "${workspaceFolder}/build",
-  "typescript.tsdk": "node_modules/typescript/lib"
+    "qmetaobject": "cpp",
+    "atomic": "cpp",
+    "functional": "cpp",
+    "random": "cpp",
+    "numeric": "cpp",
+    "cmath": "cpp",
+    "*.tcc": "cpp"
+  }
 }

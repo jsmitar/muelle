@@ -29,13 +29,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(QT_QML_DEBUG ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "" FORCE)
 
-set(RCC_BIN "/usr/bin/rcc-qt5")
 set(PACKAGE_DIR "${CMAKE_SOURCE_DIR}/packages")
 set(PACKAGE_MUELLE "${CMAKE_SOURCE_DIR}/packages/muelle")
 set(PACKAGE_SHELL "${CMAKE_SOURCE_DIR}/packages/dist/shell")
 set(PACKAGE_SHARED "${CMAKE_SOURCE_DIR}/packages/dist/shared")
-set(SHELL_RCC "${PACKAGE_SHELL}/qml.rcc")
+set(SHELL_RCC "packages/resources/shell.rcc")
 
 # Packages: Qt-KDE Packages
 find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)

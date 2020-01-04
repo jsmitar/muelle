@@ -1,12 +1,22 @@
 const { series, parallel, watch, dest, src } = require('gulp');
-const { generateQrc } = require('./gulpUtils');
 const ts = require('gulp-typescript');
 const rename = require('gulp-rename');
 const replace = require('gulp-just-replace');
-const execa = require('gulp-execa');
-const fs = require('fs');
+const { generateQrc } = require('./gulpUtils');
 
-let process;
+const fs = require('fs');
+const { spawn, execSync } = require('child_process');
+
+function createProcess(command) {
+  return function subProcess(cb) {
+    try {
+      execSync(command, { cwd: __dirname, stdio: 'inherit' });
+      cb();
+    } catch (e) {
+      cb(e);
+    }
+  };
+}
 
 const dirs = {
   tsconfig: 'tsconfig.json',
@@ -17,47 +27,56 @@ const dirs = {
   shell: 'packages/shell',
   dist: 'packages/dist',
   buildDev: 'build',
+  bin: 'build/muelle',
   resources: {
     shell: {
-      watch: [
-        'packages/shell/**/*.qml',
-        'packages/shell/**/*.ts',
-        'packages/shell/**/*.js',
-        'packages/shared/**/*.ts',
-      ],
+      watch: [`packages/shell/**/*.(qml|ts)`, 'packages/shared/**/*.ts'],
       qrc: {
         from: 'packages/dist/shell/',
         input: ['packages/dist/shell/', 'packages/dist/shared'],
         output: 'packages/dist/shell/qml.qrc',
-        rcc: 'packages/dist/shell/qml.rcc',
+        rcc: 'packages/resources/shell.rcc',
       },
     },
     muelle: {
-      watch: [
-        'CMakeLists.txt',
-        'packages/muelle/**/*.cpp',
-        'packages/muelle/**/*.hpp',
-      ],
+      watch: ['CMakeLists.txt', 'packages/muelle/**/*.(hpp|cpp)'],
     },
   },
 };
 
-async function cleanDist() {
-  try {
-    await execa.exec(`rm -rf ${dirs.dist}`);
-  } catch {}
+function cleanDist(cb) {
+  execSync(`find ${dirs.dist} -type f -not -name 'qml.rcc' -delete`, {
+    cwd: __dirname,
+    stdio: 'inherit',
+  });
+  cb();
 }
-async function runCMake() {
-  await execa.exec(`cmake -Wno-dev -S . -B ${dirs.buildDev}`);
-}
-async function runMake() {
-  await execa.exec(`make -C ${dirs.buildDev}`);
-}
-async function runMuelle() {
-  await runMake();
-  if (process) process.cancel();
-  process = await execa.exec(`${dirs.buildDev}/muelle`);
-}
+
+const runCMake = createProcess(
+  `cmake -Wno-dev -G Ninja -S . -B ${dirs.buildDev}`
+);
+const runMake = createProcess(`ninja -C ${dirs.buildDev}`);
+
+const runMuelle = (() => {
+  let muelle;
+  const log = fs.createWriteStream('out.log');
+
+  return function(restart, cb) {
+    if (restart && muelle) {
+      muelle.on('exit', () => runMuelle());
+      muelle.kill('SIGTERM');
+    }
+
+    if (muelle == null) {
+      muelle = spawn(`${dirs.bin}`, { cwd: __dirname });
+      muelle.unref();
+      muelle.on('exit', () => (muelle = null));
+      muelle.stdout.pipe(log, { end: false });
+    }
+    if (cb) cb();
+  };
+})();
+
 function buildQml(cb) {
   const tsProject = ts.createProject(dirs.tsconfig);
 
@@ -80,7 +99,7 @@ function buildQml(cb) {
               },
               {
                 search: /import (.*) from '@qml\/(.*)-(.*)'/g,
-                replacement: '.import $2 $3 as $1',
+                replacement: '',
               },
               {
                 search: /import (.*) from '(.*)'/g,
@@ -114,36 +133,30 @@ function buildQml(cb) {
       );
       fs.writeFile(dirs.resources.shell.qrc.output, qrc, { flag: 'w' }, cb);
     },
-    async function createShellRcc() {
-      await execa.exec(
-        `rcc-qt5 --no-compress --binary -o ${dirs.resources.shell.qrc.rcc} ${dirs.resources.shell.qrc.output}`
+    function createShellRcc(cb) {
+      execSync(
+        `rcc-qt5 --no-compress --binary -o ${dirs.resources.shell.qrc.rcc} ${dirs.resources.shell.qrc.output}`,
+        { cwd: __dirname, stdio: 'inherit' }
       );
+      cb();
     }
   )(cb);
 }
 async function watchApp() {
-  const silent = (...tasks) => {
-    try {
-      return series(...tasks)();
-    } catch (e) {
-      console.log(e);
-    } finally {
-    }
-  };
-
-  async function muelle() {
-    silent(runCMake, runMuelle);
+  function muelle(cb) {
+    return series(runCMake, runMake, cb => runMuelle(true, cb))(cb);
   }
 
-  async function qml() {
-    silent(cleanDist, buildQml);
+  function qml(cb) {
+    return series(cleanDist, buildQml, cb => runMuelle(false, cb))(cb);
   }
 
-  await muelle();
-  await qml();
+  muelle(() => {
+    qml();
+  });
 
-  watch(dirs.resources.shell.watch, { delay: 500 }, qml);
-  watch(dirs.resources.muelle.watch, { delay: 500 }, muelle);
+  watch(dirs.resources.muelle.watch, muelle);
+  watch(dirs.resources.shell.watch, qml);
 }
 
 function watchTask() {
