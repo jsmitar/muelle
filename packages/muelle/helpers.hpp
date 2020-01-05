@@ -57,7 +57,6 @@ static inline std::string demangle(const char* name) {
 
 #endif
 
-
 class Lambda {
 public:
   Lambda() = default;
@@ -69,6 +68,11 @@ public:
   Lambda(Lambda && fn) {
     m_function = fn.m_function;
   };
+
+  template<class Fn, std::enable_if_t<!std::is_same_v<std::decay_t<Fn>, Lambda>, int> = 0>
+  Lambda(Fn&& function) {
+    m_function.reset(new Callable(std::forward<Fn>(function)));
+  }
 
   Lambda &operator=(Lambda& fn) {
     std::swap(*this, fn);
@@ -84,11 +88,6 @@ public:
   friend void swap(Lambda &l, Lambda &r) {
     using std::swap;
     swap(l.m_function, r.m_function);
-  }
-
-  template<class Fn>
-  void set(Fn&& function) {
-    m_function.reset(new Callable(std::forward<Fn>(function)));
   }
 
   void operator()() {
@@ -142,15 +141,17 @@ public:
     }
 
     QTimer * timer = new QTimer();
-    Lambda disconnect;
 
-    disconnect.set([timer] () mutable {
+    Lambda disconnect([timer] () mutable {
       if (timer) {
-        QMetaObject::invokeMethod(timer, "stop", Qt::QueuedConnection);
-        QMetaObject::invokeMethod(timer, "deleteLater", Qt::QueuedConnection);
+        if (timer->isActive()) {
+          QMetaObject::invokeMethod(timer, "stop", Qt::QueuedConnection);
+        }
+        timer->deleteLater();
         timer = nullptr;
       }
     });
+
     timer->callOnTimeout([value] () mutable { value.call(); });
     timer->callOnTimeout(disconnect);
     timer->setSingleShot(true);

@@ -33,6 +33,7 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   setFlag(Qt::WindowDoesNotAcceptFocus, true);
   setFlag(Qt::WindowCloseButtonHint, false);
   setFlag(Qt::FramelessWindowHint, true);
+
   setResizeMode(QQuickView::SizeRootObjectToView);
   setTextRenderType(QQuickWindow::NativeTextRendering);
   setPersistentSceneGraph(true);
@@ -40,6 +41,8 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   setClearBeforeRendering(true);
 
   KWindowSystem::setType(winId(), NET::Dock);
+  KWindowSystem::setOnAllDesktops(winId(), true);
+  KWindowSystem::setOnActivities(winId(), {"0"});
 
   connect(this, &QQuickView::widthChanged, this, &View::sizeChanged);
   connect(this, &QQuickView::heightChanged, this, &View::sizeChanged);
@@ -53,12 +56,7 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
     releaseResources();
   });
 
-  connect(this, &QQuickView::visibleChanged, this, &View::enableGlow,
-          Qt::QueuedConnection);
-
   qInfo() << "winId" << winId();
-  enableGlow();
-  
 }
 
 View::~View() {}

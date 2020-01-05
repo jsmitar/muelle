@@ -45,10 +45,10 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
 
 int main(int argc, char *argv[]) {
   std::ios::sync_with_stdio(true);
-  qInstallMessageHandler(customMessageOutput); 
+  qInstallMessageHandler(customMessageOutput);
 
-  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QApplication app(argc, argv);
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
   QQmlDebuggingEnabler qmldebug;
   Dock::qmlRegisterTypes();
   qmlRegisterPressureDetector();
@@ -56,13 +56,14 @@ int main(int argc, char *argv[]) {
   qmlRegisterPropertyMap();
   qmlRegisterQObjectPropertyValueSource();
 
+  QQuickWindow::setDefaultAlphaBuffer(true);
+
+  auto engine = QSharedPointer<EnhancedQmlEngine>::create();
+  Dock::Extensions::registerExtensions(*engine);
+
   qInfo() << "Version:" << MUELLE_VERSION;
   qInfo() << "Commit:" << MUELLE_COMMIT;
 
-  QQuickWindow::setDefaultAlphaBuffer(true);
-  auto engine = QSharedPointer<EnhancedQmlEngine>::create();
-
-  Dock::Extensions::registerExtensions(*engine);
   Dock::View view(engine);
 
   return QApplication::exec();
@@ -91,19 +92,19 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
 
   switch (type) {
   case QtDebugMsg:
-    std::cout << "[debug] " << msg.toStdString() << " " << file << std::endl;
+    std::cout << "\033[1;32m[debug]\033[0m " << msg.toStdString() << " " << file << std::endl;
     break;
   case QtInfoMsg:
-    std::cout << "[info] " << msg.toStdString() << " " << std::endl;
+    std::cout << "\033[1;34m[info]\033[0m " << msg.toStdString() << " " << std::endl;
     break;
   case QtWarningMsg:
-    std::cout << "[warning] " << msg.toStdString() << " " << file << std::endl;
+    std::cout << "\033[1;33m[warning]\033[0m " << msg.toStdString() << " " << file << std::endl;
     break;
   case QtCriticalMsg:
-    std::cout << "[critical] " << msg.toStdString() << " " << file << std::endl;
+    std::cout << "\033[1;31m[critical]\033[0m " << msg.toStdString() << " " << file << std::endl;
     break;
   case QtFatalMsg:
-    std::cout << "[faltal] " << msg.toStdString() << " " << file << std::endl;
+    std::cout << "\033[1;31m[faltal]\033[0m " << msg.toStdString() << " " << file << std::endl;
     break;
   }
 }

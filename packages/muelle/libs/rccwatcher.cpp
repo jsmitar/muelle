@@ -32,7 +32,6 @@ RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
 
   connect(&debounce, &QTimer::timeout, this, &RCCWatcher::rccChanged);
   connect(this, &RCCWatcher::fileChanged, [this, rcc] {
-    qDebug() << "[watch] RCC file changed";
     addPath(rcc);
     debounce.start();
   });
