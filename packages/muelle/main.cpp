@@ -45,7 +45,7 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
 
 int main(int argc, char *argv[]) {
   std::ios::sync_with_stdio(true);
-  qInstallMessageHandler(customMessageOutput);
+  qInstallMessageHandler(customMessageOutput); 
 
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QApplication app(argc, argv);
@@ -61,10 +61,8 @@ int main(int argc, char *argv[]) {
 
   QQuickWindow::setDefaultAlphaBuffer(true);
   auto engine = QSharedPointer<EnhancedQmlEngine>::create();
-  const auto helpers = new Dock::Helpers();
-  engine->rootContext()->setContextProperty("$helpers", helpers);
-  engine->setObjectOwnership(helpers, QQmlEngine::JavaScriptOwnership);
 
+  Dock::Extensions::registerExtensions(*engine);
   Dock::View view(engine);
 
   return QApplication::exec();
@@ -77,20 +75,13 @@ inline std::string format(const QMessageLogContext &context) {
   if (file.empty())
     return "";
 
-  file = std::strlen(SOURCE_DIR) > file.length()
-             ? file + ":" + line + " "
-             : file.substr(std::strlen(SOURCE_DIR)) + ":" + line + " ";
+  file = file + ":" + line + " "; 
 
-  return file.compare(0, 3, "qrc") == 0 ? file : "file:" + file;
+  return file.compare(0, 3, "qrc") == 0 ?  file : "file://" + file;
 }
 
 void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
                          const QString &msg) {
-
-  if (msg.startsWith("[CLEAR]")) {
-    std::cout << "\033c" << std::endl;
-    return;
-  }
 
   auto file = format(context);
 
