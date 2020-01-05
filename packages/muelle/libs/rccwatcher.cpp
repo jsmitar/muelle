@@ -27,15 +27,15 @@ constexpr auto filters{QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot |
 RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
     : QFileSystemWatcher(parent) {
 
-  connect(this, &RCCWatcher::fileChanged, [this, rcc](auto subdir) {
-    addPath(rcc);
-    debounce.start(300);
-  });
-
   debounce.setSingleShot(true);
-  connect(this, &RCCWatcher::fileChanged, [&] { debounce.start(300); });
-  connect(&debounce, &QTimer::timeout, this, &RCCWatcher::rccChanged);
+  debounce.setInterval(300);
 
+  connect(&debounce, &QTimer::timeout, this, &RCCWatcher::rccChanged);
+  connect(this, &RCCWatcher::fileChanged, [this, rcc] {
+    qDebug() << "[watch] RCC file changed";
+    addPath(rcc);
+    debounce.start();
+  });
   addPath(rcc);
   debounce.start();
 }

@@ -25,7 +25,6 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 #ifdef BUILD_TYPE_Debug
   mWatcher = new Dock::RCCWatcher(SHELL_RCC, this);
   connect(mWatcher, &Dock::RCCWatcher::rccChanged, [&] {
-    qInfo() << "[CLEAR]";
     emit clearSource();
     QResource::unregisterResource(SHELL_RCC);
 
@@ -40,11 +39,6 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
       emit sourceChanged();
     }
   });
-
-  if (QResource::registerResource(SHELL_RCC)) {
-    qInfo() << "[watch] Qml Resources loaded";
-    emit sourceChanged();
-  }
 #else
   QResource::registerResource(SHELL_RCC);
 #endif

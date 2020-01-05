@@ -30,9 +30,9 @@ class RCCWatcher : public QFileSystemWatcher {
 public:
   explicit RCCWatcher(const QString &rcc, QObject *parent = nullptr);
 
-signals:
+signals: 
   void rccChanged();
-
+ 
 private:
   QTimer debounce;
 };
