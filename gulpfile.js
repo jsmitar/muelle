@@ -53,11 +53,11 @@ const runMuelle = (() => {
     }
 
     if (muelle == null) {
-      log.write(`
+      log.write(`${'\033[1;35m'}
 ╓───────────────────────────────────╖
 ║          STARTING MUELLE          ║
 ╙───────────────────────────────────╜
-`);
+${'\033[0m'}`);
       muelle = spawn(`${dirs.bin}`, { cwd: __dirname });
       muelle.unref();
       muelle
