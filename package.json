@@ -15,6 +15,7 @@
     "useTabs": false
   },
   "devDependencies": {
+    "@types/node": "^13.1.4",
     "gulp": "^4.0.2",
     "gulp-just-replace": "^1.0.2",
     "gulp-remove-code": "^3.0.4",

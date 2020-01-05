@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 function listFiles(pathname = `${__dirname}/packages`, files = []) {
   return fs
@@ -33,5 +34,20 @@ function generateQrc(from, paths = []) {
     .map(to => path.relative(from, to))}`;
 }
 
+function createCommand(command) {
+  return function exec(cb) {
+    try {
+      execSync(command, { cwd: __dirname, stdio: 'inherit' });
+      cb();
+    } catch (e) {
+      cb(e);
+    }
+  };
+}
+
+const clear = createCommand(`clear`);
+
 exports.generateQrc = generateQrc;
 exports.listFiles = listFiles;
+exports.createCommand = createCommand;
+exports.clear = clear;
