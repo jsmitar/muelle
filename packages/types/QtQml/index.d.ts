@@ -1,5 +1,6 @@
-declare module '@qml/QtQml-2.x' {
+declare module '@qml/QtQml-2.14' {
   import Qt from 'qt';
+
   export interface Timer extends Qt.QtObject {
     interval: number;
     repeat: boolean;

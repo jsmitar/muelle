@@ -1,7 +1,7 @@
 '.pragma library';
 
 import Qt from 'qt';
-import { Timer } from '@qml/QtQml-2.x';
+import QtQml from '@qml/QtQml-2.14';
 
 export function randColor(alpha: number) {
   alpha = alpha || 1;
@@ -117,7 +117,7 @@ export function range(start = 0, stop: number = 0, step: number = 1) {
   };
 }
 
-export function timeout(timer: Timer, slot: Qt.Slot, interval?: number) {
+export function timeout(timer: QtQml.Timer, slot: Qt.Slot, interval?: number) {
   function disconnect() {
     if (timer && timer.triggered) {
       timer.triggered.disconnect(slot);
@@ -134,7 +134,7 @@ export function timeout(timer: Timer, slot: Qt.Slot, interval?: number) {
 }
 
 export function asyncTimeout(interval: number) {
-  return new Qt.Promise(r => Qt.setTimeout(r, interval));
+  return new Qt.Promise(r => setTimeout(r, interval));
 }
 
 export function yes() {
@@ -400,10 +400,10 @@ export function debounce<Fn extends (...args: any[]) => any>(
   fn: Fn,
   time: number
 ) {
-  let timeout = 0;
+  let timeout: any;
   return (...args: Parameters<Fn>) => {
     const lastArgs = args;
-    Qt.clearTimeout(timeout);
-    timeout = Qt.setTimeout(() => fn(...lastArgs), time);
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...lastArgs), time);
   };
 }

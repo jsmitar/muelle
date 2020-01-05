@@ -32,7 +32,7 @@ function join(task) {
 
 function delay(time) {
   return call(next => {
-    Qt.setTimeout(next, time);
+    setTimeout(next, time);
   });
 }
 

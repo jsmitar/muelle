@@ -43,7 +43,7 @@ QObject {
       slide.show.cancel()
         .start(() => {
           commit(T.SLIDE_STATUS, 'Running')
-          Qt.setTimeout(() => $view.setOpacity(1), 10)
+          setTimeout(() => $view.setOpacity(1), 10)
         })
         .completed(() => {
           commit(T.SHOW_PANEL)

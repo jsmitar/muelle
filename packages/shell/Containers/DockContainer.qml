@@ -24,7 +24,7 @@ Item {
 
     DelegateModel {
       Component.onCompleted: {
-        Qt.setTimeout(_ => {
+        setTimeout(_ => {
           model = Qt.binding(_ => store.tasksModel)
         }, 500)
       }

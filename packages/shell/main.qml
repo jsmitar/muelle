@@ -13,7 +13,6 @@ import "Settings"
 import "libs/Flux"
 import 'libs/Flux/actions.ts' as Action
 import 'libs/functional.ts' as F
-import 'polyfills/Timer/timer.ts' as TimerPolyfill
 import 'polyfills/promise.js' as PromisePolyfill
 
 Item {
@@ -25,6 +24,7 @@ Item {
 
   Component.onCompleted: {
     $positioner.centerOffset = 0
+
     Qt.Promise.all([
       store.dispatch(Action.changeEdge(Types.Bottom)),
       store.dispatch(Action.changeAlignment(Types.Center)),

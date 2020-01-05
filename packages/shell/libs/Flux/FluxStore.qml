@@ -13,14 +13,18 @@ QObject {
   property bool debug: false
 
   function commit(type, payload) {
-    if (!(type in mutations.mutations)) {
+    if (!type || !(type in mutations.mutations)) {
       throw new Error(`FluxStore.commit: ${type} did not recognized`)
     }
 
     if (debug) {
        console.log(`[COMMIT] - ${type}`, payload !== undefined ? F.tostr(payload) : '')
     }
-    mutations.mutations[type](payload)
+    try {
+      mutations.mutations[type](payload)
+    } catch (e) {
+      throw new Error(`FluxStore.commit: fail to call mutation: ${type}`)
+    }
   }
 
   function dispatch({ type, payload }) {

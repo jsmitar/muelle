@@ -2,7 +2,7 @@ export = Qt;
 export as namespace Qt;
 
 import { type } from './symbols';
-import { Component } from '@qml/QtQml-2.x';
+import QtQml from '@qml/QtQml-2.14';
 
 declare namespace Qt {
   //START: Qt Namespace
@@ -18,11 +18,6 @@ declare namespace Qt {
 
   //START: No standard
   export const Promise: PromiseConstructor;
-  function setTimeout<Fn extends (...args: any[]) => any>(
-    handler: Fn,
-    ms: number
-  ): number;
-  function clearTimeout(handle: number): void;
   //END: No standard
 
   //START: Qt QML Type
@@ -32,8 +27,8 @@ declare namespace Qt {
   ): void;
   function createComponent<T extends QtObject = QtObject>(
     url: string,
-    mode?: Component.Status
-  ): Component<T>;
+    mode?: QtQml.Component.Status
+  ): QtQml.Component<T>;
   function rect(x: number, y: number, width: number, height: number): rect;
   function size(width: number, height: number): size;
   function point(x: number, y: number): point;
