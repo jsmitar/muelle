@@ -3,7 +3,7 @@ import QtQml.Models 2.3
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1 as TaskManager
 import QtQml.Models 2.12
-import '../libs/functional.ts' as F
+import '../../shared/functional.ts' as F
 import '../libs/taskHelper.ts' as TaskHelper
 import '../libs/constants.ts' as Consts
 import "../Components"

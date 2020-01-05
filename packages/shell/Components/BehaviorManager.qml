@@ -2,7 +2,7 @@ import QtQuick 2.12
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import "../Extras"
-import '../libs/functional.ts' as F
+import '../../shared/functional.ts' as F
 import '../libs/Flux/actions.ts' as Action
 
 QObject {

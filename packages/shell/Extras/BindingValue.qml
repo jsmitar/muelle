@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import org.muelle.extra 1.0
-import '../libs/functional.ts' as F
+import '../../shared/functional.ts' as F
 
 QtObject {
   id: bindingValue

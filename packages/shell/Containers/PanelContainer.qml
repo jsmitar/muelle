@@ -4,7 +4,7 @@ import QtQml.Models 2.3
 import org.muelle.types 1.0
 import "../Extras"
 import "../Components"
-import '../libs/functional.ts' as F
+import '../../shared/functional.ts' as F
 
 Loader {
   id: panelContainer

@@ -12,8 +12,8 @@ import "Extras"
 import "Settings"
 import "libs/Flux"
 import 'libs/Flux/actions.ts' as Action
-import 'libs/functional.ts' as F
 import 'polyfills/promise.js' as PromisePolyfill
+import '../shared/functional.ts' as F
 
 Item {
   id: root

@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import '../libs/functional.ts' as F
+import '../../shared/functional.ts' as F
 import "Private"
 
 Item {

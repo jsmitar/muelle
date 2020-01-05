@@ -1,6 +1,6 @@
 import QtQuick 2.10
 import '../../Extras'
-import '../functional.ts' as F
+import '../../shared/functional.ts' as F
 
 QObject {
   id: store

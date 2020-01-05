@@ -199,7 +199,7 @@ function breakLine(indent: number) {
   return indent >= 0 ? '\n' : ' ';
 }
 
-function atostr(array: any[], deep = 5, indent = 2): string {
+export function atostr(array: any[], deep = 5, indent = 2): string {
   if (deep === 0) {
     return '[Array]';
   }
@@ -215,7 +215,7 @@ function atostr(array: any[], deep = 5, indent = 2): string {
   return formatHelper(str, ['[', ']'], indent);
 }
 
-function otostr(object: Record<any, any>, deep = 5, indent = 2): string {
+export function otostr(object: Record<any, any>, deep = 5, indent = 2): string {
   if (deep === 0) {
     const ostr = String(object) || 'Object';
     return `${ostr}${object.objectName ? '-' + object.objectName : ''}`;
@@ -239,18 +239,18 @@ function otostr(object: Record<any, any>, deep = 5, indent = 2): string {
   return formatHelper(str, ['{', '}'], indent);
 }
 
-function ctostr(callable: (...args: any[]) => any): string {
+export function ctostr(callable: (...args: any[]) => any): string {
   if (callable.name) {
     return `[Function: ${callable.name}]`;
   }
   return '[Function]';
 }
 
-function repeat(value: string, length = 1) {
+export function repeat(value: string, length = 1) {
   return Array.from({ length: length + 1 }).join(value);
 }
 
-function tostr(value: any, deep = 5, indent = 2) {
+export function tostr(value: any, deep = 5, indent = 2) {
   if (isString(value)) {
     return quote(value);
   }

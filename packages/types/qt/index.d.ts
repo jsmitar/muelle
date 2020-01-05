@@ -62,6 +62,13 @@ declare namespace Qt {
     r: number;
     g: number;
     b: number;
+    a: number;
+    hsvHue: number;
+    hsvSaturation: number;
+    hsvValue: number;
+    hslHue: number;
+    hslSaturation: number;
+    hslLightness: number;
   };
   //END: Basic Qt Data Types
 

@@ -3,7 +3,7 @@ import QtQml 2.3
 import QtQuick.Controls 2.4
 import QtQuick.Window 2.11
 import "../Extras"
-import '../libs/functional.ts' as F
+import '../../shared/functional.ts' as F
 
 Window {
   id: win

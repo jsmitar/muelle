@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import "../../Components"
 import "../../Extras"
-import '../functional.ts' as F
+import '../../shared/functional.ts' as F
 import './types.ts' as T
 import './actions.ts' as Action
 import org.kde.taskmanager 0.1

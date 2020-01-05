@@ -1,7 +1,7 @@
 import QtQuick 2.10
 import "../../Extras"
 import './types.ts' as T
-import '../functional.ts' as F
+import '../../shared/functional.ts' as F
 import './actions.ts' as Action
 
 QObject {
