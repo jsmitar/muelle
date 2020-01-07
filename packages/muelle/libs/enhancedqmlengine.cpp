@@ -19,7 +19,6 @@
 #include <QDebug>
 #include <QtGlobal>
 #include <malloc.h>
-#include <iostream>
       
 EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 
@@ -36,12 +35,14 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
     malloc_trim(0);
 
     if (QResource::registerResource(SHELL_RCC)) {
-      std::cout << "\n\n";
-      qInfo() << "\033[1;32m[watch] QML Resources Changed\033[0m";
-      emit sourceChanged();
+      qInfo() << "\033[1;32m[watch] QML Resources Updated\033[0m";
+    } else {
+      qDebug() << "\033[1;32m[watch] QML Resources fail to register\033[0m";
     }
+    emit sourceChanged();
   });
 #else
   QResource::registerResource(SHELL_RCC);
+  emit sourceChanged();
 #endif
 }

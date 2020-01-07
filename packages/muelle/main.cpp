@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
   std::ios::sync_with_stdio(true);
   qInstallMessageHandler(customMessageOutput);
 
-  QApplication app(argc, argv);
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+  QApplication app(argc, argv);
   QQmlDebuggingEnabler qmldebug;
   Dock::qmlRegisterTypes();
   qmlRegisterPressureDetector();

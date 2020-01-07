@@ -49,6 +49,7 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
 
   connect(mEngine.data(), &EnhancedQmlEngine::sourceChanged, this, &View::load);
   connect(mEngine.data(), &EnhancedQmlEngine::clearSource, [this] {
+    hide();
     setSource({});
     rootContext()->setContextProperty("$view", nullptr);
     rootContext()->setContextProperty("$layout", nullptr);
@@ -56,7 +57,7 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
     releaseResources();
   });
 
-  qInfo() << "winId" << winId();
+  qInfo() << "Window id:" << winId();
 }
 
 View::~View() {}
