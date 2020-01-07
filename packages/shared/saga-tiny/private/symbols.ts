@@ -8,9 +8,7 @@ export const CANCEL = 'CANCEL';
 export const CANCELLED = 'CANCELLED';
 export const ALL = 'ALL';
 export const RACE = 'RACE';
-export const effect = Symbol('@saga-tiny/effect');
-
-export type EffectSymbol = typeof effect;
+export const effectType = Symbol('@saga-tiny/effect-type');
 
 export enum TaskStatus {
   Running,
@@ -18,5 +16,3 @@ export enum TaskStatus {
   Aborted,
   Cancelled,
 }
-
-export const m_private = Symbol('@saga-tiny/private');

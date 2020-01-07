@@ -1,5 +1,5 @@
 import {
-  effect,
+  effectType,
   CALL,
   TAKE,
   PUT,
@@ -9,10 +9,9 @@ import {
   CANCELLED,
   RACE,
   ALL,
-} from './symbols';
+} from '../private/symbols';
 import {
   CallEffect,
-  Callback,
   DelayedEffect,
   ForkEffect,
   RaceEffect,
@@ -23,34 +22,32 @@ import {
   CancelEffect,
   PutEffect,
   SagaFn,
-} from '../types';
+} from '../private/types';
 
-export function call<Fn extends (...args: any) => any>(
-  fn: Fn,
+export function call<Fn extends SagaFn>(
+  saga: Fn,
   ...args: Parameters<Fn>
 ): CallEffect {
-  return { [effect]: true, type: CALL, fn, args };
+  return { [effectType]: CALL, saga, args };
 }
 
 export function take(pattern: string): TakeEffect {
-  return { [effect]: true, type: TAKE, action: { pattern } };
+  return { [effectType]: TAKE, action: { pattern } };
 }
 
 export function put(action: { type: string; payload: any }): PutEffect {
-  return { [effect]: true, type: PUT, action };
+  return { [effectType]: PUT, action };
 }
 
-export function delayed<T>(
-  fn: (resolve: Callback<T>, reject: Callback) => any
-): DelayedEffect {
-  return { [effect]: true, type: DELAYED, fn };
+export function delayed(delayed: DelayedEffect['delayed']): DelayedEffect {
+  return { [effectType]: DELAYED, delayed };
 }
 
 export function fork<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ): ForkEffect {
-  return { [effect]: true, type: FORK, saga, args };
+  return { [effectType]: FORK, saga, args };
 }
 
 export function join(task: ITask) {
@@ -58,17 +55,17 @@ export function join(task: ITask) {
 }
 
 export function cancel(task?: ITask): CancelEffect {
-  return { [effect]: true, type: CANCEL, task };
+  return { [effectType]: CANCEL, task };
 }
 
 export function cancelled(): CancelledEffect {
-  return { [effect]: true, type: CANCELLED };
+  return { [effectType]: CANCELLED };
 }
 
 export function race(effects: CallEffect[]): RaceEffect {
-  return { [effect]: true, type: RACE, effects };
+  return { [effectType]: RACE, effects, count: effects.length };
 }
 
 export function all(effects: CallEffect[]): AllEffect {
-  return { [effect]: true, type: ALL, effects };
+  return { [effectType]: ALL, effects, count: effects.length };
 }
