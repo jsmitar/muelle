@@ -152,10 +152,11 @@ public:
       }
     });
 
+
     timer->callOnTimeout([value] () mutable { value.call(); });
     timer->callOnTimeout(disconnect);
     timer->setSingleShot(true);
-    timer->start(delay);
+    timer->start(delay + delay * 0.05);
 
     return QVariant::fromValue(disconnect);
   }

@@ -49,12 +49,12 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
 
   connect(mEngine.data(), &EnhancedQmlEngine::sourceChanged, this, &View::load);
   connect(mEngine.data(), &EnhancedQmlEngine::clearSource, [this] {
-    hide();
     setSource({});
+    releaseResources();
     rootContext()->setContextProperty("$view", nullptr);
     rootContext()->setContextProperty("$layout", nullptr);
     rootContext()->setContextProperty("$positioner", nullptr);
-    releaseResources();
+    hide();
   });
 
   qInfo() << "Window id:" << winId();
@@ -67,8 +67,9 @@ void View::load() {
   rootContext()->setContextProperty("$layout", &mLayout);
   rootContext()->setContextProperty("$positioner", &mPositionHandler);
   setSource({"qrc:/main.qml"});
-  show();
+  show(); 
 }
+
 
 bool View::containsMouse() const { return mContainsMouse; }
 

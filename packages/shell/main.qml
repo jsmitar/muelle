@@ -14,6 +14,7 @@ import "libs/Flux"
 import 'libs/Flux/actions.ts' as Action
 import 'polyfills/promise.js' as PromisePolyfill
 import '../shared/functional.ts' as F
+import '../shared/saga-tiny/test.ts' as Saga
 
 Item {
   id: root
@@ -23,6 +24,10 @@ Item {
   height: store.state.geometry.viewSize.height
 
   Component.onCompleted: {
+    Qt.setTimeout = setTimeout
+    Qt.clearTimeout = clearTimeout
+
+    Saga.test()
     $positioner.centerOffset = 0
 
     Qt.Promise.all([

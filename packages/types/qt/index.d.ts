@@ -16,8 +16,11 @@ declare namespace Qt {
   export const GroupSwitchModifier: KeyboardModifier;
   //END: Qt Namespace
 
-  //START: No standard
+  //START: No standard, extra extensions
+  export class Timer {}
   export const Promise: PromiseConstructor;
+  export const setTimeout: (handler: () => any, ms: number) => Timer;
+  export const clearTimeout: (timer: Timer) => void;
   //END: No standard
 
   //START: Qt QML Type

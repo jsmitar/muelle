@@ -27,16 +27,15 @@ constexpr auto filters{QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot |
 RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
     : QFileSystemWatcher(parent) {
 
-  debounce.setSingleShot(true);
-  debounce.setInterval(300);
-
   connect(&debounce, &QTimer::timeout, this, &RCCWatcher::rccChanged);
   connect(this, &RCCWatcher::fileChanged, [this, rcc] {
     addPath(rcc);
-    debounce.start();
+    debounce.start(500);
   });
+
   addPath(rcc);
-  debounce.start();
+  debounce.setSingleShot(true);
+  debounce.start(0);
 }
 
 } // namespace Dock

@@ -25,6 +25,7 @@
 #include <QPixmapCache>
 #include <QPointer>
 #include <QQmlEngine>
+#include <QJSEngine>
 #include <QQuickWindow>
 #include <QResource>
 
@@ -32,6 +33,9 @@ class EnhancedQmlEngine : public QQmlEngine {
   Q_OBJECT
 public:
   explicit EnhancedQmlEngine(QObject *parent = nullptr);
+
+public slots:
+  void loadResources();
 
 signals:
   void sourceChanged();
