@@ -1,5 +1,4 @@
 import genId from '../genId';
-import { AssertionError } from 'assert';
 
 const id = genId();
 
@@ -11,13 +10,13 @@ export type Connection = { event: string; id: ListenerId };
 
 function assertEventName(event: any): asserts event {
   if (!event) {
-    throw new AssertionError({ message: 'Event name is falsy' });
+    throw new Error('Event name is falsy');
   }
 
   return event;
 }
 
-export class EventEmitter {
+class EventEmitter {
   private listeners: {
     [event: string]: { [id: number]: Listener };
   } = {};
@@ -33,7 +32,7 @@ export class EventEmitter {
   emit(event: string, ...payload: any[]) {
     if (event in this.listeners) {
       Object.values(this.listeners[event]).forEach(listener =>
-        listener(...payload)
+        listener(payload)
       );
     }
   }
@@ -44,16 +43,17 @@ export class EventEmitter {
   ): Connection {
     assertEventName(event);
 
-    const connection = this.saveListener(event, (...payload) => {
+    const connection = this.saveListener(event, payload => {
       this.off(connection);
-      listener(...(payload as any));
+      listener(...payload);
     });
 
     return connection;
   }
 
   off({ event, id }: Connection) {
-    delete this.listeners[event][id];
+    if (event in this.listeners && id in this.listeners[event])
+      delete this.listeners[event][id];
   }
 
   offAll(connections?: Connection[]) {
@@ -64,3 +64,5 @@ export class EventEmitter {
     }
   }
 }
+
+export default EventEmitter;

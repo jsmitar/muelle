@@ -48,8 +48,9 @@ const runMuelle = (() => {
 
   return function(restart, cb) {
     if (restart && muelle) {
-      muelle.on('exit', () => runMuelle());
+      muelle.on('close', () => runMuelle(false, cb));
       muelle.kill('SIGTERM');
+      return;
     }
 
     if (muelle == null) {
@@ -61,7 +62,9 @@ ${'\033[0m'}`);
       muelle = spawn(`${dirs.bin}`, { cwd: __dirname });
       muelle.unref();
       muelle
-        .on('exit', () => (muelle = null))
+        .on('exit', () => {
+          muelle = null;
+        })
         .on('close', (_, signal) => log.write(`\n[END] Signal: ${signal}\n\n`));
 
       muelle.stdout.pipe(log, { end: false });
@@ -98,6 +101,10 @@ function buildQml(cb) {
               {
                 search: /import (.*) from '(.*)'/g,
                 replacement: "import $1 from '$2.mjs'",
+              },
+              {
+                search: /export (.*) from '(.*)'/g,
+                replacement: "export $1 from '$2.mjs'",
               },
               {
                 search: /'.pragma-library'/g,
@@ -140,7 +147,7 @@ async function watchApp() {
   }
 
   function qml(cb) {
-    return series(cleanDist, buildQml, cb => runMuelle(false, cb))(cb);
+    return series(cleanDist, buildQml, cb => runMuelle(true, cb))(cb);
   }
 
   muelle(() => {

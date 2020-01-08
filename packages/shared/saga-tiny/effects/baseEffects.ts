@@ -9,6 +9,7 @@ import {
   CANCELLED,
   RACE,
   ALL,
+  JOIN,
 } from '../private/symbols';
 import {
   CallEffect,
@@ -18,10 +19,11 @@ import {
   AllEffect,
   TakeEffect,
   CancelledEffect,
-  ITask,
+  Task,
   CancelEffect,
   PutEffect,
   SagaFn,
+  JoinEffect,
 } from '../private/types';
 
 export function call<Fn extends SagaFn>(
@@ -35,8 +37,8 @@ export function take(pattern: string): TakeEffect {
   return { [effectType]: TAKE, action: { pattern } };
 }
 
-export function put(action: { type: string; payload: any }): PutEffect {
-  return { [effectType]: PUT, action };
+export function put(type: string, payload?: any): PutEffect {
+  return { [effectType]: PUT, action: { type, payload } };
 }
 
 export function delayed(delayed: DelayedEffect['delayed']): DelayedEffect {
@@ -50,11 +52,11 @@ export function fork<Fn extends SagaFn>(
   return { [effectType]: FORK, saga, args };
 }
 
-export function join(task: ITask) {
-  return { type: 'join', task };
+export function join(task: Task): JoinEffect {
+  return { [effectType]: JOIN, task };
 }
 
-export function cancel(task?: ITask): CancelEffect {
+export function cancel(task?: Task): CancelEffect {
   return { [effectType]: CANCEL, task };
 }
 

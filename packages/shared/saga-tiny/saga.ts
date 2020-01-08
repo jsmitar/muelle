@@ -1,7 +1,7 @@
-import '../../types/Qt';
+import Qt from 'qt';
 import {
   Saga,
-  ITask,
+  Task,
   SagaFn,
   Effect,
   CallEffect,
@@ -14,7 +14,6 @@ import {
   CancelledEffect,
   AllEffect,
   RaceEffect,
-  ITaskPrivate,
 } from './private/types';
 import {
   TaskStatus,
@@ -31,9 +30,8 @@ import {
   effectType,
 } from './private/symbols';
 import genId from '../genId';
-import { EventEmitter, Listener, Connection } from './EventEmitter';
-import Qt from 'qt';
-import { AssertionError } from 'assert';
+import EventEmitter, { Listener, Connection } from './eventEmitter';
+import { tostr, zip } from '../functional';
 
 const id = genId();
 
@@ -50,21 +48,19 @@ export const sagaEmitter = new EventEmitter();
 
 function assertEffect(effect: any): effect is Effect {
   if (!effect || !(effectType in effect)) {
-    throw new AssertionError({
-      message: 'Saga internal error',
-      expected: 'Effect',
-      actual: effect,
-    });
+    throw new Error(
+      `Saga: A Effect was expected but the value is: ${tostr(effect)}`
+    );
   }
 
   return effect;
 }
 
-class TaskController implements ITaskPrivate {
+class TaskController implements Task {
   m_taskId = `@SAGA_TASK_${id.next().value}`;
   m_parent: TaskController | null;
   m_saga: Saga;
-  m_subTasks: Record<string, ITaskPrivate> = {};
+  m_subTasks: Record<string, TaskController> = {};
   m_status: TaskStatus = TaskStatus.Running;
   m_result?: any;
   emitter = new EventEmitter();
@@ -78,13 +74,14 @@ class TaskController implements ITaskPrivate {
     this.m_saga = saga;
   }
 
-  run(): ITask {
-    Qt.callLater(this.advancer);
+  run(): TaskController {
+    Qt.callLater(this.advancer.bind(this));
     return this;
   }
 
   protected advancer(response?: Response, requestStatus?: TaskStatus) {
     let action: Action;
+    //console.info('response:', tostr(response), requestStatus || '');
 
     switch (requestStatus) {
       case TaskStatus.Cancelled:
@@ -103,7 +100,9 @@ class TaskController implements ITaskPrivate {
       const result = this.m_saga[action](response);
       this.handleNext(result);
     } catch (e) {
+      console.error(e.name, e.message, e.stack);
       if (this.m_status !== TaskStatus.Aborted) {
+        this.m_status = TaskStatus.Aborted;
         this.releaseSagaConnections();
         this.propagateAbort(e);
         this.notifyFinish();
@@ -112,7 +111,7 @@ class TaskController implements ITaskPrivate {
   }
 
   handleNext({ value, done }: IteratorResult<Effect, unknown>) {
-    if (done) {
+    if (!done) {
       if (assertEffect(value)) {
         effectHandlers[value[effectType]].call<TaskController, any[], void>(
           this,
@@ -121,7 +120,12 @@ class TaskController implements ITaskPrivate {
       }
     } else {
       this.releaseSagaConnections();
-      this.notifyFinish();
+      if (this.m_status === TaskStatus.Running) {
+        this.m_status = TaskStatus.Done;
+        this.m_result = value;
+        this.notifyFinish();
+      }
+      this.deleteSubTask(this);
     }
   }
 
@@ -135,10 +139,7 @@ class TaskController implements ITaskPrivate {
     this.m_status = TaskStatus.Cancelled;
     this.releaseSagaConnections();
     for (let id in this.m_subTasks) {
-      const subtask = this.m_subTasks[id];
-      if (subtask.status === TaskStatus.Running) {
-        this.m_subTasks[id].cancel();
-      }
+      this.m_subTasks[id].cancel();
     }
     this.m_subTasks = {};
   }
@@ -152,17 +153,21 @@ class TaskController implements ITaskPrivate {
     sagaEmitter.offAll(this.conn);
   }
 
-  deleteSubTask(task: ITaskPrivate) {
+  deleteSubTask(task: TaskController) {
     task.m_parent = null;
     delete this.m_subTasks[task.taskId];
   }
 
   cancel() {
-    this.advancer(undefined, TaskStatus.Cancelled);
+    if (this.m_status === TaskStatus.Running) {
+      this.advancer(undefined, TaskStatus.Cancelled);
+    }
   }
 
   abort(e: Error) {
-    this.advancer(e, TaskStatus.Aborted);
+    if (this.m_status === TaskStatus.Running) {
+      this.advancer(e, TaskStatus.Aborted);
+    }
   }
 
   onFinish(listener: Listener<[Response, TaskStatus]>) {
@@ -181,15 +186,15 @@ class TaskController implements ITaskPrivate {
     return this.m_status;
   }
 
-  get task(): ITask {
+  get task(): Task {
     return this;
   }
 }
 
 const effectHandlers = {
   [CALL](this: TaskController, effect: CallEffect) {
-    const task = new TaskController(this, effect.saga(...effect.args));
-    task.onFinish(this.advancer);
+    const task = makeTask(this, effect.saga, effect.args);
+    task.onFinish(this.advancer.bind(this));
     task.run();
   },
   [TAKE](this: TaskController, effect: TakeEffect) {
@@ -206,13 +211,14 @@ const effectHandlers = {
     this.advancer();
   },
   [DELAYED](this: TaskController, effect: DelayedEffect) {
+    const self = this;
     const clear = effect.delayed(result => {
       clear();
-      this.emitter.off(conn);
+      self.emitter.off(conn);
       if (result instanceof Error) {
-        this.advancer(result, TaskStatus.Aborted);
+        self.advancer(result, TaskStatus.Aborted);
       } else {
-        this.advancer(result);
+        self.advancer(result);
       }
     });
 
@@ -224,7 +230,7 @@ const effectHandlers = {
   },
   [JOIN](this: TaskController, effect: JoinEffect) {
     const task = <TaskController>effect.task;
-    task.onFinish(this.advancer);
+    task.onFinish(this.advancer.bind(this));
   },
   [CANCEL](this: TaskController, effect: CancelEffect) {
     const task = <TaskController>effect.task || this;
@@ -243,41 +249,53 @@ const effectHandlers = {
 
     const finishHandler = (index: number): Listener<[Response, TaskStatus]> => {
       return (result, status) => {
-        if (countdown === 0) {
-          this.advancer(results);
+        --countdown;
+        if (status === TaskStatus.Done) {
+          results[index] = result;
         } else {
-          if (status === TaskStatus.Done) {
-            --countdown;
-            results[index] = result;
-          } else {
-            tasks.forEach(task => task.cancel());
-            this.advancer(undefined, status);
-          }
+          countdown = 0;
+        }
+
+        if (countdown === 0) {
+          zip(tasks, conns).forEach(([task, conn]) => {
+            task.emitter.off(conn);
+            task.cancel();
+          });
+
+          this.advancer(results, status);
         }
       };
     };
 
-    tasks.forEach((task, index) => {
-      task.onFinish(finishHandler(index));
+    const conns = tasks.map((task, index) => {
       task.run();
+      return task.onFinish(finishHandler(index).bind(this));
     });
   },
   [RACE](this: TaskController, effect: RaceEffect) {
     const { effects, count } = effect;
 
+    let countdown = count;
     const results = Array.from({ length: count });
+
     const tasks = effects.map(({ saga, args }) => makeTask(this, saga, args));
 
     const finishHandler = (index: number): Listener<[Response, TaskStatus]> => {
       return (result, status) => {
-        results[index] = result;
-        tasks.forEach(task => task.cancel());
-        this.advancer(results, status);
+        --countdown;
+        if (countdown === 0 || status === TaskStatus.Done) {
+          results[index] = result;
+          zip(tasks, conns).forEach(([task, conn]) => {
+            task.emitter.off(conn);
+            task.cancel();
+          });
+          this.advancer(results);
+        }
       };
     };
-    tasks.forEach((task, index) => {
-      task.onFinish(finishHandler(index));
+    const conns = tasks.map((task, index) => {
       task.run();
+      return task.onFinish(finishHandler(index).bind(this));
     });
   },
 };
@@ -290,6 +308,9 @@ export function makeTask<Fn extends SagaFn>(
   return new TaskController(parent, saga(...args));
 }
 
-export function run<Fn extends SagaFn>(saga: Fn, ...args: Parameters<Fn>) {
+export function run<Fn extends SagaFn>(
+  saga: Fn,
+  ...args: Parameters<Fn>
+): Task {
   return makeTask(null, saga, args).run();
 }

@@ -1,23 +1,16 @@
 import { effectType, TaskStatus } from './symbols';
 
-export interface Saga extends Generator<Effect, any, unknown> {}
+export interface Saga extends Generator<Effect, any, any> {}
 
 export interface SagaFn {
   (...args: any[]): Saga;
 }
 
-export interface ITask<T = any> {
+export interface Task<T = any> {
   taskId: string;
   result: T;
   status: TaskStatus;
-}
-
-export interface ITaskPrivate extends ITask {
-  m_parent: ITaskPrivate | null;
-  run(): void;
-  abort(e: Error): void;
   cancel(): void;
-  deleteSubTask(task: ITaskPrivate): void;
 }
 
 export type EffectType =
@@ -61,13 +54,13 @@ export interface TakeEffect extends EffectBase<'TAKE'> {
 }
 
 export interface PutEffect extends EffectBase<'PUT'> {
-  action: { type: string; payload: any };
+  action: { type: string; payload?: any };
 }
 
 export type ClearFunction = () => any;
 
 export interface DelayedEffect extends EffectBase<'DELAYED'> {
-  delayed: (resolve: (result?: any) => any) => ClearFunction;
+  delayed: (resolve: (result?: any) => void) => ClearFunction;
 }
 
 export interface ForkEffect extends EffectBase<'FORK'> {
@@ -76,11 +69,11 @@ export interface ForkEffect extends EffectBase<'FORK'> {
 }
 
 export interface JoinEffect extends EffectBase<'JOIN'> {
-  task: ITask;
+  task: Task;
 }
 
 export interface CancelEffect extends EffectBase<'CANCEL'> {
-  task?: ITask;
+  task?: Task;
 }
 
 export interface CancelledEffect extends EffectBase<'CANCELLED'> {}
