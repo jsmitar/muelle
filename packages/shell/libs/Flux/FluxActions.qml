@@ -1,4 +1,4 @@
-import QtQuick 2.10
+import QtQuick 2.12
 import "../../Extras"
 import './types.ts' as T
 import '../../shared/functional.ts' as F
