@@ -22,9 +22,14 @@ const dirs = {
       watch: [`packages/shell/**/*.(qml|ts)`, 'packages/shared/**/*.ts'],
       qrc: {
         from: 'packages/dist/shell/',
-        input: ['packages/dist/shell/', 'packages/dist/shared'],
+        input: ['packages/dist/shell', 'packages/dist/shared'],
         output: 'packages/dist/shell/qml.qrc',
         rcc: 'packages/resources/shell.rcc',
+      },
+      qrcQtCreator: {
+        from: 'packages/shell',
+        input: ['packages/shell', 'packages/shared'],
+        output: 'packages/shell/qml.qrc',
       },
     },
     muelle: {
@@ -133,6 +138,19 @@ function buildQml(cb) {
         dirs.resources.shell.qrc.input
       );
       fs.writeFile(dirs.resources.shell.qrc.output, qrc, { flag: 'w' }, cb);
+    },
+    function createShellQrcQtCreator(cb) {
+      const qrc = generateQrc(
+        dirs.resources.shell.qrcQtCreator.from,
+        dirs.resources.shell.qrcQtCreator.input,
+        /.qml|.js|.ts/
+      );
+      fs.writeFile(
+        dirs.resources.shell.qrcQtCreator.output,
+        qrc,
+        { flag: 'w' },
+        cb
+      );
     },
     function createShellRcc(cb) {
       createCommand(

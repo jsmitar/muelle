@@ -36,6 +36,7 @@ set(PACKAGE_DIR "${CMAKE_SOURCE_DIR}/packages")
 set(PACKAGE_MUELLE "${CMAKE_SOURCE_DIR}/packages/muelle")
 set(PACKAGE_SHELL "${CMAKE_SOURCE_DIR}/packages/dist/shell")
 set(PACKAGE_SHARED "${CMAKE_SOURCE_DIR}/packages/dist/shared")
+set(SHELL_QRC "packages/shell/qml.qrc")
 set(SHELL_RCC "packages/resources/shell.rcc")
 
 # Packages: Qt-KDE Packages
@@ -66,7 +67,7 @@ target_link_libraries(muelle
 )
 
 # Target: qml targets
-add_custom_target(shell SOURCES "${PACKAGE_SHELL}/qml.qrc")
+add_custom_target(shell SOURCES "${SHELL_QRC}")
 
 # Info Messages
 message(STATUS " ")

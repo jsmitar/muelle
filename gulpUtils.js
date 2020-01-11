@@ -24,12 +24,12 @@ ${files.map(file => `    <file>${file}</file>`).join('\n')}
 </RCC>`;
 }
 
-function generateQrc(from, paths = []) {
+function generateQrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
   return qrc`${paths
     .flatMap(pathname => listFiles(`${__dirname}/${pathname}`))
     .filter(file => {
       const { ext, name } = path.parse(file);
-      return /.qml|.js|.mjs/.test(ext) && /\w/.test(name);
+      return patttern.test(ext) && /\w/.test(name);
     })
     .map(to => path.relative(from, to))}`;
 }
