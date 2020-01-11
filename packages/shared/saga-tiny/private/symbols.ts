@@ -8,6 +8,9 @@ export const CANCEL = 'CANCEL';
 export const CANCELLED = 'CANCELLED';
 export const ALL = 'ALL';
 export const RACE = 'RACE';
+
+export const FINISH = '@saga/finish';
+
 export const effectType = Symbol('@saga-tiny/effect-type');
 
 export enum TaskStatus {

@@ -28,6 +28,7 @@ import {
   JOIN,
   RACE,
   effectType,
+  FINISH,
 } from './private/symbols';
 import genId from '../genId';
 import EventEmitter, { Listener, Connection } from './eventEmitter';
@@ -35,16 +36,12 @@ import { tostr, zip } from '../functional';
 
 const id = genId();
 
-type Action = 'next' | 'throw' | 'return';
+type Method = typeof Next | typeof Throw | typeof Return;
 const Next = 'next';
 const Throw = 'throw';
 const Return = 'return';
 
-const FINISH = '@saga/finish';
-
 type Response = any;
-
-export const sagaEmitter = new EventEmitter();
 
 function assertEffect(effect: any): effect is Effect {
   if (!effect || !(effectType in effect)) {
@@ -56,22 +53,31 @@ function assertEffect(effect: any): effect is Effect {
   return effect;
 }
 
+export type TaskContext = {
+  actionSubscriber: EventEmitter;
+  commit: (type: string, payload?: any) => void;
+  getState: () => any;
+};
+
 class TaskController implements Task {
   m_taskId = `@SAGA_TASK_${id.next().value}`;
   m_parent: TaskController | null;
-  m_saga: Saga;
-  m_subTasks: Record<string, TaskController> = {};
   m_status: TaskStatus = TaskStatus.Running;
   m_result?: any;
-  emitter = new EventEmitter();
-  conn: Connection[] = []; // Saga Connections
 
-  constructor(parent: TaskController | null, saga: Saga) {
+  saga: Saga;
+  subTasks: Record<string, TaskController> = {};
+  emitter = new EventEmitter();
+  connections: Connection[] = []; // subscriptions
+  context: TaskContext;
+
+  constructor(context: TaskContext, parent: TaskController | null, saga: Saga) {
     this.m_parent = parent;
     if (parent) {
-      parent.m_subTasks[this.m_taskId] = this;
+      parent.subTasks[this.m_taskId] = this;
     }
-    this.m_saga = saga;
+    this.saga = saga;
+    this.context = context;
   }
 
   run(): TaskController {
@@ -80,7 +86,7 @@ class TaskController implements Task {
   }
 
   protected advancer(response?: Response, requestStatus?: TaskStatus) {
-    let action: Action;
+    let action: Method;
     //console.info('response:', tostr(response), requestStatus || '');
 
     switch (requestStatus) {
@@ -97,13 +103,13 @@ class TaskController implements Task {
     }
 
     try {
-      const result = this.m_saga[action](response);
+      const result = this.saga[action](response);
       this.handleNext(result);
     } catch (e) {
       console.error(e.name, e.message, e.stack);
       if (this.m_status !== TaskStatus.Aborted) {
         this.m_status = TaskStatus.Aborted;
-        this.releaseSagaConnections();
+        this.releaseContextConnections();
         this.propagateAbort(e);
         this.notifyFinish();
       }
@@ -119,7 +125,7 @@ class TaskController implements Task {
         );
       }
     } else {
-      this.releaseSagaConnections();
+      this.releaseContextConnections();
       if (this.m_status === TaskStatus.Running) {
         this.m_status = TaskStatus.Done;
         this.m_result = value;
@@ -137,11 +143,11 @@ class TaskController implements Task {
 
   propagateCancel() {
     this.m_status = TaskStatus.Cancelled;
-    this.releaseSagaConnections();
-    for (let id in this.m_subTasks) {
-      this.m_subTasks[id].cancel();
+    this.releaseContextConnections();
+    for (let id in this.subTasks) {
+      this.subTasks[id].cancel();
     }
-    this.m_subTasks = {};
+    this.subTasks = {};
   }
 
   notifyFinish() {
@@ -149,13 +155,13 @@ class TaskController implements Task {
     this.emitter.offAll();
   }
 
-  releaseSagaConnections() {
-    sagaEmitter.offAll(this.conn);
+  releaseContextConnections() {
+    this.context.actionSubscriber.offAll(this.connections);
   }
 
   deleteSubTask(task: TaskController) {
     task.m_parent = null;
-    delete this.m_subTasks[task.taskId];
+    delete this.subTasks[task.taskId];
   }
 
   cancel() {
@@ -199,15 +205,15 @@ const effectHandlers = {
   },
   [TAKE](this: TaskController, effect: TakeEffect) {
     const { pattern } = effect.action;
-    this.conn.push(
-      sagaEmitter.once(pattern, payload => {
+    this.connections.push(
+      this.context.actionSubscriber.once(pattern, payload => {
         this.advancer(payload);
       })
     );
   },
   [PUT](this: TaskController, effect: PutEffect) {
     const { type, payload } = effect.action;
-    sagaEmitter.emit(type, payload);
+    this.context.commit(type, payload);
     this.advancer();
   },
   [DELAYED](this: TaskController, effect: DelayedEffect) {
@@ -301,16 +307,17 @@ const effectHandlers = {
 };
 
 export function makeTask<Fn extends SagaFn>(
-  parent: TaskController | null,
+  parent: TaskController,
   saga: Fn,
   args: Parameters<Fn>
 ) {
-  return new TaskController(parent, saga(...args));
+  return new TaskController(parent.context, parent, saga(...args));
 }
 
 export function run<Fn extends SagaFn>(
+  context: TaskContext,
   saga: Fn,
   ...args: Parameters<Fn>
 ): Task {
-  return makeTask(null, saga, args).run();
+  return new TaskController(context, null, saga(...args)).run();
 }

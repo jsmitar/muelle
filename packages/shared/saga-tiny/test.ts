@@ -11,8 +11,9 @@ import {
   race,
   join,
 } from './effects';
-import { run } from './saga';
-import { range } from '../functional';
+import { run, TaskContext } from './saga';
+import { range, tostr } from '../functional';
+import EventEmitter from './eventEmitter';
 
 function* t(name: string) {
   try {
@@ -137,9 +138,15 @@ function* test4(): Saga {
   }
 }
 
+const defaultContext: TaskContext = {
+  actionSubscriber: new EventEmitter(),
+  commit: (type, payload) => console.log('[COMMIT]:', type, tostr(payload)),
+  getState: () => ({}),
+};
+
 export function test() {
   [test1, test2, test3, test4].forEach((t, i) => {
     console.log(t.name, 'start');
-    i == 3 && run(t);
+    i == 3 && run(defaultContext, t);
   });
 }
