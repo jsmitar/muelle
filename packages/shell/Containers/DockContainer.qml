@@ -3,9 +3,9 @@ import QtQuick.Layouts 1.1
 import QtQml.Models 2.3
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1 as TaskManager
-import '../../shared/functional.ts' as F
-import "../Components"
-import "../Extras"
+import '../shared/functional.ts' as F
+import '../Components'
+import '../Extras'
 
 Item {
   id: dockContainer

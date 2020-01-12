@@ -19,7 +19,7 @@ const dirs = {
   bin: 'build/muelle',
   resources: {
     shell: {
-      watch: [`packages/shell/**/*.(qml|ts)`, 'packages/shared/**/*.ts'],
+      watch: ['packages/shell/**/*.(qml|ts)', 'packages/shared/**/*.(qml|ts)'],
       qrc: {
         from: 'packages/dist/shell/',
         input: ['packages/dist/shell', 'packages/dist/shared'],

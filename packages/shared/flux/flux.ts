@@ -1,15 +1,15 @@
 import Qt from 'qt';
-import EventEmitter from 'shared/saga-tiny/eventEmitter';
-import { SagaFn, Task } from 'shared/saga-tiny/private/types';
-import { run } from 'shared/saga-tiny/saga';
+import EventEmitter from '../saga-tiny/eventEmitter';
+import { SagaFn, Task } from '../saga-tiny/private/types';
+import { runSaga } from '../saga-tiny/saga';
 
 export type State<T = any> = Qt.QtObject<T>;
 export type Mutations<S = any> = Record<
   string,
-  (state: S, payload: any) => void
+  (state: S, ...args: any[]) => void
 >;
 
-export type Action = { type: string; payload?: any };
+export type Action = { type: string; payload: any[] };
 
 export type Options<S extends State, M extends Mutations<S>> = {
   state: S;
@@ -27,7 +27,7 @@ class FluxStore<S extends State, M extends Mutations> {
     (<any>Qt).store = this;
     this.state = options.state;
     this.mutations = options.mutations;
-    this.sagaTaskRoot = run(
+    this.sagaTaskRoot = runSaga(
       {
         commit: this.commit,
         actionSubscriber: this.actionEmitter,
@@ -37,10 +37,10 @@ class FluxStore<S extends State, M extends Mutations> {
     );
   }
 
-  commit(type: string, payload: any) {
+  commit(type: string, ...args: any[]) {
     try {
       if (type in this.mutations) {
-        this.mutations[type](this.state, payload);
+        this.mutations[type](this.state, ...args);
       } else {
         throw new Error(`FluxStore.commit: fail to call mutation: ${type}`);
       }

@@ -35,13 +35,15 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
+out.log
+
+# generated files
+*.pro.user*
+packages/shell/qml.qrc
 node_modules/
 packages/dist/**/*.*
 !packages/dist/**/*.rcc
 packages/muelle/dockconfig.hpp
-
-# qtcreator generated files
-*.pro.user*
 
 # xemacs temporary files
 *.flc
@@ -75,4 +77,3 @@ packages/muelle/dockconfig.hpp
 # --------
 *.dll
 *.exe
-out.log

@@ -67,9 +67,8 @@ void View::load() {
   rootContext()->setContextProperty("$layout", &mLayout);
   rootContext()->setContextProperty("$positioner", &mPositionHandler);
   setSource({"qrc:/main.qml"});
-  show(); 
+  show();
 }
-
 
 bool View::containsMouse() const { return mContainsMouse; }
 

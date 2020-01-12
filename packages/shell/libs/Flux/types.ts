@@ -1,5 +1,3 @@
-'.pragma library';
-
 export const CHANGE_EDGE = 'CHANGE_EDGE';
 export const CHANGE_ALIGNMENT = 'CHANGE_ALIGNMENT';
 export const HIDE_PANEL = 'HIDE_PANEL';

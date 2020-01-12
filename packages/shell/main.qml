@@ -1,20 +1,21 @@
 import QtQuick 2.12
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 2.2
-import QtQuick.Window 2.3
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
+import QtQuick.Window 2.12
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1
 
-import "Components"
-import "Containers"
-import "Extras"
-import "Settings"
-import "libs/Flux"
+import 'Components'
+import 'Containers'
+import 'Extras'
+import 'Settings'
+import 'libs/Flux'
 import 'libs/Flux/actions.ts' as Action
 import 'polyfills/promise.js' as PromisePolyfill
-import '../shared/functional.ts' as F
-import '../shared/saga-tiny/test.ts' as Saga
+import 'shared/functional.ts' as F
+import 'shared/saga-tiny/test.ts' as Saga
+//import 'Store'
 
 Item {
   id: root
@@ -42,6 +43,8 @@ Item {
     enabled: false
     showSize: false
   }
+
+//  readonly property ShellStore shellStore: ShellStore {}
 
   readonly property SettingsWindow settings: SettingsWindow {}
 

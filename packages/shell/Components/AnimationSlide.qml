@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.3
-import "../Extras"
+import '../Extras'
 
 QObject {
   id: slide

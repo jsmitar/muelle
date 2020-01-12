@@ -2,8 +2,8 @@ import QtQuick 2.12
 import QtQml 2.12
 import QtQuick.Controls.Universal 2.12
 import org.muelle.types 1.0
-import "../Extras"
-import '../../shared/functional.ts' as F
+import '../Extras'
+import '../shared/functional.ts' as F
 import '../libs/Flux/actions.ts' as Action
 
 SettingsForm {

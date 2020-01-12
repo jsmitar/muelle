@@ -19,7 +19,16 @@ function qrc(_, files) {
   return `<!DOCTYPE RCC>
 <RCC>
   <qresource prefix="/">
-${files.map(file => `    <file>${file}</file>`).join('\n')}
+${files
+  .map(file => {
+    if (file.startsWith('../')) {
+      const alias = file.replace(/^(\.\.\/)+/, '');
+      return `    <file alias="${alias}">${file}</file>`;
+    } else {
+      return `    <file>${file}</file>`;
+    }
+  })
+  .join('\n')}
   </qresource>
 </RCC>`;
 }

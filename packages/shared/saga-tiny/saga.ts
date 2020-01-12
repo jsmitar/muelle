@@ -55,7 +55,7 @@ function assertEffect(effect: any): effect is Effect {
 
 export type TaskContext = {
   actionSubscriber: EventEmitter;
-  commit: (type: string, payload?: any) => void;
+  commit: (type: string, ...payload: any[]) => void;
   getState: () => any;
 };
 
@@ -204,7 +204,7 @@ const effectHandlers = {
     task.run();
   },
   [TAKE](this: TaskController, effect: TakeEffect) {
-    const { pattern } = effect.action;
+    const { pattern } = effect;
     this.connections.push(
       this.context.actionSubscriber.once(pattern, payload => {
         this.advancer(payload);
@@ -212,8 +212,8 @@ const effectHandlers = {
     );
   },
   [PUT](this: TaskController, effect: PutEffect) {
-    const { type, payload } = effect.action;
-    this.context.commit(type, payload);
+    const { type, args } = effect;
+    this.context.commit(type, ...args);
     this.advancer();
   },
   [DELAYED](this: TaskController, effect: DelayedEffect) {
@@ -314,7 +314,7 @@ export function makeTask<Fn extends SagaFn>(
   return new TaskController(parent.context, parent, saga(...args));
 }
 
-export function run<Fn extends SagaFn>(
+export function runSaga<Fn extends SagaFn>(
   context: TaskContext,
   saga: Fn,
   ...args: Parameters<Fn>

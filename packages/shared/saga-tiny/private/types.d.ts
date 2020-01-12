@@ -50,11 +50,12 @@ export interface CallEffect<Fn extends SagaFn = SagaFn>
 }
 
 export interface TakeEffect extends EffectBase<'TAKE'> {
-  action: { pattern: string };
+  pattern: string;
 }
 
 export interface PutEffect extends EffectBase<'PUT'> {
-  action: { type: string; payload?: any };
+  type: string;
+  args: any[];
 }
 
 export type ClearFunction = () => any;

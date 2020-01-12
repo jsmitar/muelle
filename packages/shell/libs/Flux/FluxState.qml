@@ -1,8 +1,7 @@
 import QtQuick 2.12
 import org.muelle.types 1.0
-import "../../Extras"
-import "./State"
-import "./State" as S
+import '../../Extras'
+import 'State'
 
 QObject {
   id: state

@@ -1,5 +1,3 @@
-'.pragma library';
-
 const DragAndDrop = {
   mime: [
     'windowsystem/winid',

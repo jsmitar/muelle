@@ -92,10 +92,10 @@ declare namespace Qt {
     (): void;
   }
 
-  export type QtObject<T = any> = {
+  type QtObject<Properties = {}> = {
     objectName: string;
     destroy(delay?: number): void;
   } & {
-    [P in keyof T]: T[P];
+    [P in keyof Properties]: Properties[P];
   };
 }

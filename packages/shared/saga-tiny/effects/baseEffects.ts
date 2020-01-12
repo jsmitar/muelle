@@ -34,11 +34,11 @@ export function call<Fn extends SagaFn>(
 }
 
 export function take(pattern: string): TakeEffect {
-  return { [effectType]: TAKE, action: { pattern } };
+  return { [effectType]: TAKE, pattern };
 }
 
-export function put(type: string, payload?: any): PutEffect {
-  return { [effectType]: PUT, action: { type, payload } };
+export function put(type: string, ...args: any[]): PutEffect {
+  return { [effectType]: PUT, type, args };
 }
 
 export function delayed(delayed: DelayedEffect['delayed']): DelayedEffect {

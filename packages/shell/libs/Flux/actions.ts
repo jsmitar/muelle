@@ -1,5 +1,3 @@
-'.pragma library';
-
 import Muelle from '@qml/org.muelle.types-1.0';
 
 export function showPanel() {

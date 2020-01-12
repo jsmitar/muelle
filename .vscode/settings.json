@@ -3,6 +3,7 @@
   "cmake.generator": "Ninja",
   "cmake.buildEnvironment": { "CXX": "/usr/bin/c++" },
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "relative",
   "files.associations": {
     "*.qml": "qml",
     "qmetaobject": "cpp",

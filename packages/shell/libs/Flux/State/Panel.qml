@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import org.muelle.types 1.0
-import "./" as Record
-import "../../../Extras"
+import '../../../Extras'
 
 QObject {
   id: panel

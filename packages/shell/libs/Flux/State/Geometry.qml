@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import org.muelle.types 1.0
-import "../../../Extras"
+import '../../../Extras'
 
 QObject {
   id: obj
