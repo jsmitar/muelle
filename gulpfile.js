@@ -104,6 +104,10 @@ function buildQml(cb) {
                 replacement: '',
               },
               {
+                search: /'\.import (.*)';/g,
+                replacement: '.import $1',
+              },
+              {
                 search: /import (.*) from '(.*)'/g,
                 replacement: "import $1 from '$2.mjs'",
               },
