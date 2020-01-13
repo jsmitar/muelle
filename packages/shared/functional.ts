@@ -134,7 +134,7 @@ export function timeout(timer: QtQml.Timer, slot: Qt.Slot, interval?: number) {
 }
 
 export function asyncTimeout(interval: number) {
-  return new Qt.Promise(r => setTimeout(r, interval));
+  return new Promise(r => Qt.setTimeout(r, interval));
 }
 
 export function yes() {
@@ -381,17 +381,14 @@ export function makeCancelable<Fn extends (...args: any[]) => any>(
 ) {
   let cancel = noop;
 
-  const cancelPromise = new Qt.Promise((_, reject) => {
+  const cancelPromise = new Promise((_, reject) => {
     cancel = () => reject(new CanceledError());
   });
 
   return {
     cancel,
     job(...args: Parameters<Fn>) {
-      return Qt.Promise.race([
-        cancelPromise,
-        fnPromise.call({ cancel }, ...args),
-      ]);
+      return Promise.race([cancelPromise, fnPromise.call({ cancel }, ...args)]);
     },
   };
 }
