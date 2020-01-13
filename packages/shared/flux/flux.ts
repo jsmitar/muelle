@@ -9,7 +9,7 @@ export type Mutations<S = any> = Record<
   (state: S, ...args: any[]) => void
 >;
 
-export type Action = { type: string; payload: any[] };
+export type Action<T = any> = { type: string; payload: T };
 
 export type Options<S extends State, M extends Mutations<S>> = {
   state: S;
@@ -17,7 +17,16 @@ export type Options<S extends State, M extends Mutations<S>> = {
   sagaRoot: SagaFn;
 };
 
-class FluxStore<S extends State, M extends Mutations> {
+function assertOptions(options: Options<any, any>): asserts options {
+  if (!Qt.isQtObject(options.state)) {
+    throw new Error('FluxStore: options.state is not instace of QtObject');
+  }
+  if (!options.mutations) {
+    throw new Error('FluxStore: options.mutations is undefined');
+  }
+}
+
+export class FluxStore<S extends State, M extends Mutations> {
   state: S;
   mutations: M;
   actionEmitter = new EventEmitter();
@@ -25,6 +34,7 @@ class FluxStore<S extends State, M extends Mutations> {
 
   constructor(options: Options<S, M>) {
     (<any>Qt).store = this;
+    assertOptions(options);
     this.state = options.state;
     this.mutations = options.mutations;
     this.sagaTaskRoot = runSaga(
@@ -53,5 +63,3 @@ class FluxStore<S extends State, M extends Mutations> {
     this.actionEmitter.emit(action.type, action);
   }
 }
-
-export default FluxStore;
