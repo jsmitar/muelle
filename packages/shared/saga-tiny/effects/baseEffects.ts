@@ -10,6 +10,7 @@ import {
   RACE,
   ALL,
   JOIN,
+  SELECT,
 } from '../private/symbols';
 import {
   CallEffect,
@@ -24,6 +25,7 @@ import {
   PutEffect,
   SagaFn,
   JoinEffect,
+  SelectEffect,
 } from '../private/types';
 
 export function call<Fn extends SagaFn>(
@@ -31,6 +33,10 @@ export function call<Fn extends SagaFn>(
   ...args: Parameters<Fn>
 ): CallEffect {
   return { [effectType]: CALL, saga, args };
+}
+
+export function select(selector: (state: any) => any): SelectEffect {
+  return { [effectType]: SELECT, selector };
 }
 
 export function take(pattern: string): TakeEffect {

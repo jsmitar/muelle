@@ -14,6 +14,7 @@ import {
   CancelledEffect,
   AllEffect,
   RaceEffect,
+  SelectEffect,
 } from './private/types';
 import {
   TaskStatus,
@@ -29,6 +30,7 @@ import {
   RACE,
   effectType,
   FINISH,
+  SELECT,
 } from './private/symbols';
 import genId from '../genId';
 import EventEmitter, { Listener, Connection } from './eventEmitter';
@@ -202,6 +204,9 @@ const effectHandlers = {
     const task = makeTask(this, effect.saga, effect.args);
     task.onFinish(this.advancer.bind(this));
     task.run();
+  },
+  [SELECT](this: TaskController, effect: SelectEffect) {
+    this.advancer(effect.selector(this.context.getState()));
   },
   [TAKE](this: TaskController, effect: TakeEffect) {
     const { pattern } = effect;

@@ -1,4 +1,5 @@
 export const CALL = 'CALL';
+export const SELECT = 'SELECT';
 export const TAKE = 'TAKE';
 export const PUT = 'PUT';
 export const DELAYED = 'DELAYED';

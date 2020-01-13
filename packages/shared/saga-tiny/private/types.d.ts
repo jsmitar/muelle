@@ -15,6 +15,7 @@ export interface Task<T = any> {
 
 export type EffectType =
   | 'CALL'
+  | 'SELECT'
   | 'TAKE'
   | 'PUT'
   | 'DELAYED'
@@ -28,6 +29,7 @@ export type EffectType =
 // prettier-ignore
 export type Effect<T extends EffectType = EffectType> = 
   T extends 'CALL' ? CallEffect :
+  T extends 'SELECT' ? SelectEffect :
   T extends 'TAKE' ? TakeEffect :
   T extends 'PUT' ? PutEffect :
   T extends 'DELAYED' ? DelayedEffect :
@@ -47,6 +49,10 @@ export interface CallEffect<Fn extends SagaFn = SagaFn>
   extends EffectBase<'CALL'> {
   saga: SagaFn;
   args: Parameters<Fn>;
+}
+
+export interface SelectEffect extends EffectBase<'SELECT'> {
+  selector: (state: any) => any;
 }
 
 export interface TakeEffect extends EffectBase<'TAKE'> {
