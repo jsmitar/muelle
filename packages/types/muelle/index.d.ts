@@ -1,4 +1,6 @@
 declare module '@qml/org.muelle.types-1.0' {
+  import Qt from 'qt';
+
   export namespace Types {
     export type Edge = 2 | 4 | 8 | 16;
     export const Top = 2;
@@ -21,5 +23,32 @@ declare module '@qml/org.muelle.types-1.0' {
     export const AutoHide: 2;
     export const DodgeAll: 3;
     export const DodgeActive: 4;
+  }
+
+  export namespace Dock {
+    export interface $view extends Qt.QtObject {
+      readonly containsMouse: boolean;
+      mask: Qt.rect;
+      readonly geometry: Qt.rect;
+      panelGeometry: Qt.rect;
+      size: Qt.size;
+      position: Qt.point;
+      mousePosition: Qt.point;
+      setOpacity(level: number): void;
+    }
+
+    export interface $layout extends Qt.QtObject {
+      edege: Types.Edge;
+      readonly orientation: Types.Orientation;
+      alignment: Types.Alignment;
+      readonly layout: number;
+      readonly isHorizontal: boolean;
+      readonly isVertical: boolean;
+    }
+
+    export interface $positioner extends Qt.QtObject {
+      centerOffset: number;
+      update(duration: number): void;
+    }
   }
 }

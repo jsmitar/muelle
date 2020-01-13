@@ -3,27 +3,31 @@ export as namespace Qt;
 
 import { type } from './symbols';
 import QtQml from '@qml/QtQml-2.14';
+import { Dock } from '@qml/org.muelle.types-1.0';
 
 declare namespace Qt {
   //START: Qt Namespace
-  export type KeyboardModifier = enumeration<'KeyboardModifier'>;
-  export const NoModifier: KeyboardModifier;
-  export const ShiftModifier: KeyboardModifier;
-  export const ControlModifier: KeyboardModifier;
-  export const AltModifier: KeyboardModifier;
-  export const MetaModifier: KeyboardModifier;
-  export const KeypadModifier: KeyboardModifier;
-  export const GroupSwitchModifier: KeyboardModifier;
+  type KeyboardModifier = enumeration<'KeyboardModifier'>;
+  const NoModifier: KeyboardModifier;
+  const ShiftModifier: KeyboardModifier;
+  const ControlModifier: KeyboardModifier;
+  const AltModifier: KeyboardModifier;
+  const MetaModifier: KeyboardModifier;
+  const KeypadModifier: KeyboardModifier;
+  const GroupSwitchModifier: KeyboardModifier;
   //END: Qt Namespace
 
-  //START: No standard, extra extensions
-  export class Timer {}
-  export const Promise: PromiseConstructor;
-  export const setTimeout: (handler: () => any, ms: number) => Timer;
-  export const clearTimeout: (timer: Timer) => void;
+  //START: No standard, extensions and globals
+  class Timer {}
+  const setTimeout: (handler: () => any, ms: number) => Timer;
+  const clearTimeout: (timer: Timer) => void;
+  const $positioner: Dock.$positioner;
+  const $view: Dock.$view;
+  const $layout: Dock.$layout;
   //END: No standard
 
   //START: Qt QML Type
+  function isQtObject(object: any): boolean;
   function callLater<Fn extends (...args: any[]) => any>(
     callback: Fn,
     ...args: Parameters<Fn>
@@ -39,11 +43,11 @@ declare namespace Qt {
   //END: Qt QML Type
 
   //START: Basic Qt Data Types
-  export type enumeration<T extends string> = number & {
+  type enumeration<T extends string> = number & {
     [type]: T;
   };
-  export type url = string;
-  export type rect = size &
+  type url = string;
+  type rect = size &
     point & {
       left: number;
       right: number;
@@ -51,17 +55,17 @@ declare namespace Qt {
       bottom: number;
     };
 
-  export type size = {
+  type size = {
     width: number;
     height: number;
   };
 
-  export type point = {
+  type point = {
     x: number;
     y: number;
   };
 
-  export type color = {
+  type color = {
     r: number;
     g: number;
     b: number;
@@ -75,7 +79,7 @@ declare namespace Qt {
   };
   //END: Basic Qt Data Types
 
-  export interface Signal<
+  interface Signal<
     Fn extends (...args: any[]) => any = (...args: any[]) => any
   > {
     connect(slot: Fn): void;
@@ -83,12 +87,12 @@ declare namespace Qt {
     (): void;
   }
 
-  export interface Slot {
+  interface Slot {
     (...args: any[]): any;
     [p: string]: any;
   }
 
-  export interface Method {
+  interface Method {
     (): void;
   }
 
