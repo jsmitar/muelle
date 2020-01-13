@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.3
 import '../Extras'
-import '../libs/Flux/actions.ts' as Action
+import '../Store/actions.ts' as Action
 
 Window {
   id: win

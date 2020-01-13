@@ -13,7 +13,7 @@ QObject {
       .slice(1)
       .map(str => str.replace(/[\.\(\)\s]+/g, '').split(','))
 
-    return F.zip(targets, properties)
+    return F.zip(targets || [parentObject], properties)
   }
 
   Instantiator {

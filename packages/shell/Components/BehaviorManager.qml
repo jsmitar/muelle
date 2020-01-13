@@ -3,7 +3,7 @@ import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import '../Extras'
 import '../shared/functional.ts' as F
-import '../libs/Flux/actions.ts' as Action
+import '../Store/actions.ts' as Action
 
 QObject {
   id: manager

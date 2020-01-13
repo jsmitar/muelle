@@ -10,12 +10,10 @@ import 'Components'
 import 'Containers'
 import 'Extras'
 import 'Settings'
-import 'libs/Flux'
-import 'libs/Flux/actions.ts' as Action
-import 'polyfills/promise.js' as PromisePolyfill
+import 'Store/actions.ts' as Action
 import 'shared/functional.ts' as F
 import 'shared/saga-tiny/test.ts' as Saga
-//import 'Store'
+import 'Store'
 
 Item {
   id: root
@@ -25,13 +23,20 @@ Item {
   height: store.state.geometry.viewSize.height
 
   Component.onCompleted: {
+    // Start: Set Globals
     Qt.setTimeout = setTimeout
     Qt.clearTimeout = clearTimeout
+    Qt.$view = $view
+    Qt.$layout = $layout
+    Qt.$positioner = $positioner
+    Qt.Muelle = { Types: Types, $view, $layout, $positioner }
+    // End: Set Globals
+    console.log(Promise)
 
-    Saga.test()
+    // Saga.test()
     $positioner.centerOffset = 0
 
-    Qt.Promise.all([
+    Promise.all([
       store.dispatch(Action.changeEdge(Types.Bottom)),
       store.dispatch(Action.changeAlignment(Types.Center)),
       store.dispatch(Action.changeBehavior(Types.DodgeActive))
@@ -44,13 +49,11 @@ Item {
     showSize: false
   }
 
-//  readonly property ShellStore shellStore: ShellStore {}
-
   readonly property SettingsWindow settings: SettingsWindow {}
 
   readonly property AnimationSlide slide: AnimationSlide {}
 
-  readonly property Store store: Store {
+  readonly property ShellStore store: ShellStore {
     id: store
 
     Binding {
