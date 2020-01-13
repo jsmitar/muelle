@@ -35,7 +35,7 @@ QObject {
     if (debug) {
        console.log(`[ACTION] - ${type}`, payload !== undefined ? F.tostr(payload) : '')
     }
-    return Qt.Promise
+    return Promise
       .resolve(actions[type](payload))
   }
 

@@ -16,7 +16,7 @@ QObject {
 
     if (state.panel.hidden && state.panel.slide !== 'Running') return;
 
-    return new Qt.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       slide.hide.cancel()
         .start(() => {
           commit(T.SLIDE_STATUS, 'Running')
@@ -39,7 +39,7 @@ QObject {
 
     if (state.panel.visible && state.panel.slide !== 'Running') return;
 
-    return new Qt.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       slide.show.cancel()
         .start(() => {
           commit(T.SLIDE_STATUS, 'Running')
