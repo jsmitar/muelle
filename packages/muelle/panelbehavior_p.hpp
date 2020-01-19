@@ -77,13 +77,13 @@ public:
   }
 
   virtual ~PanelBehavior() override {
-    for (auto c : connections)
+    foreach (auto c, connections)
       QObject::disconnect(c);
   }
 
 public:
   void updateBehavior() {
-    for (auto c : connections)
+    foreach (auto c, connections)
       QObject::disconnect(c);
 
     clearStruts();

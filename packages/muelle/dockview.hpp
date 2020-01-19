@@ -45,7 +45,7 @@ class View : public QQuickView {
   Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged)
   Q_PROPERTY(
       QPoint position READ position WRITE setPosition NOTIFY positionChanged)
-  Q_PROPERTY(QPoint mousePosition READ mousePosition)
+  Q_PROPERTY(QPoint mousePosition READ mousePosition CONSTANT)
 
 public:
   View(QSharedPointer<EnhancedQmlEngine> &engine);

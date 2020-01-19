@@ -16,6 +16,7 @@
  */
 
 #include "pressuredetector.hpp"
+
 #include <QGuiApplication>
 
 namespace Dock {
@@ -194,7 +195,9 @@ void PressureDetector::updateBarrier() {
     }
 
     if (auto error = xcb_request_check(conn, cookie); error) {
-      qWarning() << "fail to create pointer barrier" << error->error_code;
+      auto rect = std::get<1>(barrier());
+      qWarning() << "fail to create pointer barrier" << error->error_code
+                 << rect.toString().c_str();
       mBarrier = 0;
       return;
     }

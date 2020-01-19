@@ -16,6 +16,7 @@
  */
 
 #include "dockview.hpp"
+
 #include <memory>
 #include <xcb/xcb.h>
 #include <xcb/xinput.h>
@@ -66,7 +67,7 @@ void View::load() {
   rootContext()->setContextProperty("$view", this);
   rootContext()->setContextProperty("$layout", &mLayout);
   rootContext()->setContextProperty("$positioner", &mPositionHandler);
-  setSource({"qrc:/main.qml"});
+  setSource({"qrc:/shell/main.qml"});
   show();
 }
 

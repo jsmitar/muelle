@@ -117,7 +117,6 @@ private:
 };   
 Q_DECLARE_METATYPE(Lambda);
 
-
 namespace Dock {
 class Extensions : public QObject {
   Q_OBJECT

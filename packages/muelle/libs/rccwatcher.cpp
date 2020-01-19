@@ -21,9 +21,6 @@
 
 namespace Dock {
 
-constexpr auto filters{QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot |
-                       QDir::Readable | QDir::Writable};
-
 RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
     : QFileSystemWatcher(parent) {
 

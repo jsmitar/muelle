@@ -79,6 +79,11 @@ private:
     uint16_t y1;
     uint16_t x2;
     uint16_t y2;
+
+    std::string toString() const {
+      return "(" + std::to_string(x1) + "," + std::to_string(y1) + ") " +
+             std::to_string(x1 + x2) + "x" + std::to_string(y1 + y2);
+    }
   };
   std::tuple<xcb_xfixes_barrier_directions_t, Rect> barrier() const;
 
