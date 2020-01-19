@@ -17,19 +17,25 @@ const dirs = {
   dist: 'packages/dist',
   buildDev: 'build',
   bin: 'build/muelle',
+  binArgs: [
+    '-qmljsdebugger=port:5000,services:CanvasFrameRate,EngineControl,DebugMessages',
+  ],
   resources: {
+    watchQmlPackages: [
+      'packages/shell/**/*.(qml|ts)',
+      'packages/shared/**/*.(qml|ts)',
+    ],
     shell: {
-      watch: ['packages/shell/**/*.(qml|ts)', 'packages/shared/**/*.(qml|ts)'],
       qrc: {
-        from: 'packages/dist/shell/',
+        from: 'packages/dist',
         input: ['packages/dist/shell', 'packages/dist/shared'],
-        output: 'packages/dist/shell/qml.qrc',
+        output: 'packages/dist/shell.qrc',
         rcc: 'packages/resources/shell.rcc',
       },
       qrcQtCreator: {
-        from: 'packages/shell',
+        from: 'packages',
         input: ['packages/shell', 'packages/shared'],
-        output: 'packages/shell/qml.qrc',
+        output: 'packages/shell.qrc',
       },
     },
     muelle: {
@@ -64,7 +70,10 @@ const runMuelle = (() => {
 ║          STARTING MUELLE          ║
 ╙───────────────────────────────────╜
 ${'\033[0m'}`);
-      muelle = spawn(`${dirs.bin}`, { cwd: __dirname });
+      muelle = spawn(`${dirs.bin}`, dirs.binArgs, {
+        cwd: __dirname,
+        env: { ...process.env, QML_IMPORT_TRACE: 0 },
+      });
       muelle.unref();
       muelle
         .on('exit', () => {
@@ -137,29 +146,34 @@ function buildQml(cb) {
       }
     ),
     function createShellQrc(cb) {
-      const qrc = generateQrc(
-        dirs.resources.shell.qrc.from,
-        dirs.resources.shell.qrc.input
-      );
-      fs.writeFile(dirs.resources.shell.qrc.output, qrc, { flag: 'w' }, cb);
+      [dirs.resources.shell].forEach(resource => {
+        const qrc = generateQrc(resource.qrc.from, resource.qrc.input);
+        fs.writeFileSync(resource.qrc.output, qrc, { flag: 'w' }, () => {});
+      });
+      cb();
     },
     function createShellQrcQtCreator(cb) {
-      const qrc = generateQrc(
-        dirs.resources.shell.qrcQtCreator.from,
-        dirs.resources.shell.qrcQtCreator.input,
-        /.qml|.js|.ts/
-      );
-      fs.writeFile(
-        dirs.resources.shell.qrcQtCreator.output,
-        qrc,
-        { flag: 'w' },
-        cb
-      );
+      [dirs.resources.shell].forEach(resource => {
+        const qrc = generateQrc(
+          resource.qrcQtCreator.from,
+          resource.qrcQtCreator.input,
+          /.qml|.js|.ts/
+        );
+        fs.writeFile(
+          resource.qrcQtCreator.output,
+          qrc,
+          { flag: 'w' },
+          () => {}
+        );
+      });
+      cb();
     },
     function createShellRcc(cb) {
-      createCommand(
-        `rcc-qt5 --no-compress --binary -o ${dirs.resources.shell.qrc.rcc} ${dirs.resources.shell.qrc.output}`
-      )(cb);
+      [dirs.resources.shell].forEach(resource => {
+        createCommand(
+          `rcc-qt5 --no-compress --binary -o ${resource.qrc.rcc} ${resource.qrc.output}`
+        )(cb);
+      });
     }
   )(cb);
 }
@@ -177,7 +191,7 @@ async function watchApp() {
   });
 
   watch(dirs.resources.muelle.watch, muelle);
-  watch(dirs.resources.shell.watch, qml);
+  watch(dirs.resources.watchQmlPackages, qml);
 }
 
 function watchTask() {

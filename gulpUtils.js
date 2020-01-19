@@ -19,16 +19,7 @@ function qrc(_, files) {
   return `<!DOCTYPE RCC>
 <RCC>
   <qresource prefix="/">
-${files
-  .map(file => {
-    if (file.startsWith('../')) {
-      const alias = file.replace(/^(\.\.\/)+/, '');
-      return `    <file alias="${alias}">${file}</file>`;
-    } else {
-      return `    <file>${file}</file>`;
-    }
-  })
-  .join('\n')}
+${files.map(file => `    <file>${file}</file>`).join('\n')}
   </qresource>
 </RCC>`;
 }
@@ -38,7 +29,7 @@ function generateQrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
     .flatMap(pathname => listFiles(`${__dirname}/${pathname}`))
     .filter(file => {
       const { ext, name } = path.parse(file);
-      return patttern.test(ext) && /\w/.test(name);
+      return (patttern.test(ext) && /\w/.test(name)) || /qmldir/.test(name);
     })
     .map(to => path.relative(from, to))}`;
 }

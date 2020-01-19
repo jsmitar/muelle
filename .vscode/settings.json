@@ -4,7 +4,14 @@
   "cmake.buildEnvironment": { "CXX": "/usr/bin/c++" },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.enable": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
   "files.associations": {
+    "*.qrc": "xml",
     "*.qml": "qml",
     "qmetaobject": "cpp",
     "atomic": "cpp",
