@@ -2,10 +2,10 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.1
 import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import '../libs/constants.ts' as Const
-import '../shared/functional.ts' as F
+import '../helpers/constants.ts' as Const
+import '../../shared/functional.ts' as F
 import '../Containers'
-import '../Extras'
+import '../../shared/components'
 
 IconTaskContainer {
   id: icon

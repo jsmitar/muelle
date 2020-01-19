@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import '../../Extras'
+import '../../../shared/components'
 
 QObject {
   objectName: '@State/Animation'

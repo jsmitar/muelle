@@ -8,11 +8,11 @@ import org.kde.taskmanager 0.1
 
 import 'Components'
 import 'Containers'
-import 'Extras'
 import 'Settings'
 import 'Store/actions.ts' as Action
-import 'shared/functional.ts' as F
-import 'shared/saga-tiny/test.ts' as Saga
+import '../shared/functional.ts' as F
+import '../shared/components'
+import '../shared/saga/test.ts' as Saga
 import 'Store'
 
 Item {
@@ -31,7 +31,6 @@ Item {
     Qt.$positioner = $positioner
     Qt.Muelle = { Types: Types, $view, $layout, $positioner }
     // End: Set Globals
-    console.log(Promise)
 
     // Saga.test()
     $positioner.centerOffset = 0
@@ -45,13 +44,11 @@ Item {
 
   PaintItem {
     target: root
-    enabled: false
+    enabled: true
     showSize: false
   }
 
   readonly property SettingsWindow settings: SettingsWindow {}
-
-  readonly property AnimationSlide slide: AnimationSlide {}
 
   readonly property ShellStore store: ShellStore {
     id: store

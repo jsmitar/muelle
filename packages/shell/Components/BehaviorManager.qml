@@ -1,8 +1,8 @@
 import QtQuick 2.12
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
-import '../Extras'
-import '../shared/functional.ts' as F
+import '../../shared/components'
+import '../../shared/functional.ts' as F
 import '../Store/actions.ts' as Action
 
 QObject {
@@ -19,7 +19,7 @@ QObject {
     enabled: store.state.panel.hidden
 
     onThresholdReached: {
-      store.dispatch(Action.showPanel())
+      store.dispatch(Action.slideIn())
     }
   }
 
@@ -35,8 +35,8 @@ QObject {
 
     Connections {
       target: $view
-      onEntered: store.dispatch(Action.showPanel())
-      onExited: store.dispatch(Action.hidePanel())
+      onEntered: store.dispatch(Action.slideIn())
+      onExited: store.dispatch(Action.slideOut())
     }
   }
 
@@ -49,10 +49,12 @@ QObject {
     }
 
     function dodge() {
-      if ($view.containsMouse || !behavior.dodge) {
-        store.dispatch(Action.showPanel())
-      } else {
-        store.dispatch(Action.hidePanel())
+      if ($view.containsMouse) {
+        if (store.state.panel.slide !== 'slide-in-running')
+          store.dispatch(Action.slideIn())
+      } else if (behavior.dodge) {
+        if (store.state.panel.slide !== 'slide-out-running')
+          store.dispatch(Action.slideOut())
       }
     }
 
@@ -81,7 +83,7 @@ QObject {
     onEnabledChanged: {
       if (enabled) {
         forceUpdate()
-        store.dispatch(Action.showPanel())
+        store.dispatch(Action.slideIn())
       }
     }
 

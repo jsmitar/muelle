@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick 2.12
 import org.muelle.types 1.0
-import '../../Extras'
+import '../../../shared/components'
 
 QObject {
   objectName: '@State/Geometry'
@@ -103,7 +103,7 @@ QObject {
     delayed: true
     properties: [
       spy`(panelNextRect,panelRect,maskRect,_panel_next_size)`,
-      spy`${state.panel}.(nextTaskCount1,taskCount1)`,
+      spy`(nextTaskCount1,taskCount1)`,
     ]
   }
 }

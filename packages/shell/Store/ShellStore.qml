@@ -3,9 +3,9 @@ import org.kde.taskmanager 0.1
 import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
 
 import '../Components'
-import '../Extras'
-import '../shared/functional.ts' as F
-import '../shared/flux'
+import '../../shared/components'
+import '../../shared/functional.ts' as F
+import '../../shared/flux'
 import 'mutations.ts' as M
 import 'sagaRoot.ts' as Saga
 import 'actions.ts' as Action
@@ -13,7 +13,8 @@ import 'actions.ts' as Action
 FluxStore {
   id: store
 
-  state: ShellState {}
+  readonly property ShellState state: ShellState {}
+  _state: state
   mutations: M.mutations
   sagaRoot: Saga.sagaRoot
 
@@ -34,10 +35,10 @@ FluxStore {
     onCountChanged: {
       store.dispatch(Action.updateTaskCount1(count))
     }
-  }
 
-  Component.onCompleted: {
-    tasksModel.countChanged()
+    Component.onCompleted: {
+      tasksModel.countChanged()
+    }
   }
 
   readonly property ActivityInfo activityInfo:

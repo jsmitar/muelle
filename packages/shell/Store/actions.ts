@@ -8,6 +8,14 @@ export function slideOut() {
   return { type: 'slide', payload: 'out' };
 }
 
+export function slideInFinished() {
+  return { type: 'slide-in-finished' };
+}
+
+export function slideOutFinished() {
+  return { type: 'slide-out-finished' };
+}
+
 export function changeAlignment(alignment: Muelle.Types.Alignment) {
   return { type: 'changeAlignment', payload: alignment };
 }

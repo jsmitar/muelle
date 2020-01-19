@@ -1,6 +1,7 @@
 import QtQuick 2.12
+import '../../../shared/components'
 
-QtObject {
+QObject {
   objectName: '@State/Icon'
 
   readonly property int size: iconSize + padding * 2

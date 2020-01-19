@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import org.muelle.types 1.0
-import '../../Extras'
+import '../../../shared/components'
 
 QObject {
   objectName: '@State/Panel'
@@ -13,18 +13,22 @@ QObject {
 
   property bool updatingPosition: false
   property int nextEdge: Types.Top
-  property int nextAlignment: Types.Start
+  property int nextAlignment: Types.Center
 
   readonly property int orientation: edge & Types.Top || edge & Types.Bottom
       ? Types.Horizontal : Types.Vertical
 
   readonly property bool isHorizontal: orientation === Types.Horizontal
   readonly property bool isVertical: orientation === Types.Vertical
-  property int alignment: Types.Start
+  property int alignment: Types.Center
   property int edge: Types.Top
-  property int behavior: Types.None
+  property int behavior: Types.DodgeActive
 
   // counter of not grouped tasks
   property int nextTaskCount1: 0
   property int taskCount1: 0
+
+  Spy {
+    properties: spy`taskCount1`
+  }
 }

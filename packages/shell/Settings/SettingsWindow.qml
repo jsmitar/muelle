@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Window 2.3
-import '../Extras'
+import '../../shared/components'
 import '../Store/actions.ts' as Action
 
 Window {

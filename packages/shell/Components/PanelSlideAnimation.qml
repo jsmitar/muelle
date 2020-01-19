@@ -1,49 +1,33 @@
 import QtQuick 2.12
-import QtQuick.Layouts 1.3
-import '../Extras'
+import '../../shared/components'
+import '../Store/actions.ts' as Action
 
 QObject {
   id: slide
-
   property Item target
 
-  // hide < 0
-  // show == 0
   property real value: 0
-  property real size: store.state.icon.size
+  property real distance: store.state.icon.size
 
-  readonly property alias show: showAnim.control
-  readonly property alias hide: hideAnim.control
+  Connections {
+    target: store.state.panel
 
-  AnimationControl {
-    id: hideAnim
-    alwaysRunToEnd: false
-    ScriptAction {
-      script: slide.show.cancelAndStop()
-    }
-    PauseAnimation {
-      duration: 50
-    }
-    SmoothedAnimation {
-      target: slide
-      property: 'value'
-      velocity: store.state.animation.velocity
-      easing.type: Easing.InCubic
-      to: -size
-    }
-    PauseAnimation {
-      duration: 50
+    onSlideChanged: {
+      const slide = target.slide
+      if (slide === 'slide-in-running') {
+        slideIn.start()
+      } else if (slide === 'slide-out-running') {
+        slideOut.start()
+      }
     }
   }
 
-  AnimationControl {
-    id: showAnim
+  SequentialAnimation {
+    id: slideIn
     alwaysRunToEnd: false
+
     ScriptAction {
-      script: slide.hide.cancelAndStop()
-    }
-    PauseAnimation {
-      duration: 50
+      script: slideOut.stop()
     }
     SmoothedAnimation {
       target: slide
@@ -52,8 +36,27 @@ QObject {
       easing.type: Easing.OutCubic
       to: 0
     }
-    PauseAnimation {
-      duration: 50
+    ScriptAction {
+      script: store.dispatch(Action.slideInFinished())
+    }
+  }
+
+  SequentialAnimation {
+    id: slideOut
+    alwaysRunToEnd: false
+
+    ScriptAction {
+      script: slideIn.stop()
+    }
+    SmoothedAnimation {
+      target: slide
+      property: 'value'
+      velocity: store.state.animation.velocity
+      easing.type: Easing.InCubic
+      to: -distance
+    }
+    ScriptAction {
+      script: store.dispatch(Action.slideOutFinished())
     }
   }
 
@@ -83,4 +86,3 @@ QObject {
     }
   }
 }
-
