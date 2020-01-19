@@ -1,0 +1,3 @@
+module org.muelle.shared.flux
+
+FluxStore 1.0 FluxStore.qml

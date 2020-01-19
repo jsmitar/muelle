@@ -1,7 +1,5 @@
-'.pragma library';
-
-import Qt from 'qt';
 import QtQml from '@qml/QtQml-2.14';
+import Qt from 'qt';
 
 export function randColor(alpha: number) {
   alpha = alpha || 1;
@@ -209,30 +207,36 @@ export function atostr(array: any[], deep = 5, indent = 2): string {
   }
 
   const str = array
-    .map(v => `${tostr(v, deep - 1, indent + 2)}`)
+    .map(v => `${tostr(v, deep - 1, indent > 0 ? indent + 2 : indent)}`)
     .join(`,${breakLine(indent)}${space(indent)}`);
 
   return formatHelper(str, ['[', ']'], indent);
 }
 
 export function otostr(object: Record<any, any>, deep = 5, indent = 2): string {
+  if (Symbol.toPrimitive in object) {
+    return `${object}`;
+  }
   if (deep === 0) {
     const ostr = String(object) || 'Object';
     return `${ostr}${object.objectName ? '-' + object.objectName : ''}`;
   }
 
-  if (!Object.keys(object).length) {
+  const entries = Object.getOwnPropertySymbols(object)
+    .map<[string, any]>(s => [s.toString(), object[s as any]])
+    .concat(Object.entries(object).filter(([k]) => !k.startsWith('_')));
+
+  if (!entries.length) {
     return '{}';
   }
 
-  const str = Object.entries(object)
-    .filter(([k]) => !k.startsWith('_'))
+  const str = entries
     .map(([k, v]) => {
       let nextDeep = deep - 1;
       if (k === 'parent' || object[k] === object.parent || v === object) {
         nextDeep = 0;
       }
-      return `${k}: ${tostr(v, nextDeep, indent + 2)}`;
+      return `${k}: ${tostr(v, nextDeep, indent > 0 ? indent + 2 : indent)}`;
     })
     .join(`,${breakLine(indent)}${space(indent)}`);
 
@@ -395,12 +399,20 @@ export function makeCancelable<Fn extends (...args: any[]) => any>(
 
 export function debounce<Fn extends (...args: any[]) => any>(
   fn: Fn,
-  time: number
+  time: number = 0
 ) {
-  let timeout: any;
-  return (...args: Parameters<Fn>) => {
-    const lastArgs = args;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn(...lastArgs), time);
-  };
+  if (time === 0) {
+    return (...args: Parameters<Fn>) => {
+      Qt.callLater(fn, ...args);
+    };
+  } else {
+    let timer: any;
+    return (...args: Parameters<Fn>) => {
+      const lastArgs = args;
+      Qt.clearTimeout(timer);
+      timer = Qt.setTimeout(() => fn(...lastArgs), time);
+    };
+  }
 }
+
+console.log('functional imported');

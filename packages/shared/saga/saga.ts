@@ -1,40 +1,42 @@
 import Qt from 'qt';
+import { noop, tostr, zip } from '../functional';
+import genId from '../genId';
+import { cancel } from './effects/baseEffects';
+import EventEmitter, { Connection, Listener } from './eventEmitter';
 import {
-  Saga,
-  Task,
-  SagaFn,
-  Effect,
-  CallEffect,
-  TakeEffect,
-  PutEffect,
-  DelayedEffect,
-  ForkEffect,
-  JoinEffect,
-  CancelEffect,
-  CancelledEffect,
-  AllEffect,
-  RaceEffect,
-  SelectEffect,
-} from './private/types';
-import {
-  TaskStatus,
-  CALL,
-  TAKE,
-  PUT,
   ALL,
+  CALL,
   CANCEL,
   CANCELLED,
   DELAYED,
-  FORK,
-  JOIN,
-  RACE,
   effectType,
   FINISH,
+  FORK,
+  JOIN,
+  PUT,
+  RACE,
   SELECT,
+  TAKE,
+  TaskStatus,
 } from './private/symbols';
-import genId from '../genId';
-import EventEmitter, { Listener, Connection } from './eventEmitter';
-import { tostr, zip } from '../functional';
+import {
+  AllEffect,
+  CallEffect,
+  CancelEffect,
+  CancelledEffect,
+  DelayedEffect,
+  Effect,
+  ForkEffect,
+  JoinEffect,
+  PutEffect,
+  RaceEffect,
+  Saga,
+  SagaFn,
+  SelectEffect,
+  TakeEffect,
+  Task,
+} from './private/types';
+import { SagaMonitor } from './sagaMonitor';
 
 const id = genId();
 
@@ -45,24 +47,28 @@ const Return = 'return';
 
 type Response = any;
 
-function assertEffect(effect: any): effect is Effect {
+function isEffect(effect: any): effect is Effect {
   if (!effect || !(effectType in effect)) {
     throw new Error(
-      `Saga: A Effect was expected but the value is: ${tostr(effect)}`
+      `Saga: A Effect was expected but the value was: ${tostr(effect)}`
     );
   }
 
-  return effect;
+  return true;
 }
 
 export type TaskContext = {
+  sagaMonitor?: SagaMonitor;
   actionSubscriber: EventEmitter;
   commit: (type: string, ...payload: any[]) => void;
   getState: () => any;
 };
 
-class TaskController implements Task {
+const cancelEffect = cancel();
+
+export class TaskController implements Task {
   m_taskId = `@SAGA_TASK_${id.next().value}`;
+  m_name = '';
   m_parent: TaskController | null;
   m_status: TaskStatus = TaskStatus.Running;
   m_result?: any;
@@ -71,10 +77,16 @@ class TaskController implements Task {
   subTasks: Record<string, TaskController> = {};
   emitter = new EventEmitter();
   connections: Connection[] = []; // subscriptions
-  context: TaskContext;
+  context: Required<TaskContext>;
 
-  constructor(context: TaskContext, parent: TaskController | null, saga: Saga) {
+  constructor(
+    context: Required<TaskContext>,
+    parent: TaskController | null,
+    saga: Saga,
+    name: string
+  ) {
     this.m_parent = parent;
+    this.m_name = name;
     if (parent) {
       parent.subTasks[this.m_taskId] = this;
     }
@@ -82,15 +94,22 @@ class TaskController implements Task {
     this.context = context;
   }
 
-  run(): TaskController {
-    Qt.callLater(this.advancer.bind(this));
+  run(delayed = true): TaskController {
+    if (delayed) {
+      Qt.callLater(this.run.bind(this, false));
+    } else {
+      this.context.sagaMonitor.sagaStatusChanged(this);
+      this.advancer();
+    }
     return this;
   }
 
-  protected advancer(response?: Response, requestStatus?: TaskStatus) {
+  protected advancer(
+    effect?: Effect,
+    response?: Response,
+    requestStatus: TaskStatus = TaskStatus.Running
+  ) {
     let action: Method;
-    //console.info('response:', tostr(response), requestStatus || '');
-
     switch (requestStatus) {
       case TaskStatus.Cancelled:
         this.propagateCancel();
@@ -103,6 +122,8 @@ class TaskController implements Task {
       default:
         action = Next;
     }
+
+    if (effect) this.context.sagaMonitor.effectResolved(this, effect, response);
 
     try {
       const result = this.saga[action](response);
@@ -120,7 +141,8 @@ class TaskController implements Task {
 
   handleNext({ value, done }: IteratorResult<Effect, unknown>) {
     if (!done) {
-      if (assertEffect(value)) {
+      if (isEffect(value)) {
+        this.context.sagaMonitor.effectTriggered(this, value);
         effectHandlers[value[effectType]].call<TaskController, any[], void>(
           this,
           value
@@ -133,7 +155,7 @@ class TaskController implements Task {
         this.m_result = value;
         this.notifyFinish();
       }
-      this.deleteSubTask(this);
+      this.m_parent?.deleteSubTask(this);
     }
   }
 
@@ -145,20 +167,24 @@ class TaskController implements Task {
 
   propagateCancel() {
     this.m_status = TaskStatus.Cancelled;
+    //this.notifyFinish();
     this.releaseContextConnections();
     for (let id in this.subTasks) {
       this.subTasks[id].cancel();
     }
     this.subTasks = {};
+    this.m_parent?.deleteSubTask(this);
   }
 
   notifyFinish() {
+    this.context.sagaMonitor.sagaStatusChanged(this, this.m_result);
     this.emitter.emit(FINISH, this.m_result, this.m_status);
     this.emitter.offAll();
   }
 
   releaseContextConnections() {
     this.context.actionSubscriber.offAll(this.connections);
+    this.connections = [];
   }
 
   deleteSubTask(task: TaskController) {
@@ -166,15 +192,18 @@ class TaskController implements Task {
     delete this.subTasks[task.taskId];
   }
 
-  cancel() {
-    if (this.m_status === TaskStatus.Running) {
-      this.advancer(undefined, TaskStatus.Cancelled);
+  cancel(effect = cancelEffect) {
+    if (effect.task) {
+      (<TaskController>effect.task).cancel();
+      this.advancer(effect);
+    } else if (this.m_status === TaskStatus.Running) {
+      this.advancer(effect, undefined, TaskStatus.Cancelled);
     }
   }
 
   abort(e: Error) {
     if (this.m_status === TaskStatus.Running) {
-      this.advancer(e, TaskStatus.Aborted);
+      this.advancer(undefined, e, TaskStatus.Aborted);
     }
   }
 
@@ -197,29 +226,40 @@ class TaskController implements Task {
   get task(): Task {
     return this;
   }
+
+  get name() {
+    return this.m_name;
+  }
+
+  [Symbol.toPrimitive]() {
+    const start = '\u001b[36m';
+    const end = '\u001b[0m';
+    return `${start}[${this.m_taskId} ${this.m_name}]${end}`;
+  }
 }
 
 const effectHandlers = {
   [CALL](this: TaskController, effect: CallEffect) {
-    const task = makeTask(this, effect.saga, effect.args);
-    task.onFinish(this.advancer.bind(this));
+    const task = makeTask(this, effect.saga, effect.name, effect.args);
+    task.onFinish(this.advancer.bind(this, effect));
     task.run();
   },
   [SELECT](this: TaskController, effect: SelectEffect) {
-    this.advancer(effect.selector(this.context.getState()));
+    this.advancer(effect, effect.selector(this.context.getState()));
   },
   [TAKE](this: TaskController, effect: TakeEffect) {
     const { pattern } = effect;
-    this.connections.push(
-      this.context.actionSubscriber.once(pattern, payload => {
-        this.advancer(payload);
-      })
-    );
+    const conn = this.context.actionSubscriber.once(pattern, payload => {
+      const i = this.connections.findIndex(c => c.id === conn.id);
+      if (i !== -1) this.connections.splice(i, 1);
+      this.advancer(effect, payload);
+    });
+    this.connections.push(conn);
   },
   [PUT](this: TaskController, effect: PutEffect) {
     const { type, args } = effect;
     this.context.commit(type, ...args);
-    this.advancer();
+    this.advancer(effect);
   },
   [DELAYED](this: TaskController, effect: DelayedEffect) {
     const self = this;
@@ -227,28 +267,27 @@ const effectHandlers = {
       clear();
       self.emitter.off(conn);
       if (result instanceof Error) {
-        self.advancer(result, TaskStatus.Aborted);
+        self.advancer(effect, result, TaskStatus.Aborted);
       } else {
-        self.advancer(result);
+        self.advancer(effect, result);
       }
     });
 
     const conn = this.onFinish(clear);
   },
   [FORK](this: TaskController, effect: ForkEffect) {
-    const task = makeTask(this, effect.saga, effect.args).run();
-    this.advancer(task);
+    const task = makeTask(this, effect.saga, effect.name, effect.args).run();
+    this.advancer(effect, task);
   },
   [JOIN](this: TaskController, effect: JoinEffect) {
     const task = <TaskController>effect.task;
-    task.onFinish(this.advancer.bind(this));
+    task.onFinish(this.advancer.bind(this, effect));
   },
   [CANCEL](this: TaskController, effect: CancelEffect) {
-    const task = <TaskController>effect.task || this;
-    task.cancel();
+    (<TaskController>this.task).cancel(effect);
   },
-  [CANCELLED](this: TaskController, _: CancelledEffect) {
-    this.advancer(this.status === TaskStatus.Cancelled);
+  [CANCELLED](this: TaskController, effect: CancelledEffect) {
+    this.advancer(effect, this.status === TaskStatus.Cancelled);
   },
   [ALL](this: TaskController, effect: AllEffect) {
     const { effects, count } = effect;
@@ -256,7 +295,9 @@ const effectHandlers = {
     let countdown = count;
     const results = Array.from({ length: count });
 
-    const tasks = effects.map(({ saga, args }) => makeTask(this, saga, args));
+    const tasks = effects.map(({ saga, args, name }) =>
+      makeTask(this, saga, name, args)
+    );
 
     const finishHandler = (index: number): Listener<[Response, TaskStatus]> => {
       return (result, status) => {
@@ -273,7 +314,7 @@ const effectHandlers = {
             task.cancel();
           });
 
-          this.advancer(results, status);
+          this.advancer(effect, results, status);
         }
       };
     };
@@ -289,7 +330,9 @@ const effectHandlers = {
     let countdown = count;
     const results = Array.from({ length: count });
 
-    const tasks = effects.map(({ saga, args }) => makeTask(this, saga, args));
+    const tasks = effects.map(({ saga, args, name }) =>
+      makeTask(this, saga, name, args)
+    );
 
     const finishHandler = (index: number): Listener<[Response, TaskStatus]> => {
       return (result, status) => {
@@ -300,7 +343,7 @@ const effectHandlers = {
             task.emitter.off(conn);
             task.cancel();
           });
-          this.advancer(results);
+          this.advancer(effect, results);
         }
       };
     };
@@ -314,9 +357,10 @@ const effectHandlers = {
 export function makeTask<Fn extends SagaFn>(
   parent: TaskController,
   saga: Fn,
+  name: string,
   args: Parameters<Fn>
 ) {
-  return new TaskController(parent.context, parent, saga(...args));
+  return new TaskController(parent.context, parent, saga(...args), name);
 }
 
 export function runSaga<Fn extends SagaFn>(
@@ -324,5 +368,18 @@ export function runSaga<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ): Task {
-  return new TaskController(context, null, saga(...args)).run();
+  if (!context.sagaMonitor) {
+    context.sagaMonitor = {
+      effectResolved: noop,
+      effectTriggered: noop,
+      rootSagaStarted: noop,
+      sagaStatusChanged: noop,
+    };
+  }
+  return new TaskController(
+    <Required<TaskContext>>context,
+    null,
+    saga(...args),
+    saga.name
+  ).run(/* delayed */ false);
 }

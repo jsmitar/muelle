@@ -10,7 +10,7 @@ export interface Task<T = any> {
   taskId: string;
   result: T;
   status: TaskStatus;
-  cancel(): void;
+  name: string;
 }
 
 export type EffectType =
@@ -35,7 +35,7 @@ export type Effect<T extends EffectType = EffectType> =
   T extends 'DELAYED' ? DelayedEffect :
   T extends 'FORK' ? ForkEffect :
   T extends 'JOIN' ? JoinEffect :
-  T extends 'CANCEL' ? CancelEffect :
+  T extends 'CANCEL' ? CancelEffect : 
   T extends 'CANCELLED' ? CancelledEffect :
   T extends 'ALL' ? AllEffect :
   T extends 'RACE' ? RaceEffect : 
@@ -48,6 +48,7 @@ export interface EffectBase<T extends EffectType = EffectType> {
 export interface CallEffect<Fn extends SagaFn = SagaFn>
   extends EffectBase<'CALL'> {
   saga: SagaFn;
+  name: string;
   args: Parameters<Fn>;
 }
 
@@ -72,6 +73,7 @@ export interface DelayedEffect extends EffectBase<'DELAYED'> {
 
 export interface ForkEffect extends EffectBase<'FORK'> {
   saga: SagaFn;
+  name: string;
   args: any[];
 }
 

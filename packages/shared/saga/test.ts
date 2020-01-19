@@ -1,19 +1,20 @@
-import { Saga, Task } from './private/types';
-import {
-  call,
-  delay,
-  cancelled,
-  fork,
-  all,
-  put,
-  take,
-  cancel,
-  race,
-  join,
-} from './effects';
-import { runSaga, TaskContext } from './saga';
 import { range } from '../functional';
+import {
+  all,
+  call,
+  cancel,
+  cancelled,
+  delay,
+  fork,
+  join,
+  put,
+  race,
+  take,
+} from './effects';
 import EventEmitter from './eventEmitter';
+import { Saga, Task } from './private/types';
+import { runSaga, TaskContext } from './saga';
+import { simpleSagaMonitor } from './simpleSagaMonitor';
 
 function* t(name: string) {
   try {
@@ -44,7 +45,7 @@ function* test1(): Saga {
   try {
     const task: Task = yield fork(t, 'job-1');
     yield delay(5000);
-    task.cancel();
+    yield cancel(task);
   } finally {
     if (yield cancelled()) {
       console.log('t1 cancelled');
@@ -141,6 +142,7 @@ function* test4(): Saga {
 const emitter = new EventEmitter();
 
 const defaultContext: TaskContext = {
+  sagaMonitor: simpleSagaMonitor,
   actionSubscriber: emitter,
   commit: (type, payload) => emitter.emit(type, ...payload),
   getState: () => ({}),

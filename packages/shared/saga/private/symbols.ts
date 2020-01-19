@@ -12,7 +12,7 @@ export const RACE = 'RACE';
 
 export const FINISH = '@saga/finish';
 
-export const effectType = Symbol('@saga-tiny/effect-type');
+export const effectType = Symbol('@saga/effect');
 
 export enum TaskStatus {
   Running,

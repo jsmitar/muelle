@@ -1,38 +1,38 @@
 import {
-  effectType,
+  ALL,
   CALL,
-  TAKE,
-  PUT,
-  DELAYED,
-  FORK,
   CANCEL,
   CANCELLED,
-  RACE,
-  ALL,
+  DELAYED,
+  effectType,
+  FORK,
   JOIN,
+  PUT,
+  RACE,
   SELECT,
+  TAKE,
 } from '../private/symbols';
 import {
+  AllEffect,
   CallEffect,
+  CancelEffect,
+  CancelledEffect,
   DelayedEffect,
   ForkEffect,
-  RaceEffect,
-  AllEffect,
-  TakeEffect,
-  CancelledEffect,
-  Task,
-  CancelEffect,
-  PutEffect,
-  SagaFn,
   JoinEffect,
+  PutEffect,
+  RaceEffect,
+  SagaFn,
   SelectEffect,
+  TakeEffect,
+  Task,
 } from '../private/types';
 
 export function call<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ): CallEffect {
-  return { [effectType]: CALL, saga, args };
+  return { [effectType]: CALL, name: saga.name, saga, args };
 }
 
 export function select(selector: (state: any) => any): SelectEffect {
@@ -55,7 +55,15 @@ export function fork<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ): ForkEffect {
-  return { [effectType]: FORK, saga, args };
+  return { [effectType]: FORK, name: saga.name, saga, args };
+}
+
+export function forkNamed<Fn extends SagaFn>(
+  saga: Fn,
+  name: string,
+  ...args: Parameters<Fn>
+): ForkEffect {
+  return { [effectType]: FORK, name, saga, args };
 }
 
 export function join(task: Task): JoinEffect {
@@ -63,7 +71,7 @@ export function join(task: Task): JoinEffect {
 }
 
 export function cancel(task?: Task): CancelEffect {
-  return { [effectType]: CANCEL, task };
+  return task ? { [effectType]: CANCEL, task } : { [effectType]: CANCEL };
 }
 
 export function cancelled(): CancelledEffect {

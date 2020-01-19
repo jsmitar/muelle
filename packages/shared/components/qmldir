@@ -1,0 +1,7 @@
+module shared.components
+
+QObject 1.0 QObject.qml
+PaintItem 1.0 PaintItem.qml
+BindingModel 1.0 BindingModel.qml
+BindingValue 1.0 BindingValue.qml
+Spy 1.0 Spy.qml

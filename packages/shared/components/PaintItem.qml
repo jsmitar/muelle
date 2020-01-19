@@ -1,13 +1,13 @@
 import QtQuick 2.12
 import QtGraphicalEffects 1.0
-import '../shared/functional.ts' as F
+import '../../shared/functional.ts' as F
 
 QObject {
   id: paintItem
   property Item target
   property bool enabled: false
   property bool showSize: true
-  property bool _enableAll: false
+  property bool _enableAll: true
 
   Component {
     id: bg

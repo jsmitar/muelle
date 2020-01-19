@@ -1,14 +1,15 @@
 import QtQuick 2.12
-import './flux.ts' as Flux
+import 'flux.ts' as Flux
 import '../components'
+import '../saga/simpleSagaMonitor.ts' as S
 
 QObject {
-  property var state
+  property QtObject _state
   property var mutations
   property var sagaRoot
   property var dispatch
 
-  onStateChanged: private_.init()
+  on_StateChanged: private_.init()
   onMutationsChanged: private_.init()
   onSagaRootChanged: private_.init()
 
@@ -17,13 +18,14 @@ QObject {
     property var store
 
     function init() {
-      if (state && mutations && sagaRoot) {
+      if (state && mutations && sagaRoot && !store) {
         store = new Flux.FluxStore({
           state,
           mutations,
-          sagaRoot
+          sagaRoot,
+          sagaMonitor: S.simpleSagaMonitor
         })
-        parentObject.dispatch = store.dispatch.bind(store)
+        parentObject.dispatch = payload => store.dispatch(payload)
       }
     }
   }

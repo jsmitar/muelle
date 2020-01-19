@@ -1,7 +1,8 @@
 import Qt from 'qt';
-import { delayed, fork, cancel, take, call } from './baseEffects';
-import { Task, SagaFn, Saga } from '../private/types';
 import { Action } from '../../flux/flux';
+import { TaskStatus } from '../private/symbols';
+import { Saga, SagaFn, Task } from '../private/types';
+import { call, cancel, delayed, fork, forkNamed, take } from './baseEffects';
 
 export function delay(ms: number) {
   return delayed(resolve => {
@@ -15,12 +16,12 @@ export function takeLeading<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ) {
-  return fork(function*(): Saga {
+  return forkNamed(function*(): Saga {
     while (true) {
       const action: Action = yield take(pattern);
       yield call(saga, ...(args.concat(action) as any));
     }
-  });
+  }, saga.name);
 }
 
 export function takeLatest<Fn extends SagaFn>(
@@ -28,14 +29,15 @@ export function takeLatest<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ) {
-  return fork(function*(): Saga {
+  return forkNamed(function*(): Saga {
     let lastTask: Task | undefined;
     while (true) {
       const action: Action = yield take(pattern);
-      if (lastTask) yield cancel(lastTask);
+      if (lastTask && lastTask.status === TaskStatus.Running)
+        yield cancel(lastTask);
       lastTask = yield fork(saga, ...(args.concat(action) as any));
     }
-  });
+  }, saga.name);
 }
 
 export function takeEvery<Fn extends SagaFn>(
@@ -43,10 +45,10 @@ export function takeEvery<Fn extends SagaFn>(
   saga: Fn,
   ...args: Parameters<Fn>
 ) {
-  return fork(function*(): Saga {
+  return forkNamed(function*(): Saga {
     while (true) {
       const action: Action = yield take(pattern);
       yield fork(saga, ...(args.concat(action) as any));
     }
-  });
+  }, saga.name);
 }
