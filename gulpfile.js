@@ -39,7 +39,11 @@ const dirs = {
       },
     },
     muelle: {
-      watch: ['CMakeLists.txt', 'packages/muelle/**/*.(hpp|cpp)'],
+      watch: [
+        'CMakeLists.txt',
+        'packages/muelle/**/*.(hpp|cpp)',
+        '!packages/muelle/dockconfig.hpp',
+      ],
     },
   },
 };
@@ -177,25 +181,17 @@ function buildQml(cb) {
     }
   )(cb);
 }
-async function watchApp() {
-  function muelle(cb) {
-    return series(clear, runCMake, runMake, cb => runMuelle(true, cb))(cb);
-  }
-
-  function qml(cb) {
-    return series(cleanDist, buildQml, cb => runMuelle(true, cb))(cb);
-  }
-
-  muelle(() => {
-    qml();
-  });
-
-  watch(dirs.resources.muelle.watch, muelle);
-  watch(dirs.resources.watchQmlPackages, qml);
-}
 
 function watchTask() {
-  return series(watchApp);
+  return series(() =>
+    watch(
+      [...dirs.resources.muelle.watch, ...dirs.resources.watchQmlPackages],
+      { ignoreInitial: false, delay: 500, useFsEvents: true },
+      series(clear, buildTask(), function START(cb) {
+        runMuelle(true, cb);
+      })
+    )
+  );
 }
 
 function buildTask() {
