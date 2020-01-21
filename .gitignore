@@ -45,6 +45,7 @@ node_modules/
 packages/dist/**/*.*
 !packages/dist/**/*.rcc
 packages/muelle/dockconfig.hpp
+packages/shell.qrc
 
 # xemacs temporary files
 *.flc
@@ -78,3 +79,4 @@ packages/muelle/dockconfig.hpp
 # --------
 *.dll
 *.exe
+packages/shell.qrc
