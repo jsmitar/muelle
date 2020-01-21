@@ -49,10 +49,10 @@ QObject {
     }
 
     function dodge() {
-      if ($view.containsMouse) {
+      if ($view.containsMouse || !behavior.dodge) {
         if (store.state.panel.slide !== 'slide-in-running')
           store.dispatch(Action.slideIn())
-      } else if (behavior.dodge) {
+      } else {
         if (store.state.panel.slide !== 'slide-out-running')
           store.dispatch(Action.slideOut())
       }
