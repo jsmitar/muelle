@@ -1,26 +1,24 @@
 import { Action } from '../../../shared/flux/flux';
-import { put, select, take } from '../../../shared/saga/effects';
+import { delay, put } from '../../../shared/saga/effects';
 import { Saga } from '../../../shared/saga/private/types';
 import { defaultAction } from '../sagaRoot';
-import panelSelector from '../selectors/panelSelector';
-import {
-  MASK_GROW,
-  NEXT_TASK_COUNT1,
-  Panel,
-  UPDATE_TASK_COUNT_1,
-} from '../types';
+import selector from '../selectors/selector';
+import { NEXT_TASK_COUNT1, UPDATE_TASK_COUNT_1 } from '../types';
+
+const taskCount1Select = selector('panel', 'taskCount1');
+const durationSelect = selector('animation', 'duration');
 
 export function* updateTaskCount1(
   action: Action<number> = defaultAction
 ): Saga {
   yield put(NEXT_TASK_COUNT1, action.payload);
-  const panel: Panel = yield select(panelSelector);
+  const taskCount1: number = yield taskCount1Select;
 
-  if (action.payload > panel.taskCount1) {
+  if (action.payload >= taskCount1) {
     yield put(UPDATE_TASK_COUNT_1);
-    yield put(MASK_GROW, true);
-  } else if (action.payload < panel.taskCount1) {
-    yield take('slide-out-finished');
+  } else if (action.payload < taskCount1) {
+    const duration: number = yield durationSelect;
+    yield delay(duration);
     yield put(UPDATE_TASK_COUNT_1);
   }
 }
