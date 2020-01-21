@@ -48,6 +48,9 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   connect(this, &QQuickView::widthChanged, this, &View::sizeChanged);
   connect(this, &QQuickView::heightChanged, this, &View::sizeChanged);
 
+  connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
+          &View::compositingChanged);
+
   connect(mEngine.data(), &EnhancedQmlEngine::sourceChanged, this, &View::load);
   connect(mEngine.data(), &EnhancedQmlEngine::clearSource, [this] {
     setSource({});
@@ -116,6 +119,8 @@ void View::setSize(const QSize &size) {
 }
 
 QPoint View::mousePosition() const { return QCursor::pos(); }
+
+bool View::compositing() const { return KWindowSystem::compositingActive(); }
 
 void View::enableGlow() {
   //  auto c = QX11Info::connection();

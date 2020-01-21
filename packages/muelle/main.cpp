@@ -91,7 +91,7 @@ void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
 
   switch (type) {
   case QtDebugMsg:
-    std::cout << "\033[1;32m[debug]\033[0m " << msg.toStdString() << " " << file
+    std::cout << "\033[1;32m[debug]\033[0m " << msg.toStdString() << " "
               << std::endl;
     break;
   case QtInfoMsg:

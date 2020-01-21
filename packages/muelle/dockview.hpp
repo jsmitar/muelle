@@ -45,7 +45,8 @@ class View : public QQuickView {
   Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged)
   Q_PROPERTY(
       QPoint position READ position WRITE setPosition NOTIFY positionChanged)
-  Q_PROPERTY(QPoint mousePosition READ mousePosition CONSTANT)
+  Q_PROPERTY(QPoint mousePosition READ mousePosition)
+  Q_PROPERTY(bool compositing READ compositing NOTIFY compositingChanged)
 
 public:
   View(QSharedPointer<EnhancedQmlEngine> &engine);
@@ -64,6 +65,7 @@ public:
   void setPosition(const QPoint &value);
   void setSize(const QSize &size);
   QPoint mousePosition() const;
+  bool compositing() const;
 
   Q_INVOKABLE void enableGlow();
   Q_INVOKABLE void setOpacity(qreal level);
@@ -74,6 +76,7 @@ signals:
   void exited();
   void maskChanged();
   void positionChanged();
+  void compositingChanged();
   void sizeChanged();
   void panelGeometryChanged();
   void release();
