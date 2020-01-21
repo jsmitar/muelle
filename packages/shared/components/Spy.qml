@@ -10,11 +10,14 @@ QObject {
 
   function spy(strings, ...targets) {
     const properties = strings
+      .filter(str => str)
       .map(str => str.replace(/[\.\(\)\s]+/g, '').split(','))
 
     if (targets.length === 0) {
       targets = [parentObject]
+
     }
+
     return F.zip(targets, properties)
   }
 
@@ -31,10 +34,10 @@ QObject {
         property var property: targets.target[modelData]
 
         function printProperty() {
-          const targetName = `${targets.target}`.replace(/[_(].*/g, '')
+          const targetName = targets.target.objectName || `${targets.target}`.replace(/[_(].*/g, '')
           const parent = `${targets.target.parentObject || ''}`.replace(/[_(].*/g, '')
           const propName = `${parent ? parent + '.' : ''}${targetName}.${modelData}`
-          console.log(`${propName}: ${F.tostr(property, 1, -Infinity)}`)
+          console.log(`${propName}: ${F.tostr(property, 1, -1)}`)
         }
 
         onPropertyChanged: {
@@ -48,3 +51,5 @@ QObject {
     }
   }
 }
+
+
