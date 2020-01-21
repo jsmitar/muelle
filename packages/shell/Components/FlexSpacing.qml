@@ -13,12 +13,12 @@ Item {
   state: parent instanceof RowLayout ? 'row' : 'column'
 
   property bool fill: true
-  property bool softFill: false
+  property bool smoothFill: false
 
   property real _max: Layout.preferredWidth
 
   Behavior on _max {
-    enabled: softFill
+    enabled: smoothFill
     NumberAnimation {
       easing.type: Easing.InOutQuad
       duration: store.state.animation.duration / 2
