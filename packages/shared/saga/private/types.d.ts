@@ -52,8 +52,8 @@ export interface CallEffect<Fn extends SagaFn = SagaFn>
   args: Parameters<Fn>;
 }
 
-export interface SelectEffect extends EffectBase<'SELECT'> {
-  selector: (state: any) => any;
+export interface SelectEffect<T = any> extends EffectBase<'SELECT'> {
+  selector: (state: any) => T;
 }
 
 export interface TakeEffect extends EffectBase<'TAKE'> {

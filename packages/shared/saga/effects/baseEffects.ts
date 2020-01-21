@@ -35,7 +35,9 @@ export function call<Fn extends SagaFn>(
   return { [effectType]: CALL, name: saga.name, saga, args };
 }
 
-export function select(selector: (state: any) => any): SelectEffect {
+export function select<S = any, R = any>(
+  selector: (state: S) => R
+): SelectEffect<R> {
   return { [effectType]: SELECT, selector };
 }
 
