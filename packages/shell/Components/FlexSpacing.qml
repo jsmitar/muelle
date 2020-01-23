@@ -15,14 +15,21 @@ Item {
   property bool fill: true
   property bool smoothFill: false
 
-  property real _max: Layout.preferredWidth
+  property real _preferredWidth: Layout.preferredWidth
 
-  Behavior on _max {
-    enabled: smoothFill
+  Behavior on _preferredWidth {
+    id: anim
+    enabled: false
     NumberAnimation {
       easing.type: Easing.InOutQuad
       duration: store.state.animation.duration / 2
     }
+  }
+
+  Component.onCompleted: {
+    setTimeout(() => {
+      anim.enabled = Qt.binding(() => smoothFill)
+    }, store.state.animation.duration)
   }
 
   PaintItem {
@@ -37,10 +44,10 @@ Item {
         target: flex
         Layout.fillWidth: fill
         Layout.fillHeight: true
-        Layout.maximumWidth: _max
-        Layout.minimumWidth: _max
+        Layout.maximumWidth: _preferredWidth
+        Layout.minimumWidth: _preferredWidth
         Layout.maximumHeight: Layout.preferredHeight
-        _max: Layout.preferredWidth
+        _preferredWidth: Layout.preferredWidth
       }
     },
     State {
@@ -50,9 +57,9 @@ Item {
         Layout.fillWidth: true
         Layout.fillHeight: fill
         Layout.maximumWidth: Layout.preferredWidth
-        Layout.maximumHeight: _max
-        Layout.minimumHeight: _max
-        _max: Layout.preferredHeight
+        Layout.maximumHeight: _preferredWidth
+        Layout.minimumHeight: _preferredWidth
+        _preferredWidth: Layout.preferredHeight
       }
     }
   ]
