@@ -1,5 +1,6 @@
-import Qt from 'qt';
 import { Types } from '@qml/org.muelle.types-1.0';
+import Qt from 'qt';
+import { DeepReadonly } from '../../shared/DeepReadonly';
 
 export const CHANGE_EDGE = 'CHANGE_EDGE';
 export const CHANGE_ALIGNMENT = 'CHANGE_ALIGNMENT';
@@ -20,10 +21,12 @@ export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 
 export const START_ANIMATION = 'START_ANIMATION';
 
-export const MASK_GROW = 'MASK_GROW';
+export const MASK_GROWING = 'MASK_GROWING';
 
 export const NEXT_TASK_COUNT1 = 'NEXT_TASK_COUNT1';
 export const UPDATE_TASK_COUNT_1 = 'UPDATE_TASK_COUNT_1';
+
+export interface ShellStateReadonly extends DeepReadonly<ShellState> {}
 
 export interface ShellState extends Qt.QtObject {
   settings: Settings;
@@ -67,42 +70,19 @@ export interface Icon extends Qt.QtObject {
 }
 
 export interface Geometry extends Qt.QtObject {
-  readonly _panel_width: number;
-  readonly _panel_height: number;
-  readonly _panel_x: number;
-  readonly _panel_y: number;
-  readonly _panel_size: Qt.size;
-  readonly _panel_point: Qt.point;
-
-  readonly _panel_next_width: number;
-  readonly _panel_next_height: number;
-  readonly _panel_next_x: number;
-  readonly _panel_next_y: number;
-  readonly _panel_next_size: Qt.size;
-  readonly _panel_next_point: Qt.point;
-
   readonly viewSize: Qt.size;
-  readonly viewRect: Qt.rect;
 
   readonly panelSize: Qt.size;
-  readonly panelPoint: Qt.point;
   readonly panelRect: Qt.rect;
 
-  readonly panelNextSize: Qt.size;
-  readonly panelNextPoint: Qt.point;
   readonly panelNextRect: Qt.rect;
+  readonly panelNextPoint: Qt.point;
 
   readonly panelAbsoluteRect: Qt.rect;
   readonly panelNextAbsoluteRect: Qt.rect;
 
-  maskGrow: boolean;
-  readonly _hidden: boolean;
-  readonly maskSizeVisible: Qt.size;
-  readonly maskPointVisible: Qt.point;
-  readonly maskSizeHidden: Qt.size;
-  readonly maskPointHidden: Qt.point;
-
   readonly maskRect: Qt.rect;
+  maskGrowing: boolean;
 }
 
 export interface Animation extends Qt.QtObject {

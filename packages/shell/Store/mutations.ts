@@ -1,20 +1,20 @@
+import { Mutations } from '../../shared/flux/flux';
 import {
-  ShellState,
-  SLIDE_STATUS,
-  UPDATE_POSITION,
-  NEXT_EDGE,
+  HIDE_PANEL,
   LOCK_VISIBLE,
+  MASK_GROWING,
   NEXT_ALIGNMENT,
   NEXT_BEHAVIOR,
-  UPDATING_POSITION,
-  SHOW_PANEL,
-  HIDE_PANEL,
+  NEXT_EDGE,
   NEXT_TASK_COUNT1,
-  UPDATE_TASK_COUNT_1,
-  MASK_GROW,
+  ShellState,
+  SHOW_PANEL,
   SHOW_SETTINGS,
+  SLIDE_STATUS,
+  UPDATE_POSITION,
+  UPDATE_TASK_COUNT_1,
+  UPDATING_POSITION,
 } from './types';
-import { Mutations } from '../../shared/flux/flux';
 
 export const mutations: Mutations<ShellState> = {
   [SLIDE_STATUS](state, status) {
@@ -48,8 +48,8 @@ export const mutations: Mutations<ShellState> = {
   [UPDATE_TASK_COUNT_1](state) {
     state.panel.taskCount1 = state.panel.nextTaskCount1;
   },
-  [MASK_GROW](state, grow) {
-    state.geometry.maskGrow = grow;
+  [MASK_GROWING](state, growing) {
+    state.geometry.maskGrowing = growing;
   },
   [SHOW_SETTINGS](state, visible) {
     state.settings.visible = visible;
