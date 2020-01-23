@@ -14,7 +14,12 @@ execute_process(
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
   OUTPUT_VARIABLE GIT_COMMIT
 )
-string(STRIP ${GIT_VERSION} GIT_VERSION)
+if (GIT_VERSION)  
+  string(STRIP ${GIT_VERSION} GIT_VERSION)
+else()
+  set(GIT_VERSION "unknown")
+endif()
+
 string(STRIP ${GIT_COMMIT} GIT_COMMIT)
 
 # Extra CMake Modules
