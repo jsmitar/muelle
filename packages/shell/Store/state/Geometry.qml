@@ -12,13 +12,14 @@ QObject {
 
   readonly property alias viewSize: view.size
 
+  readonly property alias panelSize: panel.size
   readonly property alias panelRect: panel.rect
 
   readonly property alias panelNextRect: panel.nextRect
+  readonly property alias panelNextPoint: panel.nextPoint
 
   readonly property alias maskRect: mask.rect
-
-  readonly property alias panelNextPoint: panel.nextPoint
+  property alias maskGrowing: mask.growing
 
   QObject {
     id: view
@@ -59,6 +60,10 @@ QObject {
 
     readonly property int nextHeight: state.icon.size
 
+    readonly property size size: state.panel.isHorizontal
+      ? Qt.size(width, height)
+      : Qt.size(height, width)
+
     readonly property rect rect: state.panel.isHorizontal
       ? Qt.rect(x, y, width, height)
       : Qt.rect(y, x, height, width)
@@ -77,14 +82,17 @@ QObject {
     id: mask
     objectName: 'mask'
 
+    property bool growing: false
+
     QtObject {
       id: visible
 
-      readonly property bool grow:
-          state.panel.nextTaskCount1 >= state.panel.taskCount1
+      readonly property int gap: store.state.icon.size * 2
 
-      readonly property rect rect: grow
-        ? Qt.rect(panel.nextX, panel.nextY, panel.nextWidth, panel.nextHeight)
+      readonly property rect rect: mask.growing
+        ? state.panel.isHorizontal
+          ? Qt.rect(panel.nextX - gap / 2, panel.nextY, panel.nextWidth + gap, panel.nextHeight)
+          : Qt.rect(panel.nextX, panel.nextY - gap / 2, panel.nextWidth, panel.nextHeight + gap)
         : Qt.rect(panel.x, panel.y, panel.width, panel.height)
     }
 
