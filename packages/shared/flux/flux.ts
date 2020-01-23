@@ -1,4 +1,5 @@
 import Qt from 'qt';
+import { DeepReadonly } from '../DeepReadonly';
 import { debounce, tostr } from '../functional';
 import EventEmitter from '../saga/eventEmitter';
 import { SagaFn, Task } from '../saga/private/types';
@@ -45,7 +46,7 @@ export class FluxStore<S extends State, M extends Mutations> {
       {
         commit: (...args) => this.commit(...args),
         actionSubscriber: this.actionEmitter,
-        getState: () => this.state,
+        getState: () => this.getState(),
         sagaMonitor: options.sagaMonitor,
       },
       options.sagaRoot
@@ -74,5 +75,9 @@ export class FluxStore<S extends State, M extends Mutations> {
       });
       this.debouncedDispatch[action.type](action);
     }
+  }
+
+  getState(): DeepReadonly<S> {
+    return this.state;
   }
 }
