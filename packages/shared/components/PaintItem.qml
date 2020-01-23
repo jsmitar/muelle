@@ -14,8 +14,6 @@ QObject {
 
     Item {
       z: -1
-      width: 0
-      height: 0
 
       Rectangle {
         border.width: 1
@@ -36,8 +34,6 @@ QObject {
 
     Item {
       z: 999
-      width: 0
-      height: 0
       visible: showSize
       x: Math.max((parent.width - label.width), 0)
       y: Math.max((parent.height - label.height), 0)
