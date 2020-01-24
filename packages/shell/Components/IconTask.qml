@@ -26,11 +26,12 @@ IconTaskContainer {
       id: iconItem
       source: m.decoration
       roundToIconSize: true
+      usesPlasmaTheme: false
     }
 
     resources: [
-      PaintItem { target: innerIcon; enabled: true; showSize: false },
-      PaintItem { target: iconItem; enabled: true; showSize: true }
+      PaintItem { target: innerIcon; enabled: true; showSize: true },
+      PaintItem { target: iconItem; enabled: true; showSize: false }
     ]
   }
 }
