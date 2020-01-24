@@ -14,7 +14,7 @@ execute_process(
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
   OUTPUT_VARIABLE GIT_COMMIT
 )
-if (GIT_VERSION)  
+if (GIT_VERSION)
   string(STRIP ${GIT_VERSION} GIT_VERSION)
 else()
   set(GIT_VERSION "unknown")
@@ -47,7 +47,7 @@ set(SHELL_RCC "packages/resources/shell.rcc")
 
 # Packages: Qt-KDE Packages
 find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
-find_package(KF5WindowSystem REQUIRED)
+find_package(KF5 REQUIRED COMPONENTS WindowSystem Config)
 
 # Packages: xcb
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
@@ -55,7 +55,7 @@ find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
 # Target: configure
 add_custom_target(configure SOURCES "${PACKAGE_MUELLE}/dockconfig.hpp.in")
 configure_file(
-  "${PACKAGE_MUELLE}/dockconfig.hpp.in" 
+  "${PACKAGE_MUELLE}/dockconfig.hpp.in"
   "${PACKAGE_MUELLE}/dockconfig.hpp"
 )
 
@@ -69,6 +69,7 @@ target_link_libraries(muelle
   Qt5::Quick
   Qt5::X11Extras
   KF5::WindowSystem
+  KF5::ConfigCore
   ${XCB_LIBRARIES}
 )
 
