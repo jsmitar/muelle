@@ -97,13 +97,13 @@ MouseArea {
   id: task
   objectName: 'IconTaskContainer'
 
-  property var m: model
+  readonly property var m: model
   property Item panel
-  property int index: model.index
+  readonly property int index: model.index
 
-  property int size: store.state.icon.size
-  property int spacing: store.state.icon.spacing
-  property int padding: store.state.icon.padding
+  readonly property int size: store.state.icon.size
+  readonly property int spacing: store.state.icon.spacing
+  readonly property int padding: store.state.icon.padding
 
   property bool hold: false
   property Item iconTarget
