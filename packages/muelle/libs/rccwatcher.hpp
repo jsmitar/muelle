@@ -23,7 +23,7 @@
 #include <QQmlEngine>
 #include <QTimer>
 
-namespace Dock {
+namespace Muelle {
 class RCCWatcher : public QFileSystemWatcher {
   Q_OBJECT
 
@@ -36,5 +36,5 @@ signals:
 private:
   QTimer debounce;
 };
-} // namespace Dock
+} // namespace Muelle
 #endif // QMLPROJECTWATCHER_HPP

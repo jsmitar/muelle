@@ -1,6 +1,6 @@
 #include "dockcontainer.hpp"
 
-namespace Dock {
+namespace Muelle {
 
 DockContainer::DockContainer(QObject *parent) : QObject(parent) {}
-} // namespace Dock
+} // namespace Muelle

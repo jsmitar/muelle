@@ -25,7 +25,7 @@
 #include <KWindowSystem>
 #include <QX11Info>
 
-namespace Dock {
+namespace Muelle {
 View::View(QSharedPointer<EnhancedQmlEngine> &engine)
     : QQuickView(engine.data(), nullptr), mPositionHandler(this),
       mEngine(engine) {
@@ -170,4 +170,4 @@ bool View::event(QEvent *ev) {
   return QQuickView::event(ev);
 }
 
-} // namespace Dock
+} // namespace Muelle

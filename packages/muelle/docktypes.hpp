@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QQmlEngine>
 
-namespace Dock { // namespace Dock
+namespace Muelle { // namespace Muelle
 class Types {
   Q_GADGET
   Q_DISABLE_COPY(Types)
@@ -54,7 +54,7 @@ public:
 
 inline void qmlRegisterTypes() {
   qmlRegisterUncreatableType<Types>("org.muelle.types", 1, 0, "Types",
-                                    "Dock::Types is an uncreatable type");
+                                    "Muelle::Types is an uncreatable type");
 }
-} // namespace Dock
+} // namespace Muelle
 #endif // Types_HPP

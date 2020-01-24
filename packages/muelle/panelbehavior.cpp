@@ -18,7 +18,7 @@
 #include "dockview.hpp"
 #include "panelbehavior_p.hpp"
 
-namespace Dock {
+namespace Muelle {
 PanelBehavior::PanelBehavior(QObject *parent)
     : QObject(parent), dPtr(new Private::PanelBehavior(this)) {}
 
@@ -45,4 +45,4 @@ void PanelBehavior::updateStruts() { dPtr->updateStruts(); }
 
 bool PanelBehavior::dodge() const { return dPtr->dodgeValue; }
 
-} // namespace Dock
+} // namespace Muelle

@@ -30,7 +30,7 @@
 #include <QSize>
 #include <QWindow>
 
-namespace Dock {
+namespace Muelle {
 class View;
 class Layout;
 
@@ -65,5 +65,5 @@ private:
   float mOffset{0};
   QPropertyAnimation *animation{nullptr};
 };
-} // namespace Dock
+} // namespace Muelle
 #endif // POSITIONHANDLER_HPP

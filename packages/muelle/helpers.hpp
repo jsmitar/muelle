@@ -117,7 +117,7 @@ private:
 };   
 Q_DECLARE_METATYPE(Lambda);
 
-namespace Dock {
+namespace Muelle {
 class Extensions : public QObject {
   Q_OBJECT
 public:
@@ -150,7 +150,6 @@ public:
         timer = nullptr;
       }
     });
-
 
     timer->callOnTimeout([value] () mutable { value.call(); });
     timer->callOnTimeout(disconnect);

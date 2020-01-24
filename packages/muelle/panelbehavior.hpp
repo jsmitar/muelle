@@ -25,7 +25,7 @@
 #include <QRect>
 #include <QtGui/qwindowdefs.h>
 
-namespace Dock {
+namespace Muelle {
 class View;
 namespace Private {
 class PanelBehavior;
@@ -34,10 +34,10 @@ class PanelBehavior;
 class PanelBehavior : public QObject, public QQmlParserStatus {
   Q_OBJECT
   Q_INTERFACES(QQmlParserStatus)
-  Q_PROPERTY(Dock::Types::Behavior behavior READ behavior WRITE setBehavior
+  Q_PROPERTY(Muelle::Types::Behavior behavior READ behavior WRITE setBehavior
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)
-  Q_PROPERTY(Dock::View *view MEMBER view)
+  Q_PROPERTY(Muelle::View *view MEMBER view)
 
 public:
   explicit PanelBehavior(QObject *parent = nullptr);
@@ -65,9 +65,9 @@ private:
   friend class Private::PanelBehavior;
 };
 
-} // namespace Dock
+} // namespace Muelle
 inline void qmlRegisterPressureDetector() {
-  qmlRegisterType<Dock::PanelBehavior>("org.muelle.extra", 1, 0,
+  qmlRegisterType<Muelle::PanelBehavior>("org.muelle.extra", 1, 0,
                                        "PanelBehavior");
 }
 #endif // BEHAVIOR_H

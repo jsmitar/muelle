@@ -38,7 +38,7 @@
 #include <xcb/xcb_util.h>
 #include <xcb/xinput.h>
 
-namespace Dock {
+namespace Muelle {
 class PressureDetector : public QObject,
                          public QAbstractNativeEventFilter,
                          public QQmlParserStatus {
@@ -46,8 +46,8 @@ class PressureDetector : public QObject,
   Q_INTERFACES(QQmlParserStatus)
   Q_PROPERTY(double threshold MEMBER mThreshold NOTIFY thresholdChanged)
   Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-  Q_PROPERTY(Dock::View *view MEMBER view)
-  Q_PROPERTY(Dock::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
+  Q_PROPERTY(Muelle::View *view MEMBER view)
+  Q_PROPERTY(Muelle::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
 
 public:
   PressureDetector(QObject *parent = nullptr);
@@ -57,13 +57,13 @@ public:
   virtual void classBegin() override;
   virtual void componentComplete() override;
 
-  Dock::Types::Edge edge() const;
-  void setEdge(Dock::Types::Edge edge);
+  Muelle::Types::Edge edge() const;
+  void setEdge(Muelle::Types::Edge edge);
 
   void setEnabled(bool enabled);
   bool enabled() const;
 
-  void setView(Dock::View *view);
+  void setView(Muelle::View *view);
 
   bool nativeEventFilter(const QByteArray &eventType, void *message,
                          long *result) override;
@@ -100,15 +100,15 @@ private:
   double mPressure = 0;
   QTimer mPressureTimer;
   xcb_xfixes_barrier_t mBarrier = 0;
-  Dock::Types::Edge mEdge;
+  Muelle::Types::Edge mEdge;
   bool mEnabled = false;
   bool mBarrierSupport = false;
   bool mReached = false;
 };
 
-} // namespace Dock
+} // namespace Muelle
 inline void qmlRegisterPanelBehavior() {
-  qmlRegisterType<Dock::PressureDetector>("org.muelle.extra", 1, 0,
+  qmlRegisterType<Muelle::PressureDetector>("org.muelle.extra", 1, 0,
                                           "PressureDetector");
 }
 

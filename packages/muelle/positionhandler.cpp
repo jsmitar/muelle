@@ -19,7 +19,7 @@
 #include "dockview.hpp"
 #include <QPropertyAnimation>
 
-namespace Dock {
+namespace Muelle {
 PositionHandler::PositionHandler(View *view)
   : mView(view)
   , animation(new QPropertyAnimation(view))
@@ -103,4 +103,4 @@ constexpr int PositionHandler::calcAlign(int screenWide, int viewStart,
   return 0;
 }
 
-} // namespace Dock
+} // namespace Muelle

@@ -19,7 +19,7 @@
 
 #include <QGuiApplication>
 
-namespace Dock {
+namespace Muelle {
 PressureDetector::PressureDetector(QObject *parent) : QObject(parent) {}
 
 PressureDetector::~PressureDetector() {
@@ -90,7 +90,7 @@ bool PressureDetector::nativeEventFilter(const QByteArray &eventType,
         auto slide = 0.0;
         auto distance = 0.0;
 
-        using Edge = Dock::Types::Edge;
+        using Edge = Muelle::Types::Edge;
         switch (mEdge) {
         case Edge::Top:
         case Edge::Bottom:
@@ -207,7 +207,7 @@ void PressureDetector::updateBarrier() {
 
 std::tuple<xcb_xfixes_barrier_directions_t, PressureDetector::Rect>
 PressureDetector::barrier() const {
-  using Edge = Dock::Types::Edge;
+  using Edge = Muelle::Types::Edge;
 
   auto xcb_rect = [](int x1, int y1, int x2, int y2) -> PressureDetector::Rect {
     return {static_cast<uint16_t>(x1), static_cast<uint16_t>(y1),
@@ -233,4 +233,4 @@ PressureDetector::barrier() const {
   return {};
 }
 
-} // namespace Dock
+} // namespace Muelle

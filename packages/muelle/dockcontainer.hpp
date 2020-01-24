@@ -7,7 +7,7 @@
 #include <QQmlEngine>
 #include <QVector>
 
-namespace Dock {
+namespace Muelle {
 class DockContainer : public QObject {
   Q_OBJECT
 public:
@@ -18,5 +18,5 @@ signals:
 private:
   EnhancedQmlEngine *engine;
 };
-} // namespace Dock
+} // namespace Muelle
 #endif // DOCKCONTAINER_H

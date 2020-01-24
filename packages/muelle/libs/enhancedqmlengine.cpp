@@ -23,8 +23,8 @@
 EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 
 #ifdef BUILD_TYPE_Debug
-  mWatcher = new Dock::RCCWatcher(SHELL_RCC, this);
-  connect(mWatcher, &Dock::RCCWatcher::rccChanged, [&] {
+  mWatcher = new Muelle::RCCWatcher(SHELL_RCC, this);
+  connect(mWatcher, &Muelle::RCCWatcher::rccChanged, [&] {
     emit clearSource();
     QMetaObject::invokeMethod(this, "loadResources", Qt::QueuedConnection);
   });

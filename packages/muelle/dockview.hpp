@@ -34,7 +34,7 @@
 #include <QRect>
 #include <QSharedPointer>
 
-namespace Dock {
+namespace Muelle {
 class View : public QQuickView {
   Q_OBJECT
   Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
@@ -86,12 +86,12 @@ protected:
 
 private:
   bool mContainsMouse = false;
-  Dock::Layout mLayout;
-  Dock::PositionHandler mPositionHandler;
+  Muelle::Layout mLayout;
+  Muelle::PositionHandler mPositionHandler;
   QSharedPointer<EnhancedQmlEngine> mEngine;
   QRect mPanelGeometry;
 };
 
-} // namespace Dock
+} // namespace Muelle
 
 #endif // DOCKVIEW_CPP

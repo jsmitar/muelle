@@ -19,7 +19,7 @@
 #include "../dockconfig.hpp"
 #include <QDebug>
 
-namespace Dock {
+namespace Muelle {
 
 RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
     : QFileSystemWatcher(parent) {
@@ -35,4 +35,4 @@ RCCWatcher::RCCWatcher(const QString &rcc, QObject *parent)
   debounce.start(0);
 }
 
-} // namespace Dock
+} // namespace Muelle

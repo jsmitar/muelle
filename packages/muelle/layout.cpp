@@ -17,10 +17,10 @@
 
 #include "layout.hpp"
 
-namespace Dock {
+namespace Muelle {
 
 Layout::Layout(QObject *parent) : QObject(parent) {
-  setObjectName(QStringLiteral("Dock::Layout"));
+  setObjectName(QStringLiteral("Muelle::Layout"));
   connect(this, &Layout::edgeChanged, this, &Layout::layoutChanged);
   connect(this, &Layout::alignmentChanged, this, &Layout::layoutChanged);
 }
@@ -60,4 +60,4 @@ void Layout::setAlignment(Types::Alignment alignment) {
     emit alignmentChanged();
   }
 }
-} // namespace Dock
+} // namespace Muelle

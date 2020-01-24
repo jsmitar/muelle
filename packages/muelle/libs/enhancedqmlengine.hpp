@@ -42,7 +42,7 @@ signals:
   void clearSource();
 
 private:
-  Dock::RCCWatcher *mWatcher;
+  Muelle::RCCWatcher *mWatcher;
 };
 
 #endif // ENHANCEDQMLENGINE_HPP

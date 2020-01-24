@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
   QApplication app(argc, argv);
   QQmlDebuggingEnabler qmldebugging;
-  Dock::qmlRegisterTypes();
+  Muelle::qmlRegisterTypes();
   qmlRegisterPressureDetector();
   qmlRegisterPanelBehavior();
   qmlRegisterPropertyMap();
@@ -58,12 +58,12 @@ int main(int argc, char *argv[]) {
   QQuickWindow::setDefaultAlphaBuffer(true);
 
   auto engine = QSharedPointer<EnhancedQmlEngine>::create();
-  Dock::Extensions::registerExtensions(*engine);
+  Muelle::Extensions::registerExtensions(*engine);
 
   qInfo() << "Version:" << MUELLE_VERSION;
   qInfo() << "Commit:" << MUELLE_COMMIT;
 
-  Dock::View view(engine);
+  Muelle::View view(engine);
 
   return QApplication::exec();
 }

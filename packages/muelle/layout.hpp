@@ -34,14 +34,14 @@
 //    M = V; \
 //  }
 
-namespace Dock {
+namespace Muelle {
 class Layout : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY(Layout)
-  Q_PROPERTY(Dock::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
-  Q_PROPERTY(Dock::Types::Orientation orientation READ orientation NOTIFY
+  Q_PROPERTY(Muelle::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
+  Q_PROPERTY(Muelle::Types::Orientation orientation READ orientation NOTIFY
                  orientationChanged)
-  Q_PROPERTY(Dock::Types::Alignment alignment READ alignment WRITE setAlignment
+  Q_PROPERTY(Muelle::Types::Alignment alignment READ alignment WRITE setAlignment
                  NOTIFY alignmentChanged)
   Q_PROPERTY(uint layout READ layout NOTIFY layoutChanged)
   Q_PROPERTY(bool isHorizontal READ isHorizontal NOTIFY orientationChanged)
@@ -94,5 +94,5 @@ constexpr bool Layout::isHorizontal() const {
 constexpr bool Layout::isVertical() const {
   return mOrientation == Types::Orientation::Vertical;
 }
-} // namespace Dock
+} // namespace Muelle
 #endif // LAYOUT_HPP

@@ -59,7 +59,7 @@ struct Lock {
   bool value;
 };
 
-namespace Dock {
+namespace Muelle {
 class PanelBehavior;
 
 namespace Private {
@@ -67,7 +67,7 @@ namespace Private {
 class PanelBehavior : public QObject {
   Q_OBJECT
 public:
-  PanelBehavior(Dock::PanelBehavior *q) : qPtr(q) {
+  PanelBehavior(Muelle::PanelBehavior *q) : qPtr(q) {
     dodgeDebounce.setSingleShot(true);
     dodgeDebounce.setInterval(100);
     dodgeDebounce.callOnTimeout([&] {
@@ -287,7 +287,7 @@ public:
   }
 
 public:
-  Dock::PanelBehavior *qPtr{nullptr};
+  Muelle::PanelBehavior *qPtr{nullptr};
   QTimer dodgeDebounce;
   QVector<QMetaObject::Connection> connections;
   bool nextDodgeValue{false};
@@ -295,6 +295,6 @@ public:
   uint8_t pad[6];
 };
 } // namespace Private
-} // namespace Dock
+} // namespace Muelle
 
 #endif // BEHAVIOR_P_HPP
