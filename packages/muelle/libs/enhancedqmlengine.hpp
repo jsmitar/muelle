@@ -21,20 +21,25 @@
 #include "../dockconfig.hpp"
 #include "rccwatcher.hpp"
 
+#include <malloc.h>
+
+#include <QDebug>
+#include <QJSEngine>
 #include <QObject>
 #include <QPixmapCache>
-#include <QPointer>
 #include <QQmlEngine>
-#include <QJSEngine>
-#include <QQuickWindow>
 #include <QResource>
+#include <QtGlobal>
 
 class EnhancedQmlEngine : public QQmlEngine {
   Q_OBJECT
 public:
   explicit EnhancedQmlEngine(QObject *parent = nullptr);
 
-public slots:
+public:
+  bool ready() const;
+
+private slots:
   void loadResources();
 
 signals:
@@ -43,6 +48,7 @@ signals:
 
 private:
   Muelle::RCCWatcher *mWatcher;
+  bool mReady{false};
 };
 
 #endif // ENHANCEDQMLENGINE_HPP

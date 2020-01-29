@@ -26,16 +26,19 @@
 #include <QX11Info>
 
 namespace Muelle {
-View::View(QSharedPointer<EnhancedQmlEngine> &engine)
-    : QQuickView(engine.data(), nullptr), mPositionHandler(this),
-      mEngine(engine) {
+View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
+    : mPositionHandler(this), mEngine(engine),
+      mContext(new QQmlContext(mEngine, this)), mConfig(&config, ""),
+      mConfigMap(new Configuration(this, config)) {
+
+  setObjectName(config.name());
   setColor(Qt::transparent);
   setFlag(Qt::WindowStaysOnTopHint, true);
   setFlag(Qt::WindowDoesNotAcceptFocus, true);
   setFlag(Qt::WindowCloseButtonHint, false);
   setFlag(Qt::FramelessWindowHint, true);
 
-  setResizeMode(QQuickView::SizeRootObjectToView);
+  //  setResizeMode(QQuickView::SizeRootObjectToView);
   setTextRenderType(QQuickWindow::NativeTextRendering);
   setPersistentSceneGraph(true);
   setPersistentOpenGLContext(true);
@@ -45,32 +48,40 @@ View::View(QSharedPointer<EnhancedQmlEngine> &engine)
   KWindowSystem::setOnAllDesktops(winId(), true);
   KWindowSystem::setOnActivities(winId(), {"0"});
 
-  connect(this, &QQuickView::widthChanged, this, &View::sizeChanged);
-  connect(this, &QQuickView::heightChanged, this, &View::sizeChanged);
+  connect(this, &QQuickWindow::widthChanged, this, &View::sizeChanged);
+  connect(this, &QQuickWindow::heightChanged, this, &View::sizeChanged);
 
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
-
-  connect(mEngine.data(), &EnhancedQmlEngine::sourceChanged, this, &View::load);
-  connect(mEngine.data(), &EnhancedQmlEngine::clearSource, [this] {
-    setSource({});
-    releaseResources();
-    rootContext()->setContextProperty("$view", nullptr);
-    rootContext()->setContextProperty("$layout", nullptr);
-    rootContext()->setContextProperty("$positioner", nullptr);
-    hide();
-  });
-
-  qInfo() << "Window id:" << winId();
 }
 
 View::~View() {}
 
+void View::init() {
+  mContext->setContextProperty("$view", this);
+  mContext->setContextProperty("$layout", &mLayout);
+  mContext->setContextProperty("$positioner", &mPositionHandler);
+  mContext->setContextProperty("$configuration", mConfigMap);
+
+  connect(mEngine, &EnhancedQmlEngine::sourceChanged, this, &View::load);
+  connect(mEngine, &EnhancedQmlEngine::clearSource, [this] {
+    releaseResources();
+    hide();
+  });
+  if (mEngine->ready()) {
+    this->load();
+  }
+}
+
 void View::load() {
-  rootContext()->setContextProperty("$view", this);
-  rootContext()->setContextProperty("$layout", &mLayout);
-  rootContext()->setContextProperty("$positioner", &mPositionHandler);
-  setSource({"qrc:/shell/main.qml"});
+  qInfo() << "Window-Id:" << winId();
+
+  QQmlComponent component(mEngine, QUrl("qrc:/shell/main.qml"));
+
+  auto rootObject = qobject_cast<QQuickItem *>(component.create(mContext));
+  rootObject->setParent(contentItem());
+  rootObject->setParentItem(contentItem());
+
   show();
 }
 
@@ -84,7 +95,7 @@ void View::setContainsMouse(bool containsMouse) {
   }
 }
 
-QRect View::mask() const { return QQuickView::mask().boundingRect(); }
+QRect View::mask() const { return QQuickWindow::mask().boundingRect(); }
 
 QRect View::geometry() const { return {position(), size()}; }
 
@@ -101,12 +112,12 @@ void View::setPanelGeometry(const QRect &value) {
 }
 
 void View::setMask(const QRect &rect) {
-  QQuickView::setMask(rect);
+  QQuickWindow::setMask(rect);
   emit maskChanged();
 }
 
 void View::setPosition(const QPoint &value) {
-  QQuickView::setPosition(value);
+  QQuickWindow::setPosition(value);
   emit positionChanged();
   emit panelGeometryChanged();
 }
@@ -114,6 +125,8 @@ void View::setPosition(const QPoint &value) {
 void View::setSize(const QSize &size) {
   setWidth(size.width());
   setHeight(size.height());
+
+  contentItem()->setSize(size);
   mPositionHandler.update(0);
   emit sizeChanged();
 }
@@ -121,6 +134,10 @@ void View::setSize(const QSize &size) {
 QPoint View::mousePosition() const { return QCursor::pos(); }
 
 bool View::compositing() const { return KWindowSystem::compositingActive(); }
+
+Configuration *View::configuration() const { return mConfigMap; }
+
+void View::saveConfiguration() { mConfigMap->save(); }
 
 void View::enableGlow() {
   //  auto c = QX11Info::connection();
@@ -153,7 +170,7 @@ void View::enableGlow() {
   //                      atom->atom, XCB_ATOM_CARDINAL, 32, 1, &value);
 }
 
-void View::setOpacity(qreal level) { QQuickView::setOpacity(level); }
+void View::setOpacity(qreal level) { QQuickWindow::setOpacity(level); }
 
 const Layout &View::layout() const { return mLayout; }
 
@@ -167,7 +184,7 @@ bool View::event(QEvent *ev) {
     break;
   default:;
   }
-  return QQuickView::event(ev);
+  return QQuickWindow::event(ev);
 }
 
 } // namespace Muelle

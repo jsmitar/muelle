@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "dockconfig.hpp"
+#include "dockcontainer.hpp"
 #include "docktypes.hpp"
-#include "dockview.hpp"
 #include "helpers.hpp"
 #include "layout.hpp"
 #include "libs/enhancedqmlengine.hpp"
@@ -57,13 +57,11 @@ int main(int argc, char *argv[]) {
 
   QQuickWindow::setDefaultAlphaBuffer(true);
 
-  auto engine = QSharedPointer<EnhancedQmlEngine>::create();
-  Muelle::Extensions::registerExtensions(*engine);
-
   qInfo() << "Version:" << MUELLE_VERSION;
   qInfo() << "Commit:" << MUELLE_COMMIT;
 
-  Muelle::View view(engine);
+  auto muelle = Muelle::Container();
+  muelle.loadConfiguration();
 
   return QApplication::exec();
 }

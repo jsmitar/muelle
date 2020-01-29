@@ -28,13 +28,16 @@
 class PropertyMap : public QQmlPropertyMap, public QQmlParserStatus {
   Q_OBJECT
   Q_INTERFACES(QQmlParserStatus)
+
 public:
   explicit PropertyMap(QObject *parent = nullptr);
 
+  template <class DerivedType>
+  PropertyMap(DerivedType *derived, QObject *parent)
+      : QQmlPropertyMap(derived, parent) {}
+
   virtual void classBegin() {}
   virtual void componentComplete() {}
-
-private:
 };
 
 inline void qmlRegisterPropertyMap() {

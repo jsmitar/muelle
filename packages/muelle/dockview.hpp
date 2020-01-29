@@ -18,24 +18,29 @@
 #ifndef DOCKVIEW_HPP
 #define DOCKVIEW_HPP
 
+#include "configuration.hpp"
 #include "layout.hpp"
 #include "libs/enhancedqmlengine.hpp"
 #include "positionhandler.hpp"
 
 #include <memory>
 
+#include <KConfig>
+#include <KConfigGroup>
 #include <QDebug>
 #include <QEvent>
 #include <QObject>
 #include <QPointer>
 #include <QQmlContext>
 #include <QQmlEngine>
-#include <QQuickView>
+#include <QQmlIncubator>
+#include <QQuickItem>
+#include <QQuickWindow>
 #include <QRect>
 #include <QSharedPointer>
 
 namespace Muelle {
-class View : public QQuickView {
+class View : public QQuickWindow {
   Q_OBJECT
   Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
   Q_PROPERTY(QRect mask READ mask WRITE setMask NOTIFY maskChanged)
@@ -47,10 +52,13 @@ class View : public QQuickView {
       QPoint position READ position WRITE setPosition NOTIFY positionChanged)
   Q_PROPERTY(QPoint mousePosition READ mousePosition)
   Q_PROPERTY(bool compositing READ compositing NOTIFY compositingChanged)
+  Q_PROPERTY(Muelle::Configuration *configuration READ configuration CONSTANT)
 
 public:
-  View(QSharedPointer<EnhancedQmlEngine> &engine);
+  View(EnhancedQmlEngine *engine, KConfigGroup &config);
   ~View() override;
+
+  void init();
   void load();
 
   bool containsMouse() const;
@@ -66,7 +74,9 @@ public:
   void setSize(const QSize &size);
   QPoint mousePosition() const;
   bool compositing() const;
+  Configuration *configuration() const;
 
+  Q_INVOKABLE void saveConfiguration();
   Q_INVOKABLE void enableGlow();
   Q_INVOKABLE void setOpacity(qreal level);
 
@@ -86,10 +96,16 @@ protected:
 
 private:
   bool mContainsMouse = false;
-  Muelle::Layout mLayout;
-  Muelle::PositionHandler mPositionHandler;
-  QSharedPointer<EnhancedQmlEngine> mEngine;
+
+  Layout mLayout;
+  PositionHandler mPositionHandler;
+
+  EnhancedQmlEngine *mEngine;
+  QQmlContext *mContext;
+
   QRect mPanelGeometry;
+  KConfigGroup mConfig;
+  Configuration *mConfigMap;
 };
 
 } // namespace Muelle

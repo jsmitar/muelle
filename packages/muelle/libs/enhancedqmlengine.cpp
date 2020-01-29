@@ -16,10 +16,7 @@
  */
 
 #include "enhancedqmlengine.hpp"
-#include <QDebug>
-#include <QtGlobal>
-#include <malloc.h>
-      
+
 EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 
 #ifdef BUILD_TYPE_Debug
@@ -34,16 +31,21 @@ EnhancedQmlEngine::EnhancedQmlEngine(QObject *parent) : QQmlEngine(parent) {
 }
 
 void EnhancedQmlEngine::loadResources() {
-    trimComponentCache();
-    clearComponentCache();
-    collectGarbage();
-    QPixmapCache::clear();
-    malloc_trim(0);
+  trimComponentCache();
+  clearComponentCache();
+  collectGarbage();
+  QPixmapCache::clear();
+  malloc_trim(0);
 
   if (QResource::registerResource(SHELL_RCC)) {
     qInfo() << "\033[1;32m[watch] QML Resources Updated\033[0m";
+    mReady = true;
   } else {
-    qWarning() << "\033[1;32m[watch] QML Resources fail to register\033[0m";
+    qWarning() << "\033[1;32m[watch] QML Resources fail to register\033[0m"
+               << SHELL_RCC;
+    mReady = false;
   }
   emit sourceChanged();
 }
+
+bool EnhancedQmlEngine::ready() const { return mReady; }
