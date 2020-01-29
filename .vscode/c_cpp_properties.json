@@ -9,7 +9,7 @@
       "intelliSenseMode": "gcc-x64",
       "configurationProvider": "vector-of-bool.cmake-tools",
       "compileCommands": "${workspaceFolder}/build/compile_commands.json",
-      "includePath": ["${workspaceFolder}/packages/muelle"]
+      "includePath": ["/usr/include/Qt5", "${workspaceFolder}/packages/muelle"]
     }
   ],
   "version": 4

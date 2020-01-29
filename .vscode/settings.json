@@ -72,5 +72,8 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "variant": "cpp"
-  }
+  },
+  "C_Cpp.clang_format_style": "LLVM",
+  "C_Cpp.clang_format_sortIncludes": true,
+  "C_Cpp.clang_format_fallbackStyle": "LLVM"
 }
