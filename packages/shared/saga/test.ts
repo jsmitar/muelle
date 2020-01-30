@@ -1,4 +1,4 @@
-import { range } from '../functional';
+import { noop, range } from '../functional';
 import {
   all,
   call,
@@ -7,7 +7,6 @@ import {
   delay,
   fork,
   join,
-  put,
   race,
   take,
 } from './effects';
@@ -32,7 +31,6 @@ function* t(name: string) {
 function* emitCancel(time: number) {
   yield fork(function*() {
     yield delay(time);
-    yield put('cancel');
   });
 }
 
@@ -144,6 +142,7 @@ const emitter = new EventEmitter();
 const defaultContext: TaskContext = {
   sagaMonitor: simpleSagaMonitor,
   actionSubscriber: emitter,
+  dispatch: noop,
   commit: (type, payload) => emitter.emit(type, ...payload),
   getState: () => ({}),
 };

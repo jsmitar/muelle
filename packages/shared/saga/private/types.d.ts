@@ -2,6 +2,22 @@ import { effectType, TaskStatus } from './symbols';
 
 export interface Saga extends Generator<Effect, any, any> {}
 
+// prettier-ignore
+export type Effect<T extends EffectType = EffectType> = 
+  T extends 'CALL' ? CallEffect :
+  T extends 'SELECT' ? SelectEffect :
+  T extends 'TAKE' ? TakeEffect :
+  T extends 'PUT' ? PutEffect :
+  T extends 'COMMIT' ? CommitEffect :
+  T extends 'DELAYED' ? DelayedEffect :
+  T extends 'FORK' ? ForkEffect :
+  T extends 'JOIN' ? JoinEffect :
+  T extends 'CANCEL' ? CancelEffect : 
+  T extends 'CANCELLED' ? CancelledEffect :
+  T extends 'ALL' ? AllEffect :
+  T extends 'RACE' ? RaceEffect : 
+  EffectBase
+
 export interface SagaFn {
   (...args: any[]): Saga;
 }
@@ -18,6 +34,7 @@ export type EffectType =
   | 'SELECT'
   | 'TAKE'
   | 'PUT'
+  | 'COMMIT'
   | 'DELAYED'
   | 'FORK'
   | 'JOIN'
@@ -25,21 +42,6 @@ export type EffectType =
   | 'CANCELLED'
   | 'ALL'
   | 'RACE';
-
-// prettier-ignore
-export type Effect<T extends EffectType = EffectType> = 
-  T extends 'CALL' ? CallEffect :
-  T extends 'SELECT' ? SelectEffect :
-  T extends 'TAKE' ? TakeEffect :
-  T extends 'PUT' ? PutEffect :
-  T extends 'DELAYED' ? DelayedEffect :
-  T extends 'FORK' ? ForkEffect :
-  T extends 'JOIN' ? JoinEffect :
-  T extends 'CANCEL' ? CancelEffect : 
-  T extends 'CANCELLED' ? CancelledEffect :
-  T extends 'ALL' ? AllEffect :
-  T extends 'RACE' ? RaceEffect : 
-  EffectBase
 
 export interface EffectBase<T extends EffectType = EffectType> {
   [effectType]: T;
@@ -61,6 +63,12 @@ export interface TakeEffect extends EffectBase<'TAKE'> {
 }
 
 export interface PutEffect extends EffectBase<'PUT'> {
+  type: string;
+  payload?: any;
+  meta?: any;
+}
+
+export interface CommitEffect extends EffectBase<'COMMIT'> {
   type: string;
   args: any[];
 }

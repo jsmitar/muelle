@@ -1,4 +1,5 @@
 import Qt from 'qt';
+import { ActionAny } from '../flux/flux';
 import { noop, tostr, zip } from '../functional';
 import genId from '../genId';
 import { cancel } from './effects/baseEffects';
@@ -8,6 +9,7 @@ import {
   CALL,
   CANCEL,
   CANCELLED,
+  COMMIT,
   DELAYED,
   effectType,
   FINISH,
@@ -24,6 +26,7 @@ import {
   CallEffect,
   CancelEffect,
   CancelledEffect,
+  CommitEffect,
   DelayedEffect,
   Effect,
   ForkEffect,
@@ -60,8 +63,9 @@ function isEffect(effect: any): effect is Effect {
 export type TaskContext = {
   sagaMonitor?: SagaMonitor;
   actionSubscriber: EventEmitter;
-  commit: (type: string, ...payload: any[]) => void;
-  getState: () => any;
+  dispatch(action: ActionAny): void;
+  commit(type: string, ...args: any[]): void;
+  getState(): any;
 };
 
 const cancelEffect = cancel();
@@ -257,7 +261,12 @@ const effectHandlers = {
     this.connections.push(conn);
   },
   [PUT](this: TaskController, effect: PutEffect) {
+    this.context.dispatch(effect);
+    this.advancer(effect);
+  },
+  [COMMIT](this: TaskController, effect: CommitEffect) {
     const { type, args } = effect;
+
     this.context.commit(type, ...args);
     this.advancer(effect);
   },

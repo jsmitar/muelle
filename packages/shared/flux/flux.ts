@@ -1,4 +1,5 @@
 import Qt from 'qt';
+import { A } from 'ts-toolbelt';
 import { DeepReadonly } from '../DeepReadonly';
 import { debounce, tostr } from '../functional';
 import EventEmitter from '../saga/eventEmitter';
@@ -12,7 +13,21 @@ export type Mutations<S = any> = Record<
   (state: S, ...args: any[]) => void
 >;
 
-export type Action<T = any> = { type: string; payload: T };
+export type ActionAny = {
+  type: string;
+  payload?: any;
+  meta?: any;
+};
+
+export type Action<P = unknown, M = void> = A.Compute<
+  ActionPayload<P> & ActionMeta<M>
+>;
+
+export type ActionPayload<P = undefined> = { type: string; payload: P };
+
+export type ActionMeta<M = undefined> = M extends void
+  ? { type: string }
+  : { type: string; meta: M };
 
 export type Options<S extends State, M extends Mutations<S>> = {
   state: S;
@@ -35,7 +50,7 @@ export class FluxStore<S extends State, M extends Mutations> {
   mutations: M;
   actionEmitter = new EventEmitter();
   sagaTaskRoot: Task;
-  debouncedDispatch: Record<string, (action: Action) => void> = {};
+  debouncedDispatch: Record<string, (action: ActionAny) => void> = {};
 
   constructor(options: Options<S, M>) {
     (<any>Qt).store = this;
@@ -44,10 +59,11 @@ export class FluxStore<S extends State, M extends Mutations> {
     this.mutations = options.mutations;
     this.sagaTaskRoot = runSaga(
       {
-        commit: (...args) => this.commit(...args),
-        actionSubscriber: this.actionEmitter,
-        getState: () => this.getState(),
         sagaMonitor: options.sagaMonitor,
+        actionSubscriber: this.actionEmitter,
+        dispatch: action => this.dispatch(action),
+        commit: (...args) => this.commit(...args),
+        getState: () => this.getState(),
       },
       options.sagaRoot
     );
@@ -66,15 +82,13 @@ export class FluxStore<S extends State, M extends Mutations> {
     }
   }
 
-  dispatch(action: Action) {
-    if (action.type in this.debouncedDispatch) {
-      this.debouncedDispatch[action.type](action);
-    } else {
-      this.debouncedDispatch[action.type] = debounce((action: Action) => {
+  dispatch(action: ActionAny) {
+    if (!(action.type in this.debouncedDispatch)) {
+      this.debouncedDispatch[action.type] = debounce((action: ActionAny) => {
         this.actionEmitter.emit(action.type, action);
       });
-      this.debouncedDispatch[action.type](action);
     }
+    this.debouncedDispatch[action.type](action);
   }
 
   getState(): DeepReadonly<S> {

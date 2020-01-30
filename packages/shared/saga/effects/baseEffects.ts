@@ -1,8 +1,11 @@
+import { ActionCreator } from '../../flux/createAction';
+import { ActionAny } from '../../flux/flux';
 import {
   ALL,
   CALL,
   CANCEL,
   CANCELLED,
+  COMMIT,
   DELAYED,
   effectType,
   FORK,
@@ -17,6 +20,7 @@ import {
   CallEffect,
   CancelEffect,
   CancelledEffect,
+  CommitEffect,
   DelayedEffect,
   ForkEffect,
   JoinEffect,
@@ -41,12 +45,17 @@ export function select<S = any, R = any>(
   return { [effectType]: SELECT, selector };
 }
 
-export function take(pattern: string): TakeEffect {
+export function take(type: string | ActionCreator): TakeEffect {
+  const pattern = typeof type === 'string' ? type : type.type;
   return { [effectType]: TAKE, pattern };
 }
 
-export function put(type: string, ...args: any[]): PutEffect {
-  return { [effectType]: PUT, type, args };
+export function put(action: ActionAny): PutEffect {
+  return { [effectType]: PUT, ...action };
+}
+
+export function commit(type: string, ...args: any[]): CommitEffect {
+  return { [effectType]: COMMIT, type, args };
 }
 
 export function delayed(delayed: DelayedEffect['delayed']): DelayedEffect {
@@ -58,14 +67,6 @@ export function fork<Fn extends SagaFn>(
   ...args: Parameters<Fn>
 ): ForkEffect {
   return { [effectType]: FORK, name: saga.name, saga, args };
-}
-
-export function forkNamed<Fn extends SagaFn>(
-  saga: Fn,
-  name: string,
-  ...args: Parameters<Fn>
-): ForkEffect {
-  return { [effectType]: FORK, name, saga, args };
 }
 
 export function join(task: Task): JoinEffect {
