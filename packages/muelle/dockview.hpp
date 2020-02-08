@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QEvent>
 #include <QObject>
+#include <QPoint>
 #include <QPointer>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -38,6 +39,7 @@
 #include <QQuickWindow>
 #include <QRect>
 #include <QSharedPointer>
+#include <QSize>
 
 namespace Muelle {
 class View : public QQuickWindow {
