@@ -21,6 +21,7 @@
     "gulp-remove-code": "^3.0.4",
     "gulp-rename": "^2.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "ts-toolbelt": "^6.1.6",
     "tslib": "^1.10.0",
     "typescript": "^3.7.4"
   },
