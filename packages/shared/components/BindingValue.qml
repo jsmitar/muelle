@@ -9,7 +9,7 @@ QtObject {
   property var initial
   property string property
 
-  // (target: Item | QtObject) => void
+  // (target: QtObject) => void
   property var then: F.noop
   property var otherwise: F.noop
 
