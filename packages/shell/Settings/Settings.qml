@@ -27,8 +27,9 @@ SettingsForm {
     property: 'value'
     initial: $positioner.centerOffset
     then: offset => {
-      $positioner.centerOffset = offset
-      Qt.callLater(() => $positioner.update(100))
+//      $positioner.centerOffset = offset
+//      Qt.callLater(() => $positioner.update(100))
+      store.state.geometry.panelOffset = offset
     }
     otherwise: then
   }
