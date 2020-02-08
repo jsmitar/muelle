@@ -65,15 +65,15 @@ public:
   void init();
   void load();
 
-  bool containsMouse() const;
-  void setContainsMouse(bool containsMouse);
+  bool compositing() const;
   void setMask(const QRect &region);
+  Q_INVOKABLE void setOpacity(qreal level);
+
   const Layout &layout() const;
+
   QRect mask() const;
+
   QRect geometry() const;
-  QRect panelGeometry() const;
-  QRect absolutePanelGeometry() const;
-  void setPanelGeometry(const QRect &value);
   void setPosition(const QPoint &value);
   void setSize(const QSize &size);
 
@@ -87,20 +87,16 @@ public:
   void setPanelSize(const QSize &value);
 
   QPoint mousePosition() const;
-  bool compositing() const;
+  bool containsMouse() const;
+  void setContainsMouse(bool containsMouse);
+
   Configuration *configuration() const;
 
-  Q_INVOKABLE void saveConfiguration();
-  Q_INVOKABLE void enableGlow();
-  Q_INVOKABLE void setOpacity(qreal level);
-
 signals:
-  void containsMouseChanged();
-  void entered();
-  void exited();
-  void maskChanged();
-  void positionChanged();
   void compositingChanged();
+  void maskChanged();
+
+  void positionChanged();
   void sizeChanged();
 
   void panelSizeChanged();
