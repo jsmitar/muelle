@@ -1,9 +1,8 @@
 export = Qt;
 export as namespace Qt;
 
-import { type } from './symbols';
 import QtQml from '@qml/QtQml-2.14';
-import { Dock } from '@qml/org.muelle.types-1.0';
+import { type } from './symbols';
 
 declare namespace Qt {
   //START: Qt Namespace
@@ -21,9 +20,9 @@ declare namespace Qt {
   class Timer {}
   const setTimeout: (handler: () => any, ms: number) => Timer;
   const clearTimeout: (timer: Timer) => void;
-  const $positioner: Dock.$positioner;
-  const $view: Dock.$view;
-  const $layout: Dock.$layout;
+  // const $positioner: Dock.$positioner;
+  // const $view: Dock.$view;
+  // const $layout: Dock.$layout;
   //END: No standard
 
   //START: Qt QML Type
