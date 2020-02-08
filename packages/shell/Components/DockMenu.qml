@@ -24,9 +24,15 @@ Window {
   height: 30
 
   BindingModel {
-    source: win
-    target: menu
-    property: 'visible'
+    initial: false
+    Bind {
+      target: win
+      property: 'visible'
+    }
+    Bind {
+      target: menu
+      property: 'visible'
+    }
   }
 
   Menu {
