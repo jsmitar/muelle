@@ -18,20 +18,20 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
-#include <QObject>
-#include <QQmlEngine>
-#include <QThread>
+#include <QApplication>
+#include <QDebug>
 #include <QJSEngine>
 #include <QJSValue>
-#include <QVariant>
-#include <QQmlContext>
-#include <QTimer>
-#include <QDebug>
-#include <memory>
-#include <QApplication>
 #include <QMetaObject>
+#include <QObject>
+#include <QQmlContext>
+#include <QQmlEngine>
 #include <QSharedPointer>
+#include <QThread>
+#include <QTimer>
+#include <QVariant>
 #include <iostream>
+#include <memory>
 
 #ifdef __GNUG__
 #include <cstdlib>
@@ -159,7 +159,7 @@ public:
     return QVariant::fromValue(disconnect);
   }
 
-  static void registerExtensions(const QQmlEngine &engine) {
+  static void registerExtensions(QQmlEngine &engine) {
     static Extensions ext;
     engine.rootContext()->setContextObject(&ext);
   }
