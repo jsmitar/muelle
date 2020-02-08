@@ -16,7 +16,7 @@ export type Effect<T extends EffectType = EffectType> =
   T extends 'CANCELLED' ? CancelledEffect :
   T extends 'ALL' ? AllEffect :
   T extends 'RACE' ? RaceEffect : 
-  EffectBase
+  never
 
 export interface SagaFn {
   (...args: any[]): Saga;
