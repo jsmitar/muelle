@@ -50,12 +50,19 @@ QObject {
 
     function dodge() {
       if ($view.containsMouse || !behavior.dodge) {
-        if (store.state.panel.slide !== 'slide-in-running')
+        if (store.state.panel.slide === 'slide-out-running' ||
+            store.state.panel.hidden
+        ) {
           store.dispatch(Action.slideIn())
+        }
       } else {
-        if (store.state.panel.slide !== 'slide-out-running')
+        if (store.state.panel.slide === 'slide-in-running' ||
+            store.state.panel.visible
+        ) {
           store.dispatch(Action.slideOut())
+        }
       }
+
     }
 
     Connections {
