@@ -76,13 +76,21 @@ void View::init() {
 void View::load() {
   qInfo() << "Window-Id:" << winId();
 
-  QQmlComponent component(mEngine, QUrl("qrc:/shell/main.qml"));
+  auto component = new QQmlComponent(mEngine, QUrl("qrc:/shell/main.qml"),
+                                     QQmlComponent::Asynchronous);
 
-  auto rootObject = qobject_cast<QQuickItem *>(component.create(mContext));
-  rootObject->setParent(contentItem());
-  rootObject->setParentItem(contentItem());
+  connect(
+      component, &QQmlComponent::statusChanged, [&, component](auto status) {
+        if (status == QQmlComponent::Ready) {
+          auto item = qobject_cast<QQuickItem *>(component->create(mContext));
+          item->setParent(contentItem());
+          item->setParentItem(contentItem());
 
   show();
+        } else if (status == QQmlComponent::Error) {
+          qWarning() << component->errors();
+        }
+      });
 }
 
 bool View::containsMouse() const { return mContainsMouse; }
