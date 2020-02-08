@@ -30,12 +30,10 @@ PositionHandler::PositionHandler(View *view)
 
 PositionHandler::~PositionHandler() {}
 
-void PositionHandler::update(int duration)
-{
+void PositionHandler::update(int duration) {
   if (auto screen = mView->screen(); screen) {
-    const auto newPosition = computePosition(screen->geometry().size(),
-                                             mView->panelGeometry(),
-                                             mView->layout());
+    const auto newPosition = computePosition(
+        screen->geometry().size(), mView->panelGeometry(), mView->layout());
     if (duration > 0) {
       animation->setDuration(duration);
       animation->setStartValue(mView->position());
