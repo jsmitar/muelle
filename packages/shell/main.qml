@@ -26,20 +26,9 @@ Item {
     // Start: Set Globals
     Qt.setTimeout = setTimeout
     Qt.clearTimeout = clearTimeout
-    Qt.$view = $view
-    Qt.$layout = $layout
-    Qt.$positioner = $positioner
-    Qt.Muelle = { Types: Types, $view, $layout, $positioner }
-    // End: Set Globals
-
-    // Saga.test()
+    Qt.Muelle = { Types }
     $positioner.centerOffset = 0
-
-    Promise.all([
-      store.dispatch(Action.changeEdge(Types.Bottom)),
-      store.dispatch(Action.changeAlignment(Types.Center)),
-      store.dispatch(Action.changeBehavior(Types.DodgeActive))
-    ])
+    // End: Set Globals
   }
 
   PaintItem {
@@ -72,13 +61,29 @@ Item {
     Binding {
       target: $view
       property: 'mask'
-      value: store.state.geometry.maskRect
+//      value: store.state.geometry.maskRect
       delayed: true
     }
     Binding {
       target: $view
-      property: 'panelGeometry'
-      value: store.state.geometry.panelNextRect
+      when: !$view.compositing
+      property: 'panelPosition'
+      value: store.state.geometry.panelNextPosition
+      delayed: true
+    }
+
+    Binding {
+      target: $view
+      property: 'panelPosition'
+      when: $view.compositing
+      value: store.state.geometry.panelPointCenter
+      delayed: true
+    }
+
+    Binding {
+      target: $view
+      property: 'panelSize'
+      value: store.state.geometry.panelNextSize
       delayed: true
     }
 
