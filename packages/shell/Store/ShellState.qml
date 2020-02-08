@@ -18,13 +18,15 @@ QObject {
     spacing: 8
   }
 
-  readonly property Geometry geometry: Geometry { 
+  readonly property Geometry geometry: Geometry {
     parentObject: state
-    state: state 
+    state: state
   }
 
   readonly property Animation animation: Animation {
     parentObject: state
     duration: 800
   }
+
+  readonly property Context context: Context {}
 }
