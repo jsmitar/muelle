@@ -1,6 +1,6 @@
 import { Types } from '@qml/org.muelle.types-1.0';
-import Qt from 'qt';
-import { DeepReadonly } from '../../shared/DeepReadonly';
+import Qt, { QtObject } from 'qt';
+import { O } from 'ts-toolbelt';
 
 export const CHANGE_EDGE = 'CHANGE_EDGE';
 export const CHANGE_ALIGNMENT = 'CHANGE_ALIGNMENT';
@@ -26,7 +26,8 @@ export const MASK_GROWING = 'MASK_GROWING';
 export const NEXT_TASK_COUNT1 = 'NEXT_TASK_COUNT1';
 export const UPDATE_TASK_COUNT_1 = 'UPDATE_TASK_COUNT_1';
 
-export interface ShellStateReadonly extends DeepReadonly<ShellState> {}
+export interface ShellStateReadonly
+  extends O.Readonly<ShellState, any, 'deep'> {}
 
 export interface ShellState extends Qt.QtObject {
   settings: Settings;
@@ -34,10 +35,11 @@ export interface ShellState extends Qt.QtObject {
   icon: Icon;
   geometry: Geometry;
   animation: Animation;
+  context: Context;
 }
 
 export interface Settings extends Qt.QtObject<{}> {
-  visible: false;
+  visible: boolean;
 }
 
 export interface Panel extends Qt.QtObject<{}> {
@@ -88,4 +90,43 @@ export interface Geometry extends Qt.QtObject {
 export interface Animation extends Qt.QtObject {
   duration: number;
   velocity: number;
+}
+
+export interface Configuration extends Qt.QtObject {
+  save(): void;
+  [k: string]: any;
+}
+
+export interface Context extends QtObject {
+  view: Dock.view;
+  layout: Dock.layout;
+  positioner: Dock.positioner;
+  configuration: Configuration;
+}
+
+export namespace Dock {
+  export interface view extends Qt.QtObject {
+    readonly containsMouse: boolean;
+    mask: Qt.rect;
+    readonly geometry: Qt.rect;
+    panelGeometry: Qt.rect;
+    size: Qt.size;
+    position: Qt.point;
+    mousePosition: Qt.point;
+    setOpacity(level: number): void;
+  }
+
+  export interface layout extends Qt.QtObject {
+    edege: Types.Edge;
+    readonly orientation: Types.Orientation;
+    alignment: Types.Alignment;
+    readonly layout: number;
+    readonly isHorizontal: boolean;
+    readonly isVertical: boolean;
+  }
+
+  export interface positioner extends Qt.QtObject {
+    centerOffset: number;
+    update(duration: number): void;
+  }
 }
