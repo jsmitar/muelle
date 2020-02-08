@@ -81,9 +81,10 @@ Loader {
 
       FlexSpacing {
         fill: true
-        smoothFill: true
+        smoothFill: false
 
-        Layout.preferredWidth: store.state.geometry.panelNextPoint.x
+        //Layout.preferredWidth: Math.min(store.state.geometry.panelNextPoint.x, store.state.geometry.panelRect.x)
+        Layout.preferredWidth: store.state.geometry.panelRect.x
       }
       Row {
         id: row
