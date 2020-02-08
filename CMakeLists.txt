@@ -74,7 +74,7 @@ target_link_libraries(muelle
 )
 
 # Target: qml targets
-add_custom_target(shell SOURCES "${SHELL_QRC}" "${SHELL_DIST_QRC}")
+add_custom_target(shell SOURCES "${SHELL_QRC}")
 
 # Info Messages
 message(STATUS " ")
