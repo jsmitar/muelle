@@ -19,7 +19,7 @@ export function clamp(min: number, value: number, max: number) {
   return value > max ? max : value < min ? min : value;
 }
 
-export function identity(item: number) {
+export function identity<T>(item: T) {
   return item;
 }
 
@@ -103,11 +103,11 @@ export function filterUntil<T>(
 }
 
 export function range(start = 0, stop: number = 0, step: number = 1) {
-  if (stop === undefined) {
-    stop = start;
-    start = 0;
+  if (start < stop) {
+    console.assert(step > 1, 'range: Invalid step value');
+  } else {
+    console.assert(step < 1, 'range: Invalid step value');
   }
-
   return {
     *[Symbol.iterator]() {
       for (let i = start; i !== stop; i += step) yield i;
@@ -197,8 +197,8 @@ function breakLine(indent: number) {
   return indent >= 0 ? '\n' : ' ';
 }
 
-export function atostr(array: any[], deep = 5, indent = 2): string {
-  if (deep === 0) {
+export function atostr(array: any[], depth = 5, indent = 2): string {
+  if (depth === 0) {
     return '[Array]';
   }
 
@@ -207,17 +207,21 @@ export function atostr(array: any[], deep = 5, indent = 2): string {
   }
 
   const str = array
-    .map(v => `${tostr(v, deep - 1, indent > 0 ? indent + 2 : indent)}`)
+    .map(v => `${tostr(v, depth - 1, indent > 0 ? indent + 2 : indent)}`)
     .join(`,${breakLine(indent)}${space(indent)}`);
 
   return formatHelper(str, ['[', ']'], indent);
 }
 
-export function otostr(object: Record<any, any>, deep = 5, indent = 2): string {
+export function otostr(
+  object: Record<any, any>,
+  depth = 5,
+  indent = 2
+): string {
   if (Symbol.toPrimitive in object) {
     return `${object}`;
   }
-  if (deep === 0) {
+  if (depth === 0) {
     const ostr = String(object) || 'Object';
     return `${ostr}${object.objectName ? '-' + object.objectName : ''}`;
   }
@@ -232,7 +236,7 @@ export function otostr(object: Record<any, any>, deep = 5, indent = 2): string {
 
   const str = entries
     .map(([k, v]) => {
-      let nextDeep = deep - 1;
+      let nextDeep = depth - 1;
       if (k === 'parent' || object[k] === object.parent || v === object) {
         nextDeep = 0;
       }
@@ -254,7 +258,7 @@ export function repeat(value: string, length = 1) {
   return Array.from({ length: length + 1 }).join(value);
 }
 
-export function tostr(value: any, deep = 5, indent = 2) {
+export function tostr(value: any, depth = 5, indent = 2) {
   if (isString(value)) {
     return quote(value);
   }
@@ -262,7 +266,7 @@ export function tostr(value: any, deep = 5, indent = 2) {
     return Number(value.toFixed(3));
   }
   if (isArray(value)) {
-    return atostr(value, deep, indent);
+    return atostr(value, depth, indent);
   }
   if (isCallable(value)) {
     return ctostr(value);
@@ -273,7 +277,7 @@ export function tostr(value: any, deep = 5, indent = 2) {
         x: value.x,
         y: value.y,
       },
-      deep,
+      depth,
       indent
     );
   }
@@ -283,7 +287,7 @@ export function tostr(value: any, deep = 5, indent = 2) {
         width: value.width,
         height: value.height,
       },
-      deep,
+      depth,
       indent
     );
   }
@@ -295,12 +299,12 @@ export function tostr(value: any, deep = 5, indent = 2) {
         width: value.width,
         height: value.height,
       },
-      deep,
+      depth,
       indent
     );
   }
   if (isObject(value)) {
-    return otostr(value, deep, indent);
+    return otostr(value, depth, indent);
   }
   if (!value) {
     return value;
@@ -414,5 +418,3 @@ export function debounce<Fn extends (...args: any[]) => any>(
     };
   }
 }
-
-console.log('functional imported');
