@@ -1,9 +1,9 @@
 import Qt from 'qt';
 import { ActionAny } from '../flux/flux';
-import { noop, tostr, zip } from '../functional';
+import { noop, zip } from '../functional';
 import genId from '../genId';
-import { cancel } from './effects/baseEffects';
 import EventEmitter, { Connection, Listener } from './eventEmitter';
+import { isEffect } from './helpers';
 import {
   ALL,
   CALL,
@@ -50,16 +50,6 @@ const Return = 'return';
 
 type Response = any;
 
-function isEffect(effect: any): effect is Effect {
-  if (!effect || !(effectType in effect)) {
-    throw new Error(
-      `Saga: A Effect was expected but the value was: ${tostr(effect)}`
-    );
-  }
-
-  return true;
-}
-
 export type TaskContext = {
   sagaMonitor?: SagaMonitor;
   actionSubscriber: EventEmitter;
@@ -67,8 +57,6 @@ export type TaskContext = {
   commit(type: string, ...args: any[]): void;
   getState(): any;
 };
-
-const cancelEffect = cancel();
 
 export class TaskController implements Task {
   m_taskId = `@SAGA_TASK_${id.next().value}`;
@@ -102,7 +90,7 @@ export class TaskController implements Task {
     if (delayed) {
       Qt.callLater(this.run.bind(this, false));
     } else {
-      this.context.sagaMonitor.sagaStatusChanged(this);
+      this.context.sagaMonitor.statusChanged(this);
       this.advancer();
     }
     return this;
@@ -181,7 +169,7 @@ export class TaskController implements Task {
   }
 
   notifyFinish() {
-    this.context.sagaMonitor.sagaStatusChanged(this, this.m_result);
+    this.context.sagaMonitor.statusChanged(this, this.m_result);
     this.emitter.emit(FINISH, this.m_result, this.m_status);
     this.emitter.offAll();
   }
@@ -196,8 +184,8 @@ export class TaskController implements Task {
     delete this.subTasks[task.taskId];
   }
 
-  cancel(effect = cancelEffect) {
-    if (effect.task) {
+  cancel(effect?: CancelEffect) {
+    if (effect && effect.task !== this) {
       (<TaskController>effect.task).cancel();
       this.advancer(effect);
     } else if (this.m_status === TaskStatus.Running) {
@@ -238,7 +226,8 @@ export class TaskController implements Task {
   [Symbol.toPrimitive]() {
     const start = '\u001b[36m';
     const end = '\u001b[0m';
-    return `${start}[${this.m_taskId} ${this.m_name}]${end}`;
+    const name = this.m_name === 'saga' ? '' : ` ${this.m_name}`;
+    return `${start}[${this.m_taskId}${name}]${end}`;
   }
 }
 
@@ -293,7 +282,7 @@ const effectHandlers = {
     task.onFinish(this.advancer.bind(this, effect));
   },
   [CANCEL](this: TaskController, effect: CancelEffect) {
-    (<TaskController>this.task).cancel(effect);
+    this.cancel(effect);
   },
   [CANCELLED](this: TaskController, effect: CancelledEffect) {
     this.advancer(effect, this.status === TaskStatus.Cancelled);
@@ -382,7 +371,7 @@ export function runSaga<Fn extends SagaFn>(
       effectResolved: noop,
       effectTriggered: noop,
       rootSagaStarted: noop,
-      sagaStatusChanged: noop,
+      statusChanged: noop,
     };
   }
   return new TaskController(
