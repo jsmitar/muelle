@@ -1,35 +1,36 @@
 import QtQuick 2.12
+import '../functional.ts' as F
 
 QObject {
   id: model
-  property QtObject source
-  property string sourceProperty
-  property alias property: model.sourceProperty
 
-  property QtObject target
-  property string targetProperty: sourceProperty
+  property var initial: undefined
 
-  property bool when: true
-  property bool _enabled: false;
-
-  Binding {
-    target: model.source
-    property: sourceProperty
-    value: model.target[targetProperty]
-    when: model.when && model._enabled
-    delayed: true
+  property Spy _: Spy {
+    properties: [spy`${model}.(initial, prevValue, resources)`]
   }
 
-  Binding {
-    target: model.target
-    property: targetProperty
-    value: model.source[sourceProperty]
-    when: model.when && model._enabled
-    delayed: true
+  property var prevValue: undefined
+
+  signal propertyChanged(var nextValue)
+
+  function update(nextValue) {
+    if (nextValue != prevValue) {
+      prevValue = nextValue
+      F.each(resources, ({ target, property, value }) => {
+        if (value !== nextValue) target[property] = nextValue
+      })
+    }
   }
 
-  Component.onCompleted: {
-    target[targetProperty] = source[sourceProperty]
-    _enabled = true
+  onResourcesChanged: {
+    if (initial !== undefined) {
+      initial = initial
+      update(initial)
+      propertyChanged.connect(F.debounce(update))
+    } else {
+      F.once(initialChanged, () => update(initial))
+    }
   }
+
 }
