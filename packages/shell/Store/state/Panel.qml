@@ -12,7 +12,7 @@ QObject {
   property string slide: 'None'
 
   property bool updatingPosition: false
-  property int nextEdge: Types.Top
+  property int nextEdge: $configuration.edge || Types.Top
   property int nextAlignment: Types.Center
 
   readonly property int orientation: edge & Types.Top || edge & Types.Bottom
@@ -21,7 +21,7 @@ QObject {
   readonly property bool isHorizontal: orientation === Types.Horizontal
   readonly property bool isVertical: orientation === Types.Vertical
   property int alignment: Types.Center
-  property int edge: Types.Top
+  property int edge: nextEdge
   property int behavior: Types.DodgeActive
 
   // counter of not grouped tasks
