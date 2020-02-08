@@ -20,7 +20,6 @@
 namespace Muelle {
 
 Layout::Layout(QObject *parent) : QObject(parent) {
-  setObjectName(QStringLiteral("Muelle::Layout"));
   connect(this, &Layout::edgeChanged, this, &Layout::layoutChanged);
   connect(this, &Layout::alignmentChanged, this, &Layout::layoutChanged);
 }
