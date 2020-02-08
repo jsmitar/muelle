@@ -1,5 +1,5 @@
 import { tostr } from '../functional';
-import { TaskStatus } from './private/symbols';
+import { effectType, SELECT, TaskStatus } from './private/symbols';
 import { SagaMonitor } from './sagaMonitor';
 
 export const simpleSagaMonitor: SagaMonitor = {
@@ -7,20 +7,30 @@ export const simpleSagaMonitor: SagaMonitor = {
     console.info(`${task} [Started]`);
   },
   effectTriggered(task, effect?, result?) {
+    const triggered = `\u001b[43m\u001b[30m[Triggered]\u001b[0m`
     console.info(
-      `${task} [Triggered] Effect: ${tostr(effect ?? 'none', 3, -1)}`,
+      `${task} ${triggered} Effect: ${tostr(effect ?? 'none', 3, -1)}`,
       result !== undefined ? `Result: ${tostr(result, 3, -1)}` : ''
     );
   },
   effectResolved(task, effect, response) {
+    const deep = effect?.[effectType] === SELECT ? 1 : 3;
+    const resolved = `\u001b[45m\u001b[30m[Resolved]\u001b[0m`
     console.info(
-      `${task} [Resolved] Effect: ${tostr(effect ?? 'none', 3, -1)}`,
-      response !== undefined ? `Response: ${tostr(response, 3, -1)}` : ''
+      `${task} ${resolved} Effect: ${tostr(effect ?? 'none', 3, -1)}`,
+      response !== undefined
+        ? `Response: ${tostr(response, deep, -1)}`.replace(
+            / \w+Changed: \[Function\],?/g,
+            ''
+          )
+        : ''
     );
   },
-  sagaStatusChanged(task, result) {
+  statusChanged(task, result) {
+    const status = `\u001b[42m\u001b[30m[${TaskStatus[task.status]}]\u001b[0m`
+
     console.info(
-      `${task} [${TaskStatus[task.status]}]`,
+      `${task} ${status}`,
       result !== undefined ? `Result: ${tostr(result, 3, -1)}` : ''
     );
   },
