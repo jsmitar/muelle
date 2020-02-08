@@ -13,7 +13,7 @@ export const RACE = 'RACE';
 
 export const FINISH = '@saga/finish';
 
-export const effectType = Symbol('@saga/effect');
+export const effectType = '@saga/effect';
 
 export enum TaskStatus {
   Running,
