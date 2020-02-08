@@ -45,8 +45,10 @@ class View : public QQuickWindow {
   Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
   Q_PROPERTY(QRect mask READ mask WRITE setMask NOTIFY maskChanged)
   Q_PROPERTY(QRect geometry READ geometry NOTIFY maskChanged)
-  Q_PROPERTY(QRect panelGeometry READ panelGeometry WRITE setPanelGeometry
-                 NOTIFY panelGeometryChanged)
+  Q_PROPERTY(QRect panelGeometry READ panelGeometry NOTIFY panelGeometryChanged)
+
+  Q_PROPERTY(QSize panelSize READ panelSize WRITE setPanelSize)
+  Q_PROPERTY(QPoint panelPosition READ panelPosition WRITE setPanelPosition)
   Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged)
   Q_PROPERTY(
       QPoint position READ position WRITE setPosition NOTIFY positionChanged)
@@ -72,6 +74,16 @@ public:
   void setPanelGeometry(const QRect &value);
   void setPosition(const QPoint &value);
   void setSize(const QSize &size);
+
+  QRect absolutePanelGeometry() const;
+
+  QPoint panelPosition() const;
+  void setPanelPosition(const QPoint &value);
+  QRect panelGeometry() const;
+
+  QSize panelSize() const;
+  void setPanelSize(const QSize &value);
+
   QPoint mousePosition() const;
   bool compositing() const;
   Configuration *configuration() const;
@@ -88,7 +100,15 @@ signals:
   void positionChanged();
   void compositingChanged();
   void sizeChanged();
+
+  void panelSizeChanged();
+  void panelPositionChanged();
   void panelGeometryChanged();
+
+  void containsMouseChanged();
+  void entered();
+  void exited();
+
   void release();
 
 protected:

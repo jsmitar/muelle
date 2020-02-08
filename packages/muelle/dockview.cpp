@@ -101,12 +101,24 @@ QRect View::geometry() const { return {position(), size()}; }
 
 QRect View::panelGeometry() const { return mPanelGeometry; }
 
+QSize View::panelSize() const { return mPanelGeometry.size(); }
+
+void View::setPanelSize(const QSize &value) {
+  mPanelGeometry.setSize(value);
+  emit panelSizeChanged();
+  emit panelGeometryChanged();
+  mPositionHandler.update(200);
+}
+
 QRect View::absolutePanelGeometry() const {
   return {position() + mPanelGeometry.topLeft(), mPanelGeometry.size()};
 }
 
-void View::setPanelGeometry(const QRect &value) {
-  mPanelGeometry = value;
+QPoint View::panelPosition() const { return mPanelGeometry.topLeft(); }
+
+void View::setPanelPosition(const QPoint &value) {
+  mPanelGeometry.moveTo(value);
+  emit panelPositionChanged();
   emit panelGeometryChanged();
   mPositionHandler.update(200);
 }
