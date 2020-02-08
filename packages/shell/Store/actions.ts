@@ -1,28 +1,19 @@
 import Muelle from '@qml/org.muelle.types-1.0';
+import { createAction } from '../../shared/flux/createAction';
 
-export function slideIn() {
-  return { type: 'slide', payload: 'in' };
-}
+export const slideIn = createAction('slide', 'in');
 
-export function slideOut() {
-  return { type: 'slide', payload: 'out' };
-}
+export const slideOut = createAction('slide', 'out');
 
-export function slideInFinished() {
-  return { type: 'slide-in-finished' };
-}
+export const slideInFinished = createAction('slide-in-finished');
 
-export function slideOutFinished() {
-  return { type: 'slide-out-finished' };
-}
+export const slideOutFinished = createAction('slide-out-finished');
 
-export function changeAlignment(alignment: Muelle.Types.Alignment) {
-  return { type: 'changeAlignment', payload: alignment };
-}
+export const changeAlignment = createAction<Muelle.Types.Alignment>(
+  'changeAlignment'
+);
 
-export function changeEdge(edge: Muelle.Types.Edge) {
-  return { type: 'changeEdge', payload: edge };
-}
+export const changeEdge = createAction<Muelle.Types.Edge>('edge');
 
 export function changeBehavior(behavior: Muelle.Types.Behavior) {
   return { type: 'changeBehavior', payload: behavior };

@@ -1,5 +1,6 @@
 import Qt from 'qt';
 import { L } from 'ts-toolbelt';
+import { AnyActionCreator } from '../../flux/createAction';
 import { ActionAny } from '../../flux/flux';
 import { TaskStatus } from '../private/symbols';
 import { Saga, SagaFn, Task } from '../private/types';
@@ -17,26 +18,35 @@ export function takeLeading<Fn extends SagaFn>(
   saga: Fn,
   ...args: L.Pop<Parameters<Fn>>
 ) {
-  return fork(function*(): Saga {
+  const name = saga.name;
+
+  return fork(function* takeLeading(): Saga {
     while (true) {
       const action: ActionAny = yield take(pattern);
-      yield call(saga, ...(args.concat(action) as any));
+      const effect = call(saga, ...(args.concat(action) as any));
+      effect.name = name;
+      yield effect;
     }
   });
 }
 
 export function takeLatest<Fn extends SagaFn>(
-  pattern: string,
+  pattern: string | AnyActionCreator,
   saga: Fn,
   ...args: L.Pop<Parameters<Fn>>
 ) {
-  return fork(function*(): Saga {
+  const name = saga.name;
+
+  return fork(function* takeLatest(): Saga {
     let lastTask: Task | undefined;
+
     while (true) {
       const action: ActionAny = yield take(pattern);
       if (lastTask && lastTask.status === TaskStatus.Running)
         yield cancel(lastTask);
-      lastTask = yield fork(saga, ...(args.concat(action) as any));
+      const effect = fork(saga, ...(args.concat(action) as any));
+      effect.name = name;
+      yield effect;
     }
   });
 }
@@ -46,7 +56,7 @@ export function takeEvery<Fn extends SagaFn>(
   saga: Fn,
   ...args: L.Pop<Parameters<Fn>>
 ) {
-  return fork(function*(): Saga {
+  return fork(function* takeEvery(): Saga {
     while (true) {
       const action: ActionAny = yield take(pattern);
       yield fork(saga, ...(args.concat(action) as any));

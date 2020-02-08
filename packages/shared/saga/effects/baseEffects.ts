@@ -1,4 +1,4 @@
-import { ActionCreator } from '../../flux/createAction';
+import { AnyActionCreator } from '../../flux/createAction';
 import { ActionAny } from '../../flux/flux';
 import {
   ALL,
@@ -45,7 +45,7 @@ export function select<S = any, R = any>(
   return { [effectType]: SELECT, selector };
 }
 
-export function take(type: string | ActionCreator): TakeEffect {
+export function take(type: string | AnyActionCreator): TakeEffect {
   const pattern = typeof type === 'string' ? type : type.type;
   return { [effectType]: TAKE, pattern };
 }
