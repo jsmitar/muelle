@@ -1,8 +1,9 @@
-import Qt from 'qt';
 import { Action } from '../../../shared/flux/flux';
 import { call, cancelled, commit, take } from '../../../shared/saga/effects';
 import { Saga } from '../../../shared/saga/private/types';
+import { contextSelect } from '../selectors/contextSelect';
 import {
+  Context,
   HIDE_PANEL,
   SHOW_PANEL,
   SLIDE_STATUS,
@@ -26,12 +27,15 @@ export function* slideOut() {
   yield commit(HIDE_PANEL);
 
   yield commit(UPDATE_TASK_COUNT_1);
-  Qt.$view.setOpacity(0.01);
-  Qt.$positioner.update(0);
+  const context: Context = yield contextSelect;
+
+  context.view.setOpacity(0.01);
+  context.positioner.update(0);
 }
 
 export function* slideIn() {
-  Qt.$view.setOpacity(1);
+  const context: Context = yield contextSelect;
+  context.view.setOpacity(1);
 
   yield commit(SHOW_PANEL);
   yield commit(SLIDE_STATUS, 'slide-in-running');
