@@ -38,11 +38,12 @@ namespace Muelle {
 class Layout : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY(Layout)
-  Q_PROPERTY(Muelle::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
+  Q_PROPERTY(
+      Muelle::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
   Q_PROPERTY(Muelle::Types::Orientation orientation READ orientation NOTIFY
                  orientationChanged)
-  Q_PROPERTY(Muelle::Types::Alignment alignment READ alignment WRITE setAlignment
-                 NOTIFY alignmentChanged)
+  Q_PROPERTY(Muelle::Types::Alignment alignment READ alignment WRITE
+                 setAlignment NOTIFY alignmentChanged)
   Q_PROPERTY(uint layout READ layout NOTIFY layoutChanged)
   Q_PROPERTY(bool isHorizontal READ isHorizontal NOTIFY orientationChanged)
   Q_PROPERTY(bool isVertical READ isVertical NOTIFY orientationChanged)

@@ -35,25 +35,21 @@
 
 #ifdef __GNUG__
 #include <cstdlib>
-#include <memory>
 #include <cxxabi.h>
-static inline std::string demangle(const char* name) {
+#include <memory>
+static inline std::string demangle(const char *name) {
   int status = -4; // some arbitrary value to eliminate the compiler warning
 
   // enable c++11 by passing the flag -std=c++11 to g++
-  std::unique_ptr<char, void(*)(void*)> res {
-      abi::__cxa_demangle(name, NULL, NULL, &status),
-      std::free
-  };
+  std::unique_ptr<char, void (*)(void *)> res{
+      abi::__cxa_demangle(name, NULL, NULL, &status), std::free};
 
-  return (status==0) ? res.get() : name ;
+  return (status == 0) ? res.get() : name;
 }
 
 #else
 // does nothing if not g++
-static inline std::string demangle(const char* name) {
-    return name;
-}
+static inline std::string demangle(const char *name) { return name; }
 
 #endif
 
@@ -62,24 +58,21 @@ public:
   Lambda() = default;
   ~Lambda() = default;
 
-  Lambda(const Lambda& fn) {
-    m_function = fn.m_function;
-  }
-  Lambda(Lambda && fn) {
-    m_function = fn.m_function;
-  };
+  Lambda(const Lambda &fn) { m_function = fn.m_function; }
+  Lambda(Lambda &&fn) { m_function = fn.m_function; };
 
-  template<class Fn, std::enable_if_t<!std::is_same_v<std::decay_t<Fn>, Lambda>, int> = 0>
-  Lambda(Fn&& function) {
+  template <class Fn, std::enable_if_t<
+                          !std::is_same_v<std::decay_t<Fn>, Lambda>, int> = 0>
+  Lambda(Fn &&function) {
     m_function.reset(new Callable(std::forward<Fn>(function)));
   }
 
-  Lambda &operator=(Lambda& fn) {
+  Lambda &operator=(Lambda &fn) {
     std::swap(*this, fn);
     return *this;
   };
 
-  Lambda &operator=(const Lambda& fn) {
+  Lambda &operator=(const Lambda &fn) {
     Lambda temp(fn);
     std::swap(*this, temp);
     return *this;
@@ -97,31 +90,28 @@ public:
   }
 
   struct Concept {
-    virtual ~Concept() {};
+    virtual ~Concept(){};
     virtual void operator()() = 0;
   };
 
-  template<class Fn>
-  struct Callable : Concept {
-    Callable(Fn &&function): m_fn(std::forward<Fn>(function)) {}
+  template <class Fn> struct Callable : Concept {
+    Callable(Fn &&function) : m_fn(std::forward<Fn>(function)) {}
     ~Callable() override {}
 
-    void operator()() override {
-      m_fn();
-    }
+    void operator()() override { m_fn(); }
     Fn m_fn;
   };
 
 private:
   std::shared_ptr<Concept> m_function;
-};   
+};
 Q_DECLARE_METATYPE(Lambda);
 
 namespace Muelle {
 class Extensions : public QObject {
   Q_OBJECT
 public:
-  explicit Extensions(QObject * parent = nullptr): QObject(parent) {}
+  explicit Extensions(QObject *parent = nullptr) : QObject(parent) {}
   virtual ~Extensions() override {}
 
   Q_INVOKABLE void clearTimeout(const QVariant &handler) {
@@ -139,9 +129,9 @@ public:
       return {QJSValue::SpecialValue::UndefinedValue};
     }
 
-    QTimer * timer = new QTimer();
+    QTimer *timer = new QTimer();
 
-    Lambda disconnect([timer] () mutable {
+    Lambda disconnect([timer]() mutable {
       if (timer) {
         if (timer->isActive()) {
           QMetaObject::invokeMethod(timer, "stop", Qt::QueuedConnection);
@@ -151,7 +141,7 @@ public:
       }
     });
 
-    timer->callOnTimeout([value] () mutable { value.call(); });
+    timer->callOnTimeout([value]() mutable { value.call(); });
     timer->callOnTimeout(disconnect);
     timer->setSingleShot(true);
     timer->start(delay + delay * 0.05);
@@ -165,8 +155,6 @@ public:
   }
 };
 
-}
-
+} // namespace Muelle
 
 #endif // HELPERS_HPP
-

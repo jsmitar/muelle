@@ -12,16 +12,16 @@
 
 class QObjectPropertyValueSource : public QObject,
                                    public QQmlPropertyValueSource,
-                                   public QQmlParserStatus
-{
+                                   public QQmlParserStatus {
   Q_OBJECT
   Q_INTERFACES(QQmlPropertyValueSource)
   Q_INTERFACES(QQmlParserStatus)
 
   Q_PROPERTY(QVariant value READ value NOTIFY value NOTIFY targetValueChanged)
-  Q_PROPERTY(QVariant initial READ initial WRITE setInitial NOTIFY initialChanged)
+  Q_PROPERTY(
+      QVariant initial READ initial WRITE setInitial NOTIFY initialChanged)
 
-  public:
+public:
   explicit QObjectPropertyValueSource(QObject *parent = nullptr);
   ~QObjectPropertyValueSource() override = default;
 
@@ -36,21 +36,18 @@ class QObjectPropertyValueSource : public QObject,
 
   QVariant value() const;
 
-  signals:
+signals:
   void targetValueChanged();
   void initialChanged();
 
-  private:
+private:
   QQmlProperty mTargetProperty;
   QVariant mInitial;
   QVariant mValue;
 };
 
-inline void qmlRegisterQObjectPropertyValueSource()
-{
-  qmlRegisterType<QObjectPropertyValueSource>("org.muelle.extra",
-                                              1,
-                                              0,
+inline void qmlRegisterQObjectPropertyValueSource() {
+  qmlRegisterType<QObjectPropertyValueSource>("org.muelle.extra", 1, 0,
                                               "QObjectPropertyValueSource");
 }
 

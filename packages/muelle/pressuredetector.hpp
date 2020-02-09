@@ -47,7 +47,8 @@ class PressureDetector : public QObject,
   Q_PROPERTY(double threshold MEMBER mThreshold NOTIFY thresholdChanged)
   Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
   Q_PROPERTY(Muelle::View *view MEMBER view)
-  Q_PROPERTY(Muelle::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
+  Q_PROPERTY(
+      Muelle::Types::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged)
 
 public:
   PressureDetector(QObject *parent = nullptr);
@@ -109,7 +110,7 @@ private:
 } // namespace Muelle
 inline void qmlRegisterPanelBehavior() {
   qmlRegisterType<Muelle::PressureDetector>("org.muelle.extra", 1, 0,
-                                          "PressureDetector");
+                                            "PressureDetector");
 }
 
 #endif // PRESSUREDETECTOR_HPP

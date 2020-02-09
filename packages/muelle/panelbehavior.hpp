@@ -68,6 +68,6 @@ private:
 } // namespace Muelle
 inline void qmlRegisterPressureDetector() {
   qmlRegisterType<Muelle::PanelBehavior>("org.muelle.extra", 1, 0,
-                                       "PanelBehavior");
+                                         "PanelBehavior");
 }
 #endif // BEHAVIOR_H
