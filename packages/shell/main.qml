@@ -61,25 +61,15 @@ Item {
     Binding {
       target: $view
       property: 'mask'
-//      value: store.state.geometry.maskRect
+      value: store.state.geometry.maskRect
       delayed: true
     }
     Binding {
       target: $view
-      when: !$view.compositing
       property: 'panelPosition'
-      value: store.state.geometry.panelNextPosition
+      value: store.state.geometry.panelNextPoint
       delayed: true
     }
-
-    Binding {
-      target: $view
-      property: 'panelPosition'
-      when: $view.compositing
-      value: store.state.geometry.panelPointCenter
-      delayed: true
-    }
-
     Binding {
       target: $view
       property: 'panelSize'
