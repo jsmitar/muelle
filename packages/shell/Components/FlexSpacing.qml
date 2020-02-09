@@ -15,9 +15,9 @@ Item {
   property bool fill: true
   property bool smoothFill: false
 
-  property real _preferredWidth: Layout.preferredWidth
+  property real _preferred: 0
 
-  Behavior on _preferredWidth {
+  Behavior on _preferred {
     id: anim
     enabled: false
     NumberAnimation {
@@ -44,10 +44,11 @@ Item {
         target: flex
         Layout.fillWidth: fill
         Layout.fillHeight: true
-        Layout.maximumWidth: _preferredWidth
-        Layout.minimumWidth: _preferredWidth
+        Layout.maximumWidth: _preferred
+        Layout.minimumWidth: _preferred
+        Layout.minimumHeight: Layout.preferredHeight
         Layout.maximumHeight: Layout.preferredHeight
-        _preferredWidth: Layout.preferredWidth
+        _preferred: Layout.preferredWidth
       }
     },
     State {
@@ -56,10 +57,11 @@ Item {
         target: flex
         Layout.fillWidth: true
         Layout.fillHeight: fill
+        Layout.minimumWidth: Layout.preferredWidth
         Layout.maximumWidth: Layout.preferredWidth
-        Layout.maximumHeight: _preferredWidth
-        Layout.minimumHeight: _preferredWidth
-        _preferredWidth: Layout.preferredHeight
+        Layout.maximumHeight: _preferred
+        Layout.minimumHeight: _preferred
+        _preferred: Layout.preferredHeight
       }
     }
   ]

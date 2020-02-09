@@ -21,9 +21,7 @@
 
 namespace Muelle {
 PositionHandler::PositionHandler(View *view)
-  : mView(view)
-  , animation(new QPropertyAnimation(view))
-{
+    : mView(view), animation(new QPropertyAnimation(view)) {
   animation->setTargetObject(mView);
   animation->setPropertyName("position");
 }
@@ -32,17 +30,24 @@ PositionHandler::~PositionHandler() {}
 
 void PositionHandler::update(int duration) {
   if (auto screen = mView->screen(); screen) {
-    const auto newPosition = computePosition(
-        screen->geometry().size(), mView->panelGeometry(), mView->layout());
-    if (duration > 0) {
-      animation->setDuration(duration);
-      animation->setStartValue(mView->position());
-      animation->setEndValue(newPosition);
-      animation->start();
-    } else {
-      animation->stop();
-      animation->setDuration(0);
+    if (mView->compositing()) {
+      const auto newPosition = computePosition(
+          screen->geometry().size(), {{0, 0}, mView->size()}, mView->layout());
+
       mView->setPosition(newPosition);
+    } else {
+      const auto newPosition = computePosition(
+          screen->geometry().size(), mView->panelGeometry(), mView->layout());
+      if (duration > 0) {
+        animation->setDuration(duration);
+        animation->setStartValue(mView->position());
+        animation->setEndValue(newPosition);
+        animation->start();
+      } else {
+        animation->stop();
+        animation->setDuration(0);
+        mView->setPosition(newPosition);
+      }
     }
   }
 }

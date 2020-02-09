@@ -26,9 +26,16 @@ SettingsForm {
     target: alignment.centerOffset
     property: 'value'
     initial: $positioner.centerOffset
+
+    property var enableMask: F.debounce(() => {
+      store.state.geometry.maskEnabled = true
+    }, 500)
+
     then: offset => {
-//      $positioner.centerOffset = offset
-//      Qt.callLater(() => $positioner.update(100))
+      if (store.state.geometry.maskEnabled) {
+        store.state.geometry.maskEnabled = false
+      }
+      enableMask()
       store.state.geometry.panelOffset = offset
     }
     otherwise: then

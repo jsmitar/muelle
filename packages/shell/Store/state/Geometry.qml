@@ -24,6 +24,7 @@ QObject {
 
   readonly property alias maskRect: mask.rect
   property alias maskGrowing: mask.growing
+  property alias maskEnabled: mask.enabled
 
   property bool lockMaskGrowing: false
 
@@ -71,9 +72,13 @@ QObject {
 
     property real offset: 0
 
-    property int xCenter: (view.width - width) / 2
+    readonly property int xCenter: (view.width - width) / 2
 
-    property int x: xCenter + offset * xCenter
+    readonly property int xNextCenter: (view.width - nextWidth) / 2
+
+
+
+    readonly property int x: xCenter + offset * xCenter
 
     readonly property int y: 0
 
@@ -83,13 +88,13 @@ QObject {
 
     readonly property int height: state.icon.size
 
-    readonly property int nextX: x
+    readonly property int nextX: xNextCenter + offset * xNextCenter
 
     readonly property int nextY: 0
 
     readonly property int nextWidth:
       state.icon.size * state.panel.nextTaskCount1 +
-      state.icon.spacing * Math.max(0, state.panel.nextTaskCount1 - 1)
+      state.icon.spacing * Math.max(0, state.panel.nextTaskCount1 - 1) 
 
     readonly property int nextHeight: state.icon.size
 
@@ -124,6 +129,8 @@ QObject {
 
     property bool growing: false
 
+    property bool enabled: true
+
     QtObject {
       id: visible
 
@@ -134,7 +141,7 @@ QObject {
         : Qt.rect(panel.x, panel.y, panel.width, panel.height)
 
       readonly property rect rectVertical: mask.growing
-        ? Qt.rect(panel.nextY - gap / 2, panel.nextX, panel.nextHeight + gap, panel.nextWidth)
+        ? Qt.rect(panel.nextY, panel.nextX - gap / 2, panel.nextHeight, panel.nextWidth + gap)
         : Qt.rect(panel.y, panel.x, panel.height, panel.width)
 
       readonly property rect rect: state.panel.isHorizontal ? rectHorizontal : rectVertical
@@ -146,9 +153,10 @@ QObject {
       readonly property rect rect: Qt.rect(0, 0, 1, 1)
     }
 
-    readonly property rect rect: state.panel.visible
-      ? visible.rect
-      : hidden.rect
+    readonly property rect rect: enabled 
+      ? state.panel.visible ? visible.rect : hidden.rect
+      : Qt.rect(0, 0, 0, 0)
+
   }
 
   Spy {

@@ -1,14 +1,14 @@
 import { Action } from '../../../shared/flux/flux';
 import { call, cancelled, commit, take } from '../../../shared/saga/effects';
 import { Saga } from '../../../shared/saga/private/types';
-import { contextSelect } from '../selectors/contextSelect';
 import {
-  Context,
   HIDE_PANEL,
   SHOW_PANEL,
   SLIDE_STATUS,
   UPDATE_TASK_COUNT_1,
-} from '../types';
+} from '../mutationTypes';
+import { contextSelect } from '../selectors/contextSelect';
+import { Context } from '../types';
 
 export function* slide(action: Action<'in' | 'out'>): Saga {
   try {

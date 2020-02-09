@@ -1,5 +1,6 @@
 import { Mutations } from '../../shared/flux/flux';
 import {
+  ENABLE_MASK,
   HIDE_PANEL,
   LOCK_VISIBLE,
   MASK_GROWING,
@@ -7,14 +8,14 @@ import {
   NEXT_BEHAVIOR,
   NEXT_EDGE,
   NEXT_TASK_COUNT1,
-  ShellState,
   SHOW_PANEL,
   SHOW_SETTINGS,
   SLIDE_STATUS,
   UPDATE_POSITION,
   UPDATE_TASK_COUNT_1,
   UPDATING_POSITION,
-} from './types';
+} from './mutationTypes';
+import { ShellState } from './types';
 
 export const mutations: Mutations<ShellState> = {
   [SLIDE_STATUS](state, status) {
@@ -50,6 +51,9 @@ export const mutations: Mutations<ShellState> = {
   },
   [MASK_GROWING](state, growing) {
     state.geometry.maskGrowing = growing;
+  },
+  [ENABLE_MASK](state, enable) {
+    state.geometry.maskEnabled = enable;
   },
   [SHOW_SETTINGS](state, visible) {
     state.settings.visible = visible;

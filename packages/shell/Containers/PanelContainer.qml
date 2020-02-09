@@ -81,17 +81,17 @@ Loader {
 
       FlexSpacing {
         fill: true
-        smoothFill: false
+        smoothFill: true
 
-        //Layout.preferredWidth: Math.min(store.state.geometry.panelNextPoint.x, store.state.geometry.panelRect.x)
-        Layout.preferredWidth: store.state.geometry.panelRect.x
+        Layout.preferredWidth: store.state.geometry.panelNextPoint.x
       }
       Row {
         id: row
         spacing: store.state.icon.spacing
         layoutDirection: Qt.LeftToRight
-        Layout.maximumHeight: store.state.icon.size
-        height: Layout.maximumHeight
+        Layout.fillHeight: true
+        // Layout.maximumHeight: store.state.icon.size
+        // height: Layout.maximumHeight
 
         Component.onCompleted: {
           panelContainer.positioner = row
@@ -112,8 +112,6 @@ Loader {
             alwaysRunToEnd: true
           }
         }
-
-
         add: Transition {
           NumberAnimation {
             property: 'y'
@@ -135,15 +133,20 @@ Loader {
     id: vertical
     ColumnLayout {
       spacing: 0
+      
       FlexSpacing {
         fill: true
         smoothFill: true
+
         Layout.preferredHeight: store.state.geometry.panelNextPoint.y
       }
       Column {
         id: column
-        Layout.fillWidth: true
         spacing: store.state.icon.spacing
+        // layoutDirection: Qt.TopToBottom
+        Layout.fillWidth: true
+        // Layout.maximumWidth: store.state.icon.size
+        // width: Layout.maximumWidth
 
         Component.onCompleted: {
           panelContainer.positioner = column
@@ -170,7 +173,8 @@ Loader {
             from: ($layout.edge === Types.Left ? -1 : 1) * store.state.icon.size
             to: 0
             easing.type: Easing.OutBounce
-            duration: 1000
+            duration: store.state.animation.duration
+            alwaysRunToEnd: true
           }
         }
       }

@@ -1,8 +1,12 @@
 import { Action } from '../../../shared/flux/flux';
 import { call, cancelled, commit } from '../../../shared/saga/effects';
 import { Saga } from '../../../shared/saga/private/types';
+import {
+  MASK_GROWING,
+  NEXT_TASK_COUNT1,
+  UPDATE_TASK_COUNT_1,
+} from '../mutationTypes';
 import { taskCount1Select } from '../selectors/taskCount1Select';
-import { MASK_GROWING, NEXT_TASK_COUNT1, UPDATE_TASK_COUNT_1 } from '../types';
 import { growMask } from './growMask';
 
 export function* updateTaskCount1(action: Action<number>): Saga {
