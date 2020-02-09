@@ -1,5 +1,5 @@
-import Qt from 'qt';
 import { TaskItemModel } from 'plasma/org.kde.plasma.private.taskmanager-0.1';
+import Qt from 'qt';
 
 export function activate(
   taskModel: any,

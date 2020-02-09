@@ -7,7 +7,7 @@ export const simpleSagaMonitor: SagaMonitor = {
     console.info(`${task} [Started]`);
   },
   effectTriggered(task, effect?, result?) {
-    const triggered = `\u001b[43m\u001b[30m[Triggered]\u001b[0m`
+    const triggered = `\u001b[43m\u001b[30m[Triggered]\u001b[0m`;
     console.info(
       `${task} ${triggered} Effect: ${tostr(effect ?? 'none', 3, -1)}`,
       result !== undefined ? `Result: ${tostr(result, 3, -1)}` : ''
@@ -15,7 +15,7 @@ export const simpleSagaMonitor: SagaMonitor = {
   },
   effectResolved(task, effect, response) {
     const deep = effect?.[effectType] === SELECT ? 1 : 3;
-    const resolved = `\u001b[45m\u001b[30m[Resolved]\u001b[0m`
+    const resolved = `\u001b[45m\u001b[30m[Resolved]\u001b[0m`;
     console.info(
       `${task} ${resolved} Effect: ${tostr(effect ?? 'none', 3, -1)}`,
       response !== undefined
@@ -27,7 +27,7 @@ export const simpleSagaMonitor: SagaMonitor = {
     );
   },
   statusChanged(task, result) {
-    const status = `\u001b[42m\u001b[30m[${TaskStatus[task.status]}]\u001b[0m`
+    const status = `\u001b[42m\u001b[30m[${TaskStatus[task.status]}]\u001b[0m`;
 
     console.info(
       `${task} ${status}`,
