@@ -5,7 +5,16 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.enable": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "C_Cpp.clang_format_style": "LLVM",
+  "C_Cpp.clang_format_sortIncludes": true,
+  "C_Cpp.clang_format_fallbackStyle": "LLVM",
+  "C_Cpp.formatting": "Default",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
@@ -72,8 +81,5 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "variant": "cpp"
-  },
-  "C_Cpp.clang_format_style": "LLVM",
-  "C_Cpp.clang_format_sortIncludes": true,
-  "C_Cpp.clang_format_fallbackStyle": "LLVM"
+  }
 }
