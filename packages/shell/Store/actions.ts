@@ -15,22 +15,14 @@ export const changeAlignment = createAction<Muelle.Types.Alignment>(
 
 export const changeEdge = createAction<Muelle.Types.Edge>('edge');
 
-export function changeBehavior(behavior: Muelle.Types.Behavior) {
-  return { type: 'changeBehavior', payload: behavior };
-}
+export const changeBehavior = createAction<Muelle.Types.Behavior>(
+  'changeBehavior'
+);
 
-export function showSettings(visible: boolean) {
-  return { type: 'showSettings', payload: visible };
-}
+export const showSettings = createAction<boolean>('showSettings');
 
-export function maskGrow(duration: number) {
-  return { type: 'maskGrow', payload: duration };
-}
+export const maskGrow = createAction</* duration: */ number>('maskGrow');
 
-export function updateTaskCount1(count: number) {
-  return { type: 'updateTaskCount1', payload: count };
-}
+export const updateTaskCount1 = createAction<number>('updateTaskCount1');
 
-export function updateLayout() {
-  return { type: 'updateLayout' };
-}
+export const updateLayout = createAction('updateLayout');
