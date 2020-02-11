@@ -51,6 +51,9 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
 
   connect(this, &QQuickWindow::widthChanged, this, &View::sizeChanged);
   connect(this, &QQuickWindow::heightChanged, this, &View::sizeChanged);
+  connect(this, &View::panelPositionChanged, this, &View::panelGeometryChanged);
+  connect(this, &View::panelSizeChanged, this, &View::panelGeometryChanged);
+  connect(this, &View::panelGeometryChanged, [&]() {
 
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
@@ -115,7 +118,6 @@ QSize View::panelSize() const { return mPanelGeometry.size(); }
 void View::setPanelSize(const QSize &value) {
   mPanelGeometry.setSize(value);
   emit panelSizeChanged();
-  emit panelGeometryChanged();
   mPositionHandler.update(200);
 }
 
@@ -128,7 +130,6 @@ QPoint View::panelPosition() const { return mPanelGeometry.topLeft(); }
 void View::setPanelPosition(const QPoint &value) {
   mPanelGeometry.moveTo(value);
   emit panelPositionChanged();
-  emit panelGeometryChanged();
   mPositionHandler.update(200);
 }
 
