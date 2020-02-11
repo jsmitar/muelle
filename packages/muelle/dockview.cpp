@@ -32,10 +32,12 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
       mConfigMap(new Configuration(this, config)) {
 
   setColor(Qt::transparent);
-  setFlag(Qt::WindowStaysOnTopHint, true);
-  setFlag(Qt::WindowDoesNotAcceptFocus, true);
-  setFlag(Qt::WindowCloseButtonHint, false);
-  setFlag(Qt::FramelessWindowHint, true);
+  setFlag(Qt::WindowStaysOnTopHint);
+  setFlag(Qt::WindowDoesNotAcceptFocus);
+  setFlag(Qt::WindowCloseButtonHint);
+  setFlag(Qt::FramelessWindowHint);
+  setFlag(Qt::X11BypassWindowManagerHint);
+  setFlag(Qt::NoDropShadowWindowHint);
 
   //  setResizeMode(QQuickView::SizeRootObjectToView);
   setTextRenderType(QQuickWindow::NativeTextRendering);
@@ -54,6 +56,8 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   connect(this, &View::panelPositionChanged, this, &View::panelGeometryChanged);
   connect(this, &View::panelSizeChanged, this, &View::panelGeometryChanged);
   connect(this, &View::panelGeometryChanged, [&]() {
+    KWindowEffects::enableBlurBehind(winId(), true, mPanelGeometry);
+  });
 
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
