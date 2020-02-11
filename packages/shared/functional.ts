@@ -410,11 +410,30 @@ export function debounce<Fn extends (...args: any[]) => any>(
       Qt.callLater(fn, ...args);
     };
   } else {
-    let timer: any;
+    let timer: Qt.Timer;
+    let lastArgs: Parameters<Fn>;
+
     return (...args: Parameters<Fn>) => {
-      const lastArgs = args;
+      lastArgs = args;
       Qt.clearTimeout(timer);
       timer = Qt.setTimeout(() => fn(...lastArgs), time);
     };
   }
+}
+
+export function throttle<Fn extends (...args: any[]) => any>(
+  fn: Fn,
+  time: number = 0
+) {
+  let timer: Qt.Timer | undefined;
+  let lastArgs: Parameters<Fn>;
+
+  return (...args: Parameters<Fn>) => {
+    lastArgs = args;
+    if (!timer) {
+      timer = Qt.setTimeout(() => {
+        timer = (fn(...lastArgs), void Qt.clearTimeout(timer!));
+      }, time);
+    }
+  };
 }
