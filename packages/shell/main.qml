@@ -14,6 +14,7 @@ import '../shared/functional.ts' as F
 import '../shared/components'
 import '../shared/saga/test.ts' as Saga
 import 'Store'
+import QtGraphicalEffects 1.12
 
 Item {
   id: root
@@ -34,8 +35,9 @@ Item {
   }
 
   PaintItem {
+    id: bg
     target: root
-    enabled: true
+    enabled: false
     showSize: false
   }
 

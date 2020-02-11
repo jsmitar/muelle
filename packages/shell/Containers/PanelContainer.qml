@@ -81,7 +81,7 @@ Loader {
 
       FlexSpacing {
         fill: true
-        smoothFill: true
+        smoothFill: store.state.geometry.maskEnabled
 
         Layout.preferredWidth: store.state.geometry.panelNextPoint.x
       }
@@ -136,7 +136,7 @@ Loader {
       
       FlexSpacing {
         fill: true
-        smoothFill: true
+        smoothFill: store.state.geometry.maskEnabled
 
         Layout.preferredHeight: store.state.geometry.panelNextPoint.y
       }

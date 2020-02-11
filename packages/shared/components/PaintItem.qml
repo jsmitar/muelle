@@ -7,7 +7,9 @@ QObject {
   property Item target
   property bool enabled: false
   property bool showSize: true
-  property bool _enableAll: true
+  property bool _disableAll: false
+
+  readonly property Item bgItem: bgLoader.item && bgLoader.item.children[0]
 
   Component {
     id: bg
@@ -60,7 +62,8 @@ QObject {
   }
 
   Loader {
-    sourceComponent: paintItem.enabled && _enableAll && target ? bg : undefined
+    id: bgLoader
+    sourceComponent: paintItem.enabled && !_disableAll && target ? bg : undefined
 
     onLoaded: {
       item.parent = target
@@ -68,7 +71,7 @@ QObject {
   }
 
   Loader {
-    sourceComponent: paintItem.enabled && _enableAll && target && showSize ? fg : undefined
+    sourceComponent: paintItem.enabled && !_disableAll && target && showSize ? fg : undefined
 
     onLoaded: {
       item.parent = target

@@ -34,7 +34,7 @@ Item {
 
   PaintItem {
     target: flex
-    enabled: true
+    enabled: false
   }
 
   states: [

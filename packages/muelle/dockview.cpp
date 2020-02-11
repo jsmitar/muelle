@@ -95,6 +95,7 @@ void View::load() {
           item->setParentItem(contentItem());
 
           show();
+          setOpacity(0.01);
         } else if (status == QQmlComponent::Error) {
           qWarning() << component->errors();
         }

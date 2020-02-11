@@ -25,7 +25,6 @@ QObject {
 
   readonly property Animation animation: Animation {
     parentObject: state
-    duration: 800
   }
 
   readonly property Context context: Context {}

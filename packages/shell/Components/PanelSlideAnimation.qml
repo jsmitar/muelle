@@ -6,7 +6,7 @@ QObject {
   id: slide
   property Item target
 
-  property real value: 0
+  property real value: -distance 
   property real distance: store.state.icon.size
 
   Connections {
