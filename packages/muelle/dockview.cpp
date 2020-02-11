@@ -46,6 +46,8 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   KWindowSystem::setType(winId(), NET::Dock);
   KWindowSystem::setOnAllDesktops(winId(), true);
   KWindowSystem::setOnActivities(winId(), {"0"});
+  KWindowSystem::setState(winId(), NET::SkipPager | NET::SkipSwitcher |
+                                       NET::StaysOnTop | NET::Sticky);
 
   connect(this, &QQuickWindow::widthChanged, this, &View::sizeChanged);
   connect(this, &QQuickWindow::heightChanged, this, &View::sizeChanged);
