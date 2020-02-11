@@ -350,11 +350,12 @@ export function once(...args: any[]) {
     if (slot) {
       const clear = () => signals.forEach(signal => signal.disconnect(slot));
 
-      signals.forEach(signal => {
-        signal.connect(slot);
-        signal.connect(clear);
-      });
-      return slot;
+      return (
+        signals.forEach(
+          signal => (signal.connect(slot), signal.connect(clear))
+        ),
+        slot
+      );
     }
   } catch (e) {
     console.warn(e);
