@@ -20,9 +20,8 @@ declare namespace Qt {
   class Timer {}
   const setTimeout: (handler: () => any, ms: number) => Timer;
   const clearTimeout: (timer: Timer) => void;
-  // const $positioner: Dock.$positioner;
-  // const $view: Dock.$view;
-  // const $layout: Dock.$layout;
+  const setInterval: (handler: () => any, ms: number) => Timer;
+  const clearInterval: (timer: Timer) => void;
   //END: No standard
 
   //START: Qt QML Type

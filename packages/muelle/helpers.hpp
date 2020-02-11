@@ -114,14 +114,8 @@ public:
   explicit Extensions(QObject *parent = nullptr) : QObject(parent) {}
   virtual ~Extensions() override {}
 
-  Q_INVOKABLE void clearTimeout(const QVariant &handler) {
-    if (handler.canConvert<Lambda>()) {
-      auto disconnect = handler.value<Lambda>();
-      disconnect();
-    }
-  }
-
-  Q_INVOKABLE QVariant setTimeout(const QVariant &handler, int delay) {
+  inline QVariant setTimeout(const QVariant &handler, int delay,
+                             bool singleShot) const {
     auto value = handler.value<QJSValue>();
 
     if (!value.isCallable()) {
@@ -130,6 +124,8 @@ public:
     }
 
     QTimer *timer = new QTimer();
+    timer->setSingleShot(singleShot);
+    timer->callOnTimeout([value]() mutable { value.call(); });
 
     Lambda disconnect([timer]() mutable {
       if (timer) {
@@ -140,13 +136,31 @@ public:
         timer = nullptr;
       }
     });
+    if (singleShot)
+      timer->callOnTimeout(disconnect);
 
-    timer->callOnTimeout([value]() mutable { value.call(); });
-    timer->callOnTimeout(disconnect);
-    timer->setSingleShot(true);
     timer->start(delay + delay * 0.05);
 
     return QVariant::fromValue(disconnect);
+  }
+
+  Q_INVOKABLE QVariant setTimeout(const QVariant &handler, int delay) const {
+    return setTimeout(handler, delay, true);
+  }
+
+  Q_INVOKABLE void clearTimeout(const QVariant &handler) const {
+    if (handler.canConvert<Lambda>()) {
+      auto disconnect = handler.value<Lambda>();
+      disconnect();
+    }
+  }
+
+  Q_INVOKABLE QVariant setInterval(const QVariant &handler, int delay) const {
+    return setTimeout(handler, delay, false);
+  }
+
+  Q_INVOKABLE void clearInterval(const QVariant &handler) const {
+    clearTimeout(handler);
   }
 
   static void registerExtensions(QQmlEngine &engine) {

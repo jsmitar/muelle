@@ -26,6 +26,8 @@ Item {
     // Start: Set Globals
     Qt.setTimeout = setTimeout
     Qt.clearTimeout = clearTimeout
+    Qt.setInterval = setInterval
+    Qt.clearInterval = clearInterval
     Qt.Muelle = { Types }
     $positioner.centerOffset = 0
     // End: Set Globals
