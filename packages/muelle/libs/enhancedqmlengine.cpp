@@ -38,10 +38,10 @@ void EnhancedQmlEngine::loadResources() {
   malloc_trim(0);
 
   if (QResource::registerResource(SHELL_RCC)) {
-    qInfo() << "\033[1;32m[watch] QML Resources Updated\033[0m";
+    qInfo() << "\u001b[1;32m[watch] QML Resources Updated\u001b[0m";
     mReady = true;
   } else {
-    qWarning() << "\033[1;32m[watch] QML Resources fail to register\033[0m"
+    qWarning() << "\u001b[1;32m[watch] QML Resources fail to register\u001b[0m"
                << SHELL_RCC;
     mReady = false;
   }
