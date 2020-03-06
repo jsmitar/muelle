@@ -428,12 +428,20 @@ export function throttle<Fn extends (...args: any[]) => any>(
 ) {
   let timer: Qt.Timer | undefined;
   let lastArgs: Parameters<Fn>;
+  let called: boolean = false;
 
   return (...args: Parameters<Fn>) => {
     lastArgs = args;
+    called = true;
+
     if (!timer) {
-      timer = Qt.setTimeout(() => {
-        timer = (fn(...lastArgs), void Qt.clearTimeout(timer!));
+      timer = Qt.setInterval(() => {
+        if (called) {
+          timer = fn(...lastArgs);
+          called = false;
+        } else {
+          timer = void Qt.clearInterval(timer!);
+        }
       }, time);
     }
   };
