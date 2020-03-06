@@ -128,7 +128,7 @@ QObject {
       readonly property rect rect: Qt.rect(-1, -1, 1, 1)
     }
 
-    readonly property rect noMask: Qt.rect(0,0,0,0)
+    readonly property rect noMask: Qt.rect(0, 0, 0, 0)
 
     readonly property rect rect: enabled 
       ? state.panel.visible ? visible.rect : hidden.rect
@@ -137,10 +137,10 @@ QObject {
 
   Spy {
     delayed: true
-    properties: [
-      spy`${view}.size`,
-      spy`${panel}.rect,nextRect`,
-      spy`${mask}.rect`
-    ]
+    // properties: [
+    //   spy`${view}.size`,
+    //   spy`${panel}.rect,nextRect`,
+    //   spy`${mask}.rect`
+    // ]
   }
 }
