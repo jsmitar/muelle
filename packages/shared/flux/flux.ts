@@ -1,6 +1,6 @@
 import Qt from 'qt';
 import { A } from 'ts-toolbelt';
-import { debounce, tostr } from '../functional';
+import { debounce } from '../functional';
 import EventEmitter from '../saga/eventEmitter';
 import { SagaFn, Task } from '../saga/private/types';
 import { runSaga } from '../saga/saga';
@@ -70,7 +70,7 @@ export class FluxStore<S extends State, M extends Mutations> {
 
   commit(type: string, ...args: any[]) {
     try {
-      console.info(`[COMMIT]: ${tostr({ type, args }, 3, -1)}`);
+      // console.info(`[COMMIT]: ${tostr({ type, args }, 3, -1)}`);
       if (type in this.mutations) {
         this.mutations[type](this.state, ...args);
       } else {

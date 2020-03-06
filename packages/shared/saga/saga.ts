@@ -39,7 +39,7 @@ import {
   TakeEffect,
   Task,
 } from './private/types';
-import { SagaMonitor } from './sagaMonitor';
+import { SagaMonitorHooks } from './sagaMonitor';
 
 const id = genId();
 
@@ -51,7 +51,7 @@ const Return = 'return';
 type Response = any;
 
 export type TaskContext = {
-  sagaMonitor?: SagaMonitor;
+  sagaMonitor?: SagaMonitorHooks;
   actionSubscriber: EventEmitter;
   dispatch(action: ActionAny): void;
   commit(type: string, ...args: any[]): void;

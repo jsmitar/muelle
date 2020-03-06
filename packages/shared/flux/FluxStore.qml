@@ -13,6 +13,8 @@ QObject {
   onMutationsChanged: private_.init()
   onSagaRootChanged: private_.init()
 
+  property var sagaMonitor: S.simpleSagaMonitor
+
   QObject {
     id: private_
     property var store
@@ -23,7 +25,7 @@ QObject {
           state,
           mutations,
           sagaRoot,
-          sagaMonitor: S.simpleSagaMonitor
+          sagaMonitor
         })
         parentObject.dispatch = payload => store.dispatch(payload)
       }

@@ -1,8 +1,8 @@
-import { tostr } from '../functional';
+import { noop, tostr } from '../functional';
 import { effectType, SELECT, TaskStatus } from './private/symbols';
-import { SagaMonitor } from './sagaMonitor';
+import { SagaMonitor, SagaMonitorHooks } from './sagaMonitor';
 
-export const simpleSagaMonitor: SagaMonitor = {
+const sagaMonitorHooks: SagaMonitorHooks = {
   rootSagaStarted(task) {
     console.info(`${task} [Started]`);
   },
@@ -34,4 +34,28 @@ export const simpleSagaMonitor: SagaMonitor = {
       result !== undefined ? `Result: ${tostr(result, 3, -1)}` : ''
     );
   },
+};
+
+const sagaMonitorHooksDisabled: SagaMonitorHooks = {
+  rootSagaStarted: noop,
+  effectResolved: noop,
+  effectTriggered: noop,
+  statusChanged: noop,
+};
+
+export const simpleSagaMonitor: SagaMonitor = {
+  _enable: false,
+
+  get enable() {
+    return this._enable;
+  },
+  set enable(value) {
+    this._enable = value;
+    if (this._enable) {
+      Object.assign(this, { ...this, ...sagaMonitorHooks });
+    } else {
+      Object.assign(this, { ...this, ...sagaMonitorHooksDisabled });
+    }
+  },
+  ...sagaMonitorHooksDisabled,
 };
