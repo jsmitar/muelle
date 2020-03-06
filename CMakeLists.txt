@@ -47,7 +47,7 @@ set(SHELL_RCC "packages/resources/shell.rcc")
 
 # Packages: Qt-KDE Packages
 find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
-find_package(KF5 REQUIRED COMPONENTS WindowSystem Config)
+find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config)
 
 # Packages: xcb
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
@@ -70,6 +70,7 @@ target_link_libraries(muelle
   Qt5::X11Extras
   KF5::WindowSystem
   KF5::ConfigCore
+  KF5::Plasma
   ${XCB_LIBRARIES}
 )
 
