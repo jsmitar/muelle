@@ -1,8 +1,11 @@
-import { TaskItemModel } from 'plasma/org.kde.plasma.private.taskmanager-0.1';
+import {
+  TaskItemModel,
+  TasksModel,
+} from 'plasma/org.kde.plasma.private.taskmanager-0.1';
 import Qt from 'qt';
 
 export function activate(
-  taskModel: any,
+  tasksModel: TasksModel,
   { index, m }: { index: number; m: TaskItemModel },
   { modifiers }: { modifiers: Qt.KeyboardModifier }
 ) {
@@ -11,9 +14,11 @@ export function activate(
     requestToggleMinimized,
     requestActivate,
     requestNewInstance,
-  } = taskModel;
+    requestPublishDelegateGeometry,
+  } = tasksModel;
 
   const modelIndex = makeModelIndex(index);
+  requestPublishDelegateGeometry(modelIndex, Qt.rect(0, 0, 0, 0));
   if (modifiers === Qt.NoModifier) {
     if (m.IsActive) {
       requestToggleMinimized(modelIndex);

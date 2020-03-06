@@ -1,5 +1,6 @@
 import { Mutations } from '../../shared/flux/flux';
 import {
+  ADD_TRANSITION,
   ENABLE_MASK,
   HIDE_PANEL,
   LOCK_VISIBLE,
@@ -42,6 +43,9 @@ export const mutations: Mutations<ShellState> = {
   },
   [HIDE_PANEL](state) {
     state.panel.visible = false;
+  },
+  [ADD_TRANSITION](state, value) {
+    state.animation.addEnabled = value;
   },
   [NEXT_TASK_COUNT1](state, count) {
     state.panel.nextTaskCount1 = count;

@@ -30,3 +30,5 @@ export const disableMask = createAction('disableMask');
 export const updateTaskCount1 = createAction<number>('updateTaskCount1');
 
 export const updateLayout = createAction('updateLayout');
+
+export const syncLaunchers = createAction('syncLaunchers');

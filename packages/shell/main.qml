@@ -80,6 +80,13 @@ Item {
       value: store.state.geometry.panelNextSize
       delayed: true
     }
+    Connections {
+      target: store.state.tasksModel
+
+      onCountChanged: {
+        store.dispatch(Action.updateTaskCount1(target.count))
+      }
+    }
 
     contextMenu: DockMenu {
       parent: root

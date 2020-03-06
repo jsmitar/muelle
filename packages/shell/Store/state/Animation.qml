@@ -7,4 +7,6 @@ QObject {
 
   // units/second
   property int velocity: (120 * 1000) / duration
+
+  property bool addEnabled: true
 }

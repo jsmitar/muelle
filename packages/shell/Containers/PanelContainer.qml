@@ -2,9 +2,13 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.3
 import QtQml.Models 2.3
 import org.muelle.types 1.0
+
+import '../Store/actions.ts' as Action
 import '../../shared/components'
 import '../Components'
 import '../../shared/functional.ts' as F
+import '../../shared/sequence.ts' as Seq
+
 
 Loader {
   id: panelContainer
@@ -23,16 +27,12 @@ Loader {
   Drag.hotSpot.y: store.state.icon.size / 2
   Drag.dragType: Drag.Automatic
 
+  Repeater { parent: positioner; model: panelContainer.model }
 
-  Item {
-    Repeater { parent: positioner; model: panelContainer.model }
-  }
-
-  children: [
   DropArea {
     id: dropArea
 
-    readonly property rect rect: store.state.geometry.panelRect
+    readonly property rect rect: store.state.geometry.panelNextRect
 
     anchors {
       fill: parent
@@ -44,7 +44,8 @@ Loader {
 
     function moveTask() {
       if (dragging && hovered) {
-        model.items.move(
+
+        store.tasksModel.move(
           dragging.DelegateModel.itemsIndex,
           hovered.DelegateModel.itemsIndex
         )
@@ -59,20 +60,30 @@ Loader {
       }
     }
 
+    onEntered: {
+      const apps = Seq
+        .from(drag.urls)
+        .filter(url => store.backend.isApplication(url))
+        .each(url => store.backend.addLauncher(url))
+      
+      if (apps.length) {
+        drag.accept()
+      }
+    }
+
     onDropped: {
-      const applications = F.Iter
+      const urls = Seq
         .from(drop.urls)
-        .filter(store.backend.isApplication)
-        .each(store.tasksModel.requestAddLauncher)
+        .filter(url => !store.backend.isApplication(url))
         .value
 
-      if (applications.length || !hovered) return
-
-      const modelIndex = store.tasksModel.makeModelIndex(hovered.index)
-
-      store.tasksModel.requestOpenUrls(modelIndex, drop.urls)
+      if (urls && hovered) {
+        const modelIndex = store.tasksModel.makeModelIndex(hovered.index)
+        store.tasksModel.requestOpenUrls(modelIndex, drop.urls)
+      }
+      store.dispatch(Action.syncLaunchers())
     }
-  }]
+  }
 
   Component {
     id: horizontal
@@ -90,8 +101,6 @@ Loader {
         spacing: store.state.icon.spacing
         layoutDirection: Qt.LeftToRight
         Layout.fillHeight: true
-        // Layout.maximumHeight: store.state.icon.size
-        // height: Layout.maximumHeight
 
         Component.onCompleted: {
           panelContainer.positioner = row
@@ -113,6 +122,7 @@ Loader {
           }
         }
         add: Transition {
+          enabled: store.state.animation.addEnabled
           NumberAnimation {
             property: 'y'
             from: ($layout.edge === Types.Top ? -1 : 1) * store.state.icon.size
@@ -143,10 +153,7 @@ Loader {
       Column {
         id: column
         spacing: store.state.icon.spacing
-        // layoutDirection: Qt.TopToBottom
         Layout.fillWidth: true
-        // Layout.maximumWidth: store.state.icon.size
-        // width: Layout.maximumWidth
 
         Component.onCompleted: {
           panelContainer.positioner = column
@@ -168,6 +175,7 @@ Loader {
           }
         }
         add: Transition {
+          enabled: store.state.animation.addEnabled
           NumberAnimation {
             property: 'x'
             from: ($layout.edge === Types.Left ? -1 : 1) * store.state.icon.size

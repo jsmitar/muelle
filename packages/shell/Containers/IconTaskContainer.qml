@@ -119,14 +119,14 @@ MouseArea {
   drag {
     axis: Drag.XAndYAxis
     smoothed: false
-    threshold: 0
+    threshold: 5
     filterChildren: true
     target: iconTarget
   }
 
   drag.onActiveChanged: {
     if (drag.active) {
-      opacity = 0.5
+      opacity = 0
       drag.target.grabToImage(img => {
         hold = true
         panel.Drag.imageSource = img.url
@@ -151,7 +151,8 @@ MouseArea {
   }
 
   onExited: {
-    panel.hovered = null
+    if (panel.hovered === task)
+      panel.hovered = null
   }
 
   onReleased: {

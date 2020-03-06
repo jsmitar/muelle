@@ -22,9 +22,9 @@ Item {
 
     DelegateModel {
       Component.onCompleted: {
-        setTimeout(_ => {
-          model = Qt.binding(_ => store.tasksModel)
-        }, 500)
+        Qt.callLater(() => {
+          model = Qt.binding(() => store.tasksModel)
+        })
       }
 
       Component.onDestruction: {
