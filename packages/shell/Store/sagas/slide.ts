@@ -1,5 +1,5 @@
 import { Action } from '../../../shared/flux/flux';
-import { call, cancelled, commit, take } from '../../../shared/saga/effects';
+import { call, commit, take } from '../../../shared/saga/effects';
 import { Saga } from '../../../shared/saga/private/types';
 import {
   HIDE_PANEL,
@@ -14,9 +14,9 @@ export function* slide(action: Action<'in' | 'out'>): Saga {
   try {
     action.payload === 'in' ? yield call(slideIn) : yield call(slideOut);
   } finally {
-    if (yield cancelled()) {
-      yield commit(SLIDE_STATUS, 'none');
-    }
+    // if (yield cancelled()) {
+    //   yield commit(SLIDE_STATUS, 'none');
+    // }
   }
 }
 
