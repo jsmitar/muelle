@@ -18,6 +18,7 @@
 #ifndef Types_HPP
 #define Types_HPP
 
+#include <QFlags>
 #include <QObject>
 #include <QQmlEngine>
 
@@ -27,13 +28,14 @@ class Types {
   Q_DISABLE_COPY(Types)
 
 public:
-  enum class Edge {
+  enum class Edge : uint {
     Top = 1 << 1,
     Right = 1 << 2,
     Bottom = 1 << 3,
     Left = 1 << 4,
   };
   Q_ENUM(Edge)
+  Q_DECLARE_FLAGS(Edges, Edge)
 
   enum class Orientation {
     Horizontal = 1 << 5,
@@ -57,4 +59,5 @@ inline void qmlRegisterTypes() {
                                     "Muelle::Types is an uncreatable type");
 }
 } // namespace Muelle
+Q_DECLARE_OPERATORS_FOR_FLAGS(Muelle::Types::Edges)
 #endif // Types_HPP
