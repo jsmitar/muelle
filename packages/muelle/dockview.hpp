@@ -19,12 +19,14 @@
 #define DOCKVIEW_HPP
 
 #include "configuration.hpp"
+#include "helpers.hpp"
 #include "layout.hpp"
 #include "libs/enhancedqmlengine.hpp"
 #include "positionhandler.hpp"
 
 #include <memory>
 
+#include "viewshadows.hpp"
 #include <KConfig>
 #include <KConfigGroup>
 #include <QDebug>

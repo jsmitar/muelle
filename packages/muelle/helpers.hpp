@@ -19,17 +19,25 @@
 #define HELPERS_HPP
 
 #include <QApplication>
+#include <QBitmap>
 #include <QDebug>
+#include <QImage>
 #include <QJSEngine>
 #include <QJSValue>
 #include <QMetaObject>
 #include <QObject>
+#include <QPainter>
+#include <QPen>
+#include <QPixmap>
+#include <QPolygonF>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QRegion>
 #include <QSharedPointer>
 #include <QThread>
 #include <QTimer>
 #include <QVariant>
+#include <cmath>
 #include <iostream>
 #include <memory>
 
@@ -108,6 +116,15 @@ private:
 Q_DECLARE_METATYPE(Lambda);
 
 namespace Muelle {
+
+struct BorderRadius {
+  int size = 0;
+  bool topLeft = false;
+  bool topRight = false;
+  bool bottomLeft = false;
+  bool bottomRight = false;
+};
+
 class Extensions : public QObject {
   Q_OBJECT
 public:
@@ -167,6 +184,69 @@ public:
     static Extensions ext;
     engine.rootContext()->setContextObject(&ext);
   }
+
+  static QRegion setRadius(const QRect &rect, BorderRadius radius) {
+    if (rect.width() < 5 || rect.height() < 5)
+      return {rect};
+
+    QBitmap bitmap(rect.size());
+    bitmap.clear();
+
+    QPainter p(&bitmap);
+    p.setBackgroundMode(Qt::BGMode::TransparentMode);
+    p.setPen(Qt::PenStyle::NoPen);
+
+    p.fillRect(bitmap.rect(), Qt::transparent);
+    p.setBrush(Qt::black);
+
+    auto w = rect.width();
+    auto h = rect.height();
+
+    auto r = std::min(radius.size, std::min(w, h)) * 2;
+
+    QPainterPath path;
+
+    // topLeft
+    if (radius.topLeft) {
+      path.arcTo(0, 0, r, r, 90, 90);
+    } else {
+      path.lineTo(0, 0);
+    }
+
+    // bottomLeft
+    if (radius.bottomLeft) {
+      path.arcTo(0, h - r, r, r, 180, 90);
+    } else {
+      path.lineTo(0, h);
+    }
+
+    // bottomRight
+    if (radius.bottomRight) {
+      path.arcTo(w - r, h - r, r, r, 270, 90);
+    } else {
+      path.lineTo(w, h);
+    }
+
+    // topRight
+    if (radius.topRight) {
+      path.arcTo(w - r, 0, r, r, 0, 90);
+    } else {
+      path.lineTo(w, 0);
+    }
+
+    path.lineTo(r / 2, 0);
+
+    path.closeSubpath();
+    p.drawPath(path);
+
+    QRegion region(bitmap);
+    region.translate(rect.topLeft());
+
+    qDebug() << "[RECT]" << rect << " [REGION]: rect count"
+             << region.rectCount();
+
+    return region;
+  };
 };
 
 } // namespace Muelle
