@@ -30,7 +30,6 @@ Item {
     Qt.setInterval = setInterval
     Qt.clearInterval = clearInterval
     Qt.Muelle = { Types }
-    $positioner.centerOffset = 0
     // End: Set Globals
   }
 
@@ -38,7 +37,7 @@ Item {
     id: bg
     target: root
     enabled: false
-    showSize: false
+    showSize: true
   }
 
   readonly property SettingsWindow settings: SettingsWindow {}
@@ -95,6 +94,19 @@ Item {
         trigger: () => { settings.visible = true }
       }]
     }
+  }
+
+  ViewShadows {
+    view: $view
+    geometry: store.state.geometry.backgroundRect
+    enabled: store.state.panel.visible
+    edges: 
+      (Types.Top | Types.Right | Types.Bottom | Types.Left) 
+      & ~(store.state.panel.edge)
+  }
+
+  PanelBackground {
+    id: panelBackground
   }
 
   DockContainer {

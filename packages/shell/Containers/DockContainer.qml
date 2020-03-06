@@ -15,15 +15,6 @@ Item {
     target: panelContainer
   }
 
-  ViewShadows {
-    view: $view
-    geometry: store.state.geometry.panelNextRect
-    enabled: store.state.panel.visible
-    edges: 
-      (Types.Top | Types.Right | Types.Bottom | Types.Left) 
-      & ~(store.state.panel.edge)
-  }
-
   PanelContainer {
     id: panelContainer
     anchors.centerIn: dockContainer

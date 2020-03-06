@@ -19,6 +19,11 @@ QObject {
     spacing: 8
   }
 
+  readonly property Background background: Background {
+    parentObject: state
+  }
+  
+
   readonly property Geometry geometry: Geometry {
     parentObject: state
     state: state

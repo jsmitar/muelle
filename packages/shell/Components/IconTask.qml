@@ -38,7 +38,6 @@ IconTaskContainer {
       source: m.decoration
       roundToIconSize: true
       usesPlasmaTheme: false
-
     }
 
     resources: [

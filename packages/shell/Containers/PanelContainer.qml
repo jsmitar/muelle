@@ -9,7 +9,6 @@ import '../Components'
 import '../../shared/functional.ts' as F
 import '../../shared/sequence.ts' as Seq
 
-
 Loader {
   id: panelContainer
   objectName: 'PanelContainer'
