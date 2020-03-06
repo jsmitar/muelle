@@ -61,9 +61,9 @@ const runMuelle = (() => {
   let muelle;
   const log = fs.createWriteStream('out.log');
 
-  return function(restart, cb) {
+  return function muelleApp(restart, cb) {
     if (restart && muelle) {
-      muelle.on('close', () => runMuelle(false, cb));
+      muelle.on('close', () => ((muelle = null), muelleApp(false, cb)));
       muelle.kill('SIGTERM');
       return;
     }

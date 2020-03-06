@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { exec } = require('child_process');
 
 function listFiles(pathname = `${__dirname}/packages`, files = []) {
   return fs
@@ -35,14 +35,20 @@ function generateQrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
 }
 
 function createCommand(command) {
-  return function exec(cb) {
-    try {
-      execSync(command, { cwd: __dirname, stdio: 'inherit' });
-      cb();
-    } catch (e) {
-      cb(e);
-    }
-  };
+  return {
+    [command](cb) {
+      exec(
+        command,
+        { cwd: __dirname, stdio: 'inherit', shell: true },
+        (error, stdout) => {
+          if (stdout) {
+            console.log(`${stdout}`);
+          }
+          error ? cb(error) : cb();
+        }
+      );
+    },
+  }[command];
 }
 
 const clear = createCommand(`clear`);
