@@ -28,7 +28,6 @@ QObject {
 
   property bool lockMaskGrowing: false
 
-
   QObject {
     id: view
     objectName: 'view'
@@ -48,35 +47,11 @@ QObject {
     id: panel
     objectName: 'panel'
 
-    /*
-    return int(screenWide - (viewStart * 2 + viewWide) + mOffset * (screenWide - viewWide)) / 2;
-      */
-
-    SequentialAnimation on offset {
-      loops: Animation.Infinite
-      running: false
-      NumberAnimation {
-        duration: 15000
-        easing.type: Easing.Linear
-        from: -1
-        to: 1
-        running: true
-      }
-      NumberAnimation {
-        duration: 15000
-        easing.type: Easing.Linear
-        from: 1
-        to: -1
-      }
-    }
-
     property real offset: 0
 
     readonly property int xCenter: (view.width - width) / 2
 
     readonly property int xNextCenter: (view.width - nextWidth) / 2
-
-
 
     readonly property int x: xCenter + offset * xCenter
 
@@ -150,13 +125,14 @@ QObject {
     QtObject {
       id: hidden
 
-      readonly property rect rect: Qt.rect(0, 0, 1, 1)
+      readonly property rect rect: Qt.rect(-1, -1, 1, 1)
     }
+
+    readonly property rect noMask: Qt.rect(0,0,0,0)
 
     readonly property rect rect: enabled 
       ? state.panel.visible ? visible.rect : hidden.rect
-      : Qt.rect(0, 0, 0, 0)
-
+      : noMask
   }
 
   Spy {
