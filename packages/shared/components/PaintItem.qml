@@ -20,7 +20,7 @@ QObject {
       Rectangle {
         border.width: 1
         antialiasing: true
-        border.color: '#99ffffff'
+        border.color: "#90000000"
         radius: 2
         color: F.randColor(0.4)
         width: target.width
@@ -37,8 +37,8 @@ QObject {
     Item {
       z: 999
       visible: showSize
-      x: Math.max((parent.width - label.width), 0)
-      y: Math.max((parent.height - label.height), 0)
+      x: Math.max((parent.width - label.width) / 2, 0)
+      y: Math.max((parent.height - label.height) / 2, 0)
 
       Rectangle {
         width: label.width
