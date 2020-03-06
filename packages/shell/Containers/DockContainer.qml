@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.1
 import QtQml.Models 2.3
 import org.muelle.types 1.0
+import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1 as TaskManager
 import '../../shared/functional.ts' as F
 import '../Components'
@@ -12,6 +13,15 @@ Item {
 
   PanelSlideAnimation {
     target: panelContainer
+  }
+
+  ViewShadows {
+    view: $view
+    geometry: store.state.geometry.panelNextRect
+    enabled: store.state.panel.visible
+    edges: 
+      (Types.Top | Types.Right | Types.Bottom | Types.Left) 
+      & ~(store.state.panel.edge)
   }
 
   PanelContainer {

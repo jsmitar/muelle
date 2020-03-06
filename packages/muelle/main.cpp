@@ -25,6 +25,7 @@
 #include "libs/rccwatcher.hpp"
 #include "panelbehavior.hpp"
 #include "pressuredetector.hpp"
+#include "viewshadows.hpp"
 
 #include <cstring>
 #include <iostream>
@@ -54,6 +55,7 @@ int main(int argc, char *argv[]) {
   qmlRegisterPanelBehavior();
   qmlRegisterPropertyMap();
   qmlRegisterQObjectPropertyValueSource();
+  qmlRegisterViewShadows();
 
   QQuickWindow::setDefaultAlphaBuffer(true);
 
