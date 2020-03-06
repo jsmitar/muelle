@@ -48,8 +48,11 @@ QObject {
       enabled && forceUpdate()
     }
 
-    function dodge() {
-      if ($view.containsMouse || !behavior.dodge) {
+    property var dodge: F.debounce(() => {
+      // console.count('dodge')
+      // console.log($view.containsMouse, $view.dragging, !behavior.dodge)
+
+      if ($view.containsMouse || $view.dragging || !behavior.dodge) {
         if (store.state.panel.slide === 'slide-out-running' ||
             store.state.panel.hidden
         ) {
@@ -62,13 +65,13 @@ QObject {
           store.dispatch(Action.slideOut())
         }
       }
-
-    }
+    }, 50)
 
     Connections {
       target: $view
       onEntered: dodgeWindow.dodge()
       onExited: dodgeWindow.dodge()
+      onDraggingChanged: dodgeWindow.dodge()
     }
     Connections {
       target: behavior
