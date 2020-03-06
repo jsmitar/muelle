@@ -14,6 +14,12 @@ declare namespace Qt {
   const MetaModifier: KeyboardModifier;
   const KeypadModifier: KeyboardModifier;
   const GroupSwitchModifier: KeyboardModifier;
+
+  type DropAction = enumeration<'DropAction'>;
+  const CopyAction: DropAction;
+  const MoveAction: DropAction;
+  const LinkAction: DropAction;
+  const IgnoreAction: DropAction;
   //END: Qt Namespace
 
   //START: No standard, extensions and globals
@@ -44,6 +50,7 @@ declare namespace Qt {
   type enumeration<T extends string> = number & {
     [type]: T;
   };
+  type flags<T extends enumeration<any>> = T & number;
   type url = string;
   type rect = size &
     point & {
@@ -100,4 +107,35 @@ declare namespace Qt {
   } & {
     [P in keyof Properties]: Properties[P];
   };
+
+  interface Drag {
+    objectName: string;
+    x: number;
+    y: number;
+    source: null | QtObject<any>;
+    keys: {
+      [key: number]: string;
+    };
+    supportedActions: DropAction;
+    proposedAction: flags<DropAction>;
+    action: DropAction;
+    accepted: boolean;
+    hasColor: boolean;
+    hasHtml: boolean;
+    hasText: boolean;
+    hasUrls: boolean;
+    colorData: color & { valid: boolean };
+    html: string;
+    text: string;
+    urls: {
+      [url: number]: url;
+    };
+    formats: {
+      [key: number]: string;
+    };
+    getDataAsString(): string;
+    getDataAsArrayBuffer(): any;
+    acceptProposedAction(): void;
+    accept(): void;
+  }
 }

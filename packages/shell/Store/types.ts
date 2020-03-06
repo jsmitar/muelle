@@ -1,4 +1,5 @@
 import { Types } from '@qml/org.muelle.types-1.0';
+import { TasksModel } from 'plasma/org.kde.plasma.private.taskmanager-0.1';
 import Qt, { QtObject } from 'qt';
 import { O } from 'ts-toolbelt';
 
@@ -12,6 +13,7 @@ export interface ShellState extends Qt.QtObject {
   geometry: Geometry;
   animation: Animation;
   context: Context;
+  tasksModel: TasksModel;
 }
 
 export interface Settings extends Qt.QtObject<{}> {
@@ -67,6 +69,7 @@ export interface Geometry extends Qt.QtObject {
 export interface Animation extends Qt.QtObject {
   duration: number;
   velocity: number;
+  addEnabled: boolean;
 }
 
 export interface Configuration extends Qt.QtObject {
