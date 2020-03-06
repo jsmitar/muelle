@@ -2,7 +2,7 @@ const { series, parallel, watch, dest, src } = require('gulp');
 const ts = require('gulp-typescript');
 const rename = require('gulp-rename');
 const replace = require('gulp-just-replace');
-const { generateQrc, createCommand, clear } = require('./gulpUtils');
+const { generateQrc, createCommand, clear } = require('./gulputils');
 
 const fs = require('fs');
 const { spawn } = require('child_process');
@@ -69,11 +69,11 @@ const runMuelle = (() => {
     }
 
     if (muelle == null) {
-      log.write(`${'\033[1;35m'}
+      log.write(`${'\u001b[1;35m'}
 ╓───────────────────────────────────╖
 ║          STARTING MUELLE          ║
 ╙───────────────────────────────────╜
-${'\033[0m'}`);
+${'\u001b[0m'}`);
       muelle = spawn(`${dirs.bin}`, dirs.binArgs, {
         cwd: __dirname,
         env: { ...process.env, QML_IMPORT_TRACE: 0 },
