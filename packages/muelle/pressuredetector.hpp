@@ -83,7 +83,7 @@ private:
 
     std::string toString() const {
       return "(" + std::to_string(x1) + "," + std::to_string(y1) + ") " +
-             std::to_string(x1 + x2) + "x" + std::to_string(y1 + y2);
+             std::to_string(x2 - x1) + "x" + std::to_string(y2 - y1);
     }
   };
   std::tuple<xcb_xfixes_barrier_directions_t, Rect> barrier() const;
