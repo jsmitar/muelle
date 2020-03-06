@@ -1,7 +1,7 @@
 {
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cmake.generator": "Ninja",
-  "cmake.buildEnvironment": { "CXX": "/usr/bin/c++" },
+  "cmake.buildEnvironment": { "CXX": "/usr/bin/g++" },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.enable": true,
@@ -20,8 +20,9 @@
     "source.organizeImports": true
   },
   "files.associations": {
-    "*.qrc": "xml",
     "*.qml": "qml",
+    "*.mjs": "javascript",
+    "*.qrc": "xml",
     "qmetaobject": "cpp",
     "atomic": "cpp",
     "functional": "cpp",
@@ -80,6 +81,14 @@
     "thread": "cpp",
     "cinttypes": "cpp",
     "typeinfo": "cpp",
-    "variant": "cpp"
-  }
+    "variant": "cpp",
+    "kwindowshadowtile": "cpp",
+    "qpainter": "cpp",
+    "qpixmap": "cpp",
+    "qqmlengine": "cpp",
+    "qrect": "cpp"
+  },
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.cStandard": "c11"
 }
