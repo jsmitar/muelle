@@ -446,3 +446,40 @@ export function throttle<Fn extends (...args: any[]) => any>(
     }
   };
 }
+
+export interface MemoFunction<Fn extends (...args: any[]) => any> {
+  (...args: Parameters<Fn>): ReturnType<Fn>;
+  cache: {
+    valid: boolean;
+    args: Parameters<Fn>;
+    result: ReturnType<Fn>;
+  };
+}
+
+export function memoize<Fn extends (...args: any[]) => any>(
+  fn: Fn
+): MemoFunction<Fn> {
+  const cache = {
+    valid: false,
+    args: [undefined] as Parameters<Fn>,
+    result: undefined as ReturnType<Fn>,
+  };
+
+  const memoized = (...args: Parameters<Fn>): ReturnType<Fn> => {
+    const changed = zip(cache.args, args).some(([argL, argR]) => argL !== argR);
+
+    if (changed || !cache.valid) {
+      cache.valid = true;
+      cache.args = args;
+      cache.result = fn(...args);
+
+      return cache.result;
+    } else {
+      return cache.result;
+    }
+  };
+
+  memoized.cache = cache;
+
+  return memoized;
+}
