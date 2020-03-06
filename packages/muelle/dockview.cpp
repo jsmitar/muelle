@@ -112,6 +112,15 @@ void View::setContainsMouse(bool containsMouse) {
   }
 }
 
+bool View::dragging() const { return mDragging; }
+
+void View::setDragging(bool dragging) {
+  if (mDragging != dragging) {
+    mDragging = dragging;
+    emit draggingChanged();
+  }
+}
+
 QRect View::mask() const { return QQuickWindow::mask().boundingRect(); }
 
 QRect View::geometry() const { return {position(), size()}; }
@@ -207,6 +216,15 @@ bool View::event(QEvent *ev) {
   case QEvent::Leave:
     setContainsMouse(false);
     break;
+  case QEvent::DragEnter:
+    setDragging(true);
+    break;
+  case QEvent::DragLeave:
+    setDragging(false);
+    setContainsMouse(false);
+    break;
+  case QEvent::Drop:
+    setDragging(false);
   default:;
   }
   return QQuickWindow::event(ev);

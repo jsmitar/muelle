@@ -45,9 +45,12 @@ namespace Muelle {
 class View : public QQuickWindow {
   Q_OBJECT
   Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
+  Q_PROPERTY(bool dragging READ dragging NOTIFY draggingChanged)
   Q_PROPERTY(QRect mask READ mask WRITE setMask NOTIFY maskChanged)
   Q_PROPERTY(QRect geometry READ geometry NOTIFY maskChanged)
   Q_PROPERTY(QRect panelGeometry READ panelGeometry NOTIFY panelGeometryChanged)
+  Q_PROPERTY(QRect absolutePanelGeometry READ absolutePanelGeometry NOTIFY
+                 panelGeometryChanged)
 
   Q_PROPERTY(QSize panelSize READ panelSize WRITE setPanelSize)
   Q_PROPERTY(QPoint panelPosition READ panelPosition WRITE setPanelPosition)
@@ -90,6 +93,9 @@ public:
   bool containsMouse() const;
   void setContainsMouse(bool containsMouse);
 
+  bool dragging() const;
+  void setDragging(bool dragging);
+
   Configuration *configuration() const;
 
 signals:
@@ -107,6 +113,8 @@ signals:
   void entered();
   void exited();
 
+  void draggingChanged();
+
   void release();
 
 protected:
@@ -114,6 +122,7 @@ protected:
 
 private:
   bool mContainsMouse = false;
+  bool mDragging = false;
 
   Layout mLayout;
   PositionHandler mPositionHandler;
