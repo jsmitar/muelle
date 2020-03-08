@@ -3,16 +3,9 @@
   "author": "audoban",
   "license": "GPLv3",
   "scripts": {
+    "start": "NODE_ENV='development'; gulp watch",
     "build": "gulp build",
-    "watch": "gulp watch"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "tabWidth": 2,
-    "useTabs": false
+    "install": "gulp install"
   },
   "devDependencies": {
     "@types/node": "^13.1.4",
@@ -25,5 +18,12 @@
     "tslib": "^1.10.0",
     "typescript": "^3.7.4"
   },
-  "dependencies": {}
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "useTabs": false
+  }
 }

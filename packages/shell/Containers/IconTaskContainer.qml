@@ -140,9 +140,10 @@ MouseArea {
   }
 
 
-  Component.onDestruction: {
-    panel.dragging = null
-  }
+  // Component.onDestruction: {
+  //   if (panel.dragging === task)
+  //     panel.dragging = null
+  // }
   //! END: Drag&Drop
 
   //! BEGIN: MouseHandlers

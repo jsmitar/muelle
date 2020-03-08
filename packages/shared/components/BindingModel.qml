@@ -6,9 +6,9 @@ QObject {
 
   property var initial: undefined
 
-  property Spy _: Spy {
-    properties: [spy`${model}.(initial, prevValue, resources)`]
-  }
+  // property Spy _: Spy {
+  //   properties: [spy`${model}.(initial, prevValue, resources)`]
+  // }
 
   property var prevValue: undefined
 

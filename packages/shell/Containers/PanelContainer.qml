@@ -21,7 +21,7 @@ Loader {
   property Item dragging
   property Item positioner
 
-  Drag.active: !!(dragging && dragging.drag.active && dragging.hold)
+  Drag.active: dragging && dragging.drag.active
   Drag.hotSpot.x: store.state.icon.size / 2
   Drag.hotSpot.y: store.state.icon.size / 2
   Drag.dragType: Drag.Automatic
@@ -41,6 +41,8 @@ Loader {
       bottomMargin: parent.height - rect.height - rect.y
     }
 
+    property var syncLaunchers: F.debounce(store.tasksModel.syncLaunchers, 500)
+
     function moveTask() {
       if (dragging && hovered) {
 
@@ -48,6 +50,7 @@ Loader {
           dragging.DelegateModel.itemsIndex,
           hovered.DelegateModel.itemsIndex
         )
+        syncLaunchers()
       }
     }
 
@@ -80,7 +83,6 @@ Loader {
         const modelIndex = store.tasksModel.makeModelIndex(hovered.index)
         store.tasksModel.requestOpenUrls(modelIndex, drop.urls)
       }
-      store.dispatch(Action.syncLaunchers())
     }
   }
 

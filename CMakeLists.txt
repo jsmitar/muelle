@@ -29,7 +29,7 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 
 # Variables
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
@@ -43,7 +43,7 @@ set(PACKAGE_SHELL "${CMAKE_SOURCE_DIR}/packages/dist/shell")
 set(PACKAGE_SHARED "${CMAKE_SOURCE_DIR}/packages/dist/shared")
 set(SHELL_QRC "packages/shell.qrc")
 set(SHELL_DIST_QRC "packages/dist/shell.qrc")
-set(SHELL_RCC "packages/resources/shell.rcc")
+set(SHELL_RCC ${KDE_INSTALL_FULL_DATADIR}/muelle/shell.rcc)
 
 # Packages: Qt-KDE Packages
 find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
@@ -86,6 +86,9 @@ target_link_libraries(muelle
 
 # Target: qml targets
 add_custom_target(shell SOURCES "${SHELL_QRC}")
+
+add_subdirectory(${PACKAGE_DIR}/resources)
+install(TARGETS muelle DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 # Info Messages
 message(STATUS " ")

@@ -7,6 +7,8 @@ const { generateQrc, createCommand, clear } = require('./gulputils');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
+const development = process.env.NODE_ENV === 'development';
+
 const dirs = {
   tsconfig: 'tsconfig.json',
   CMakeLists: 'CMakeLists.txt',
@@ -15,7 +17,7 @@ const dirs = {
   shared: 'packages/shared',
   shell: 'packages/shell',
   dist: 'packages/dist',
-  buildDev: 'build',
+  build: development ? 'build' : 'build-release',
   bin: 'build/muelle',
   binArgs: [
     '-qmljsdebugger=port:5000,services:CanvasFrameRate,EngineControl,DebugMessages',
@@ -52,10 +54,22 @@ function cleanDist(cb) {
   createCommand(`find ${dirs.dist} -type f -not -name 'qml.rcc' -delete`)(cb);
 }
 
+const mkdirBuild = createCommand(`mkdir -p ${dirs.build}`);
+
 const runCMake = createCommand(
-  `cmake -Wno-dev -G Ninja -S . -B ${dirs.buildDev}`
+  [
+    'cmake',
+    '-Wno-dev',
+    '-G Ninja',
+    '-S .',
+    `-B ${dirs.build}`,
+    development ? `-DSHELL_RCC=${dirs.resources.shell.qrc.rcc}` : '',
+  ].join(' ')
 );
-const runMake = createCommand(`ninja -C ${dirs.buildDev}`);
+
+const runNinja = createCommand(`ninja -C ${dirs.build}`);
+
+const runNinjaInstall = createCommand(`ninja install -C ${dirs.build}`);
 
 const runMuelle = (() => {
   let muelle;
@@ -195,8 +209,16 @@ function watchTask() {
 }
 
 function buildTask() {
-  return parallel(series(runCMake, runMake), series(cleanDist, buildQml));
+  return parallel(
+    series(mkdirBuild, runCMake, runNinja),
+    series(cleanDist, buildQml)
+  );
+}
+
+function install() {
+  return series(runNinjaInstall);
 }
 
 exports.watch = watchTask();
 exports.build = buildTask();
+exports.install = install();
