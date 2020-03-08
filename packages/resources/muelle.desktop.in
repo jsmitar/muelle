@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=@GIT_VERSION@
+Encoding=UTF-8
+Name=Muelle
+GenericName=Muelle
+Icon=application-x-executable
+Comment=Task Panel
+Comment[es]=Panel de tareas
+Comment[en]=Task Panel
+Exec=muelle

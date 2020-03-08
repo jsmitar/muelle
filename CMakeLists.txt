@@ -53,10 +53,20 @@ find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config)
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
 
 # Target: configure
-add_custom_target(configure SOURCES "${PACKAGE_MUELLE}/dockconfig.hpp.in")
+add_custom_target(configure 
+  SOURCES 
+  "${PACKAGE_MUELLE}/dockconfig.hpp.in"
+  "${PACKAGE_MUELLE}/resources/muelle.desktop.in"
+)
+
 configure_file(
   "${PACKAGE_MUELLE}/dockconfig.hpp.in"
   "${PACKAGE_MUELLE}/dockconfig.hpp"
+)
+
+configure_file(
+  "${PACKAGE_DIR}/resources/muelle.desktop.in"
+  "${PACKAGE_DIR}/resources/muelle.desktop"
 )
 
 # Target: muelle
