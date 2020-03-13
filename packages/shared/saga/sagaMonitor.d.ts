@@ -7,7 +7,7 @@ export interface SagaMonitor extends SagaMonitorHooks {
 
 export interface SagaMonitorHooks {
   rootSagaStarted(task: Task): void;
-  effectTriggered(task: Task, effect?: Effect): void;
+  effectTriggered(task: Task, effect?: Effect, result?: any): void;
   effectResolved(task: Task, effect?: Effect, response?: any): void;
   statusChanged(task: Task, result?: any): void;
 }
