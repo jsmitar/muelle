@@ -36,7 +36,7 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   setFlag(Qt::WindowDoesNotAcceptFocus);
   setFlag(Qt::WindowCloseButtonHint);
   setFlag(Qt::FramelessWindowHint);
-  setFlag(Qt::X11BypassWindowManagerHint);
+  // setFlag(Qt::X11BypassWindowManagerHint);
   setFlag(Qt::NoDropShadowWindowHint);
 
   //  setResizeMode(QQuickView::SizeRootObjectToView);
