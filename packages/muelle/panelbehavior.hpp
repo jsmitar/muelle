@@ -20,9 +20,11 @@
 #include "docktypes.hpp"
 #include "dockview.hpp"
 
+#include <QJSValue>
 #include <QObject>
 #include <QQmlParserStatus>
 #include <QRect>
+#include <QVariant>
 #include <QtGui/qwindowdefs.h>
 
 namespace Muelle {
@@ -38,6 +40,7 @@ class PanelBehavior : public QObject, public QQmlParserStatus {
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)
   Q_PROPERTY(Muelle::View *view MEMBER view)
+  Q_PROPERTY(QVariant region WRITE setRegion NOTIFY regionChanged)
 
 public:
   explicit PanelBehavior(QObject *parent = nullptr);
@@ -51,11 +54,14 @@ public:
 
   Q_INVOKABLE void updateStruts();
 
+  void setRegion(const QVariant &rects);
+
   bool dodge() const;
 
 signals:
   void behaviorChanged();
   void dodgeChanged();
+  void regionChanged();
 
 private:
   Private::PanelBehavior *dPtr;

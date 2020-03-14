@@ -43,6 +43,25 @@ void PanelBehavior::setBehavior(Types::Behavior behavior) {
 
 void PanelBehavior::updateStruts() { dPtr->updateStruts(); }
 
+void PanelBehavior::setRegion(const QVariant &rects) {
+  const QJSValue array = rects.value<QJSValue>();
+
+  if (!array.isArray()) {
+    qWarning() << "value is not array";
+    return;
+  }
+  QRegion region;
+
+  for (int i = 0; i < array.property(QStringLiteral("length")).toInt(); ++i) {
+    region += array.property(i).toVariant().toRect();
+  }
+
+  region.translate(view->position());
+  dPtr->region = region;
+
+  emit regionChanged();
+}
+
 bool PanelBehavior::dodge() const { return dPtr->dodgeValue; }
 
 } // namespace Muelle

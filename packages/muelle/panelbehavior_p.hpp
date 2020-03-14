@@ -132,7 +132,7 @@ public:
     connections += QConnect(kwindow(), KWindowShowingDesktopChanged, this,
                             &Private::PanelBehavior::scanAllWindows);
 
-    connections += QConnect(qPtr->view, &View::panelGeometryChanged, this,
+    connections += QConnect(qPtr, &Muelle::PanelBehavior::regionChanged, this,
                             &Private::PanelBehavior::updateDodge);
     scanAllWindows();
   }
@@ -153,7 +153,7 @@ public:
     connections += QConnect(kwindow(), KWindowShowingDesktopChanged, this,
                             &Private::PanelBehavior::dodgeActiveWindow);
 
-    connections += QConnect(qPtr->view, &View::panelGeometryChanged, this,
+    connections += QConnect(qPtr, &Muelle::PanelBehavior::regionChanged, this,
                             &Private::PanelBehavior::updateDodge);
 
     dodgeActiveWindow(kwindow()->activeWindow());
@@ -218,7 +218,7 @@ public:
         (desktop != -1 ? info.desktop() == desktop : info.isOnCurrentDesktop());
 
     return isOnCurrentDesktop && !info.isMinimized() && validType &&
-           info.frameGeometry().intersects(panel);
+           region.intersects(info.frameGeometry());
   }
 
   void scanAllWindows(int desktop = -1) {
@@ -255,7 +255,7 @@ public:
       return;
 
     if (auto screen_ = qPtr->view->screen(); screen_) {
-      const auto panel = qPtr->view->absolutePanelGeometry();
+      const auto panel = region.boundingRect();
       const auto wid = qPtr->view->winId();
       const auto screen = screen_->geometry();
       using Edge = Types::Edge;
@@ -288,6 +288,7 @@ public:
 
 public:
   Muelle::PanelBehavior *qPtr{nullptr};
+  QRegion region;
   QTimer dodgeDebounce;
   QVector<QMetaObject::Connection> connections;
   bool nextDodgeValue{false};

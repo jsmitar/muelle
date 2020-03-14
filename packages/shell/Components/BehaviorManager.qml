@@ -27,6 +27,10 @@ QObject {
     id: behavior
     view: $view
     behavior: store.state.panel.behavior
+    region: [
+      store.state.geometry.panelRect,
+      store.state.geometry.backgroundRect
+    ]
   }
 
   ConnectionGroup {
