@@ -9,6 +9,8 @@ const { spawn } = require('child_process');
 
 const development = process.env.NODE_ENV === 'development';
 
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
 const dirs = {
   tsconfig: 'tsconfig.json',
   CMakeLists: 'CMakeLists.txt',

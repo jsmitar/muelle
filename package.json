@@ -4,7 +4,7 @@
   "license": " GPL-3.0-or-later",
   "private": true,
   "scripts": {
-    "start": "NODE_ENV='development'; gulp watch",
+    "start": "NODE_ENV='development' gulp watch",
     "build": "gulp build",
     "install:bin": "gulp install"
   },

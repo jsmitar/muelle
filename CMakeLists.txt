@@ -43,7 +43,7 @@ set(PACKAGE_SHELL "${CMAKE_SOURCE_DIR}/packages/dist/shell")
 set(PACKAGE_SHARED "${CMAKE_SOURCE_DIR}/packages/dist/shared")
 set(SHELL_QRC "packages/shell.qrc")
 set(SHELL_DIST_QRC "packages/dist/shell.qrc")
-set(SHELL_RCC ${KDE_INSTALL_FULL_DATADIR}/muelle/shell.rcc)
+set(SHELL_RCC ${KDE_INSTALL_FULL_DATADIR}/muelle/shell.rcc CACHE STRING "smith")
 
 # Packages: Qt-KDE Packages
 find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
@@ -92,7 +92,8 @@ install(TARGETS muelle DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 # Info Messages
 message(STATUS " ")
-message(STATUS "Muelle project")
+message(STATUS " -- MUELLE --")
+message(STATUS "Shell: ${SHELL_RCC}")
 message(STATUS "Version: ${GIT_VERSION}")
 message(STATUS "Commit: ${GIT_COMMIT}")
 message(STATUS " ")
