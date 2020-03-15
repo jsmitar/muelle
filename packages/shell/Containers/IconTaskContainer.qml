@@ -97,22 +97,46 @@ MouseArea {
   id: task
   objectName: 'IconTaskContainer'
 
-  readonly property var m: model
+  property var m: model
   property Item panel
-  readonly property int index: model.index
+  readonly property int index: m.index
 
-  readonly property int size: store.state.icon.size
+  // readonly property int size: store.state.icon.size
   readonly property int spacing: store.state.icon.spacing
   readonly property int padding: store.state.icon.padding
 
   property bool hold: false
-  property Item iconTarget
+  
+  readonly property Item itemTarget: loader.item
+  readonly property Item itemDragTarget: loader.item.target
+
+  readonly property bool isSeparator: m.GenericName === '__separator__'
+
   property DelegateModel delegateModel: panel.model
 
   hoverEnabled: true
   acceptedButtons: Qt.LeftButton | Qt.RightButton
-  width: size
-  height: size
+
+  Component {
+    id: iconTask
+    IconTask {
+      m: model
+    }
+  }
+
+  Component {
+    id: separatorTask 
+    SeparatorTask {
+      m: model
+    }
+  }
+
+  Loader {
+    id: loader
+
+    sourceComponent: isSeparator ? separatorTask : iconTask
+
+  }
 
   //! BEGIN: Drag&Drop
   z: containsMouse || drag.active ? 1 : 0
@@ -121,7 +145,7 @@ MouseArea {
     smoothed: false
     threshold: 5
     filterChildren: true
-    target: iconTarget
+    target: itemDragTarget
   }
 
   drag.onActiveChanged: {
@@ -138,12 +162,6 @@ MouseArea {
       opacity = 1
     }
   }
-
-
-  // Component.onDestruction: {
-  //   if (panel.dragging === task)
-  //     panel.dragging = null
-  // }
   //! END: Drag&Drop
 
   //! BEGIN: MouseHandlers
@@ -188,20 +206,20 @@ MouseArea {
   StateLayoutOrientation {
     horizontal: PropertyChanges {
       target: task
-      width: size
+      width: itemTarget.width
       height: parent.height
     }
     vertical: PropertyChanges {
       target: task
       width: parent.width
-      height: size
+      height: itemTarget.height
     }
   }
 
   StateLayoutEdge {
     reset: [
       AnchorChanges {
-        target: iconTarget
+        target: itemTarget
         anchors {
           top: undefined
           right: undefined
@@ -213,22 +231,22 @@ MouseArea {
       }
     ]
     top: AnchorChanges {
-      target: iconTarget
+      target: itemTarget
       anchors.top: task.top
       anchors.horizontalCenter: task.horizontalCenter
     }
     right: AnchorChanges {
-      target: iconTarget
+      target: itemTarget
       anchors.right: task.right
       anchors.verticalCenter: task.verticalCenter
     }
     bottom: AnchorChanges {
-      target: iconTarget
+      target: itemTarget
       anchors.bottom: task.bottom
       anchors.horizontalCenter: task.horizontalCenter
     }
     left: AnchorChanges {
-      target: iconTarget
+      target: itemTarget
       anchors.left: task.left
       anchors.verticalCenter: task.verticalCenter
     }

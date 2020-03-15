@@ -32,7 +32,7 @@ Item {
         model = null
       }
 
-      delegate: IconTask {
+      delegate: IconTaskContainer {
         id: icon
         panel: panelContainer
       }

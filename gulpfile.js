@@ -43,6 +43,7 @@ const dirs = {
       },
     },
     muelle: {
+      datadir: `${process.cwd()}/packages/resources`,
       watch: [
         'CMakeLists.txt',
         'packages/muelle/**/*.(hpp|cpp)',
@@ -65,7 +66,7 @@ const runCMake = createCommand(
     '-G Ninja',
     '-S .',
     `-B ${dirs.build}`,
-    development ? `-DSHELL_RCC=${dirs.resources.shell.qrc.rcc}` : '',
+    development ? `-DMUELLE_DATADIR=${dirs.resources.muelle.datadir}` : '',
   ].join(' ')
 );
 

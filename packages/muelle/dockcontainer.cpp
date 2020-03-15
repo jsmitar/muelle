@@ -6,7 +6,7 @@ Container::Container(QObject *parent)
     : QObject(parent), mEngine(new EnhancedQmlEngine(this)),
       mConfig(KSharedConfig::openConfig(QStringLiteral("muellerc"))) {
 
-  Extensions::registerExtensions(*mEngine);
+  Muelle::registerExtensions(*mEngine);
 }
 
 void Container::loadConfiguration() {

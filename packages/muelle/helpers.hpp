@@ -18,6 +18,8 @@
 #ifndef HELPERS_HPP
 #define HELPERS_HPP
 
+#include "dockconfig.hpp"
+
 #include <QApplication>
 #include <QBitmap>
 #include <QDebug>
@@ -33,7 +35,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QRegion>
-#include <QSharedPointer>
+#include <QString>
 #include <QThread>
 #include <QTimer>
 #include <QVariant>
@@ -180,11 +182,6 @@ public:
     clearTimeout(handler);
   }
 
-  static void registerExtensions(QQmlEngine &engine) {
-    static Extensions ext;
-    engine.rootContext()->setContextObject(&ext);
-  }
-
   static QRegion setRadius(const QRect &rect, BorderRadius radius) {
     if (rect.width() < 5 || rect.height() < 5)
       return {rect};
@@ -248,6 +245,13 @@ public:
     return region;
   };
 };
+
+static void registerExtensions(QQmlEngine &engine) {
+  static Muelle::Extensions ext;
+  engine.rootContext()->setContextObject(&ext);
+  engine.rootContext()->setContextProperty(
+      QStringLiteral("__muelle_separator__"), MUELLE_SEPARATOR);
+}
 
 } // namespace Muelle
 

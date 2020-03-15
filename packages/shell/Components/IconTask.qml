@@ -8,13 +8,15 @@ import '../Containers'
 import '../../shared/components'
 import QtGraphicalEffects 1.12
 
-IconTaskContainer {
+Item {
   id: icon
   objectName: 'IconTask'
-  iconTarget: innerIcon
 
-  Layout.minimumWidth: innerIcon.width
-  Layout.minimumHeight: innerIcon.height
+  readonly property Item target: innerIcon
+  property var m
+
+  width: store.state.icon.size
+  height: width
 
   DropShadow {
     source: innerIcon
@@ -29,9 +31,9 @@ IconTaskContainer {
   Box {
     id: innerIcon
     objectName: 'innerIcon'
-    width: icon.size
-    height: icon.size
-    paddings: icon.padding
+
+    anchors.fill: icon
+    paddings: store.state.icon.padding
 
     PlasmaCore.IconItem {
       id: iconItem
@@ -41,7 +43,7 @@ IconTaskContainer {
     }
 
     resources: [
-      PaintItem { target: innerIcon; enabled: false; showSize: true },
+      PaintItem { target: icon; enabled: false; showSize: true },
       PaintItem { target: iconItem; enabled: false; showSize: false }
     ]
   }

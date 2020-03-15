@@ -37,12 +37,12 @@ void EnhancedQmlEngine::loadResources() {
   QPixmapCache::clear();
   malloc_trim(0);
 
-  if (QResource::registerResource(SHELL_RCC)) {
+  if (QResource::registerResource(MUELLE_SHELL_RCC)) {
     qInfo() << "\u001b[1;32m[watch] QML Resources Updated\u001b[0m";
     mReady = true;
   } else {
     qWarning() << "\u001b[1;32m[watch] QML Resources fail to register\u001b[0m"
-               << SHELL_RCC;
+               << MUELLE_SHELL_RCC;
     mReady = false;
   }
   emit sourceChanged();

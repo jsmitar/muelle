@@ -11,4 +11,6 @@ QObject {
   property int spacing: 0
 
   property int padding: 0
+
+  property int separator: 1
 }

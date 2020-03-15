@@ -15,7 +15,7 @@ QObject {
   readonly property Icon icon: Icon {
     parentObject: state
     iconSize: 48
-    padding: 5
+    padding: 4
     spacing: 8
   }
 
@@ -47,11 +47,14 @@ QObject {
     filterByScreen: false
     filterByActivity: true
     sortMode: TasksModel.SortManual
-    launcherList: `applications:org.qt-project.qtcreator.desktop,applications:firefox.desktop,applications:code.desktop,applications:telegramdesktop.desktop,applications:org.kde.dolphin.desktop`.split(',')
-
-    // onCountChanged: {
-    //   store.dispatch(Action.updateTaskCount1(count))
-    // }
+    launcherList: [
+      'applications:org.qt-project.qtcreator.desktop', 
+      'applications:firefox.desktop',
+      'applications:code.desktop',
+      'applications:telegramdesktop.desktop',
+      `file://${__muelle_separator__}`,
+      'applications:org.kde.dolphin.desktop',
+    ]
 
     Component.onCompleted: {
       countChanged()

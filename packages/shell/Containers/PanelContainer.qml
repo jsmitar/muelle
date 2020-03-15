@@ -22,8 +22,8 @@ Loader {
   property Item positioner
 
   Drag.active: dragging && dragging.drag.active
-  Drag.hotSpot.x: store.state.icon.size / 2
-  Drag.hotSpot.y: store.state.icon.size / 2
+  Drag.hotSpot.x: dragging ? dragging.width / 2 : 0
+  Drag.hotSpot.y: dragging ? dragging.height / 2 : 0
   Drag.dragType: Drag.Automatic
 
   Repeater { parent: positioner; model: panelContainer.model }
