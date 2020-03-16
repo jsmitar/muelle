@@ -4,7 +4,7 @@ import '../../../shared/components'
 QObject {
   objectName: '@State/Background'
 
-  property int lift: 20
+  property int lift: 500
 
   property int borderRadius: 0
 

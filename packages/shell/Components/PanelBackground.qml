@@ -11,9 +11,10 @@ Item {
 
   Rectangle {
     antialiasing: true
-    border.color: F.randColor()
+    color: '#2D343C'
     border.width: 0
     radius: 2
+    opacity: 0.95
     
     anchors.fill: parent
   }
