@@ -27,6 +27,7 @@ QObject {
   // counter of not grouped tasks
   property int nextTaskCount1: 0
   property int taskCount1: 0
+  property int separatorCount: 0
 
   Spy {
     properties: spy`taskCount1`

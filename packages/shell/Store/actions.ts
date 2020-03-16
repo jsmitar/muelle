@@ -1,4 +1,5 @@
 import Muelle from '@qml/org.muelle.types-1.0';
+import Qt from 'qt';
 import { createAction } from '../../shared/flux/createAction';
 
 export const slide = 'slide';
@@ -27,7 +28,19 @@ export const maskGrow = createAction</* duration: */ number>('maskGrow');
 
 export const disableMask = createAction('disableMask');
 
-export const updateTaskCount1 = createAction<number>('updateTaskCount1');
+export const updateTaskCount1 = createAction(
+  'updateTaskCount1',
+  ({ launcherList, tasks }: { launcherList: string[]; tasks: number }) => {
+    const separators = launcherList.filter(
+      item => item === Qt.__muelle_separator__
+    ).length;
+
+    return {
+      tasks: tasks - separators,
+      separators,
+    };
+  }
+);
 
 export const updateLayout = createAction('updateLayout');
 

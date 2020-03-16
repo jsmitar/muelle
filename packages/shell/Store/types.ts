@@ -40,6 +40,7 @@ export interface Panel extends Qt.QtObject<{}> {
 
   nextTaskCount1: number;
   taskCount1: number;
+  separatorCount: number;
 }
 
 export interface Icon extends Qt.QtObject {

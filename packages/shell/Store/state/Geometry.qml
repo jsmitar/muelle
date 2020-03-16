@@ -65,7 +65,7 @@ QObject {
 
     readonly property int paddingX: 30
 
-    readonly property int paddingY: 10
+    readonly property int paddingY: 0
 
     readonly property int x: Math.max(panel.next.x - paddingX, 0)
 
@@ -99,7 +99,8 @@ QObject {
 
     readonly property int width:
       state.icon.size * state.panel.taskCount1 +
-      state.icon.spacing * Math.max(0, state.panel.taskCount1 - 1)
+      state.icon.separator * state.panel.separatorCount +
+      state.icon.spacing * Math.max(0, state.panel.taskCount1 + state.panel.separatorCount - 1)
 
     readonly property int height: state.icon.size
 
@@ -124,7 +125,8 @@ QObject {
 
       readonly property int width:
         state.icon.size * state.panel.nextTaskCount1 +
-        state.icon.spacing * Math.max(0, state.panel.nextTaskCount1 - 1)
+        state.icon.separator * state.panel.separatorCount +
+        state.icon.spacing * Math.max(0, state.panel.nextTaskCount1 + state.panel.separatorCount - 1)
 
       readonly property int height: state.icon.size
 

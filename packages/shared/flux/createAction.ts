@@ -41,7 +41,7 @@ export function createAction(type: string, prepareAction?: any): any {
       actionCreator = (payload: any, meta: any) => {
         return {
           type,
-          ...prepareAction(payload, meta),
+          payload: prepareAction(payload, meta),
         };
       };
     } else {

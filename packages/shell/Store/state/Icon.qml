@@ -12,5 +12,5 @@ QObject {
 
   property int padding: 0
 
-  property int separator: 1
+  readonly property int separator: 1 + padding * 2
 }

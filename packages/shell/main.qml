@@ -29,6 +29,7 @@ Item {
     Qt.clearTimeout = clearTimeout
     Qt.setInterval = setInterval
     Qt.clearInterval = clearInterval
+    Qt.__muelle_separator__ = __muelle_separator__
     Qt.Muelle = { Types }
     // End: Set Globals
   }
@@ -83,7 +84,10 @@ Item {
       target: store.state.tasksModel
 
       onCountChanged: {
-        store.dispatch(Action.updateTaskCount1(target.count))
+        store.dispatch(Action.updateTaskCount1({ 
+          tasks: target.count, 
+          launcherList: target.launcherList
+        }))
       }
     }
 

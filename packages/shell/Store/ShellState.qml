@@ -23,7 +23,6 @@ QObject {
     parentObject: state
   }
   
-
   readonly property Geometry geometry: Geometry {
     parentObject: state
     state: state
@@ -52,7 +51,7 @@ QObject {
       'applications:firefox.desktop',
       'applications:code.desktop',
       'applications:telegramdesktop.desktop',
-      `file://${__muelle_separator__}`,
+      __muelle_separator__,
       'applications:org.kde.dolphin.desktop',
     ]
 
@@ -60,5 +59,4 @@ QObject {
       countChanged()
     }
   }
-
 }

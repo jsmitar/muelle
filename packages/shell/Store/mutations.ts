@@ -9,6 +9,7 @@ import {
   NEXT_BEHAVIOR,
   NEXT_EDGE,
   NEXT_TASK_COUNT1,
+  SEPARATOR_COUNT,
   SHOW_PANEL,
   SHOW_SETTINGS,
   SLIDE_STATUS,
@@ -49,6 +50,9 @@ export const mutations: Mutations<ShellState> = {
   },
   [NEXT_TASK_COUNT1](state, count) {
     state.panel.nextTaskCount1 = count;
+  },
+  [SEPARATOR_COUNT](state, count) {
+    state.panel.separatorCount = count;
   },
   [UPDATE_TASK_COUNT_1](state) {
     state.panel.taskCount1 = state.panel.nextTaskCount1;

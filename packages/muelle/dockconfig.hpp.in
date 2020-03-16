@@ -8,7 +8,7 @@
 #define MUELLE_COMMIT "@GIT_COMMIT@"
 #define MUELLE_DATADIR "@MUELLE_DATADIR@"
 #define MUELLE_SHELL_RCC "@MUELLE_DATADIR@/shell.rcc"
-#define MUELLE_SEPARATOR "@MUELLE_DATADIR@/__separator__.desktop"
+#define MUELLE_SEPARATOR "file://@MUELLE_DATADIR@/__separator__.desktop"
 
 #define PLASMA_DATA_INSTALL_DIR "@KDE_INSTALL_DATADIR@/plasma"
 

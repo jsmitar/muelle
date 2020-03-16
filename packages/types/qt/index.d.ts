@@ -28,6 +28,7 @@ declare namespace Qt {
   const clearTimeout: (timer: Timer) => void;
   const setInterval: (handler: () => any, ms: number) => Timer;
   const clearInterval: (timer: Timer) => void;
+  const __muelle_separator__: '__separator__.desktop';
   //END: No standard
 
   //START: Qt QML Type

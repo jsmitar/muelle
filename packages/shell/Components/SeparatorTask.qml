@@ -19,15 +19,17 @@ Box {
     StateLayoutOrientation {
       horizontal: PropertyChanges {
         target: separator
-        width: store.state.icon.separator + paddings * 2
+        width: store.state.icon.separator
         height: store.state.icon.size
-        paddings: store.state.icon.padding
+        padding.x: store.state.icon.padding
+        padding.y: store.state.icon.padding * 3
       }
       vertical: PropertyChanges {
         target: separator
         width: store.state.icon.size
-        height: store.state.icon.separator + paddings * 2
-        paddings: store.state.icon.padding
+        height: store.state.icon.separator
+        padding.x: store.state.icon.padding * 3
+        padding.y: store.state.icon.padding
       }
     }
   ]
