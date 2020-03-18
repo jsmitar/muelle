@@ -107,8 +107,7 @@ MouseArea {
 
   property bool hold: false
   
-  readonly property Item itemTarget: loader.item
-  readonly property Item itemDragTarget: loader.item.target
+  readonly property Item itemDragTarget: taskItem.item.target
 
   readonly property bool isSeparator: m.GenericName === '__separator__'
 
@@ -132,10 +131,9 @@ MouseArea {
   }
 
   Loader {
-    id: loader
+    id: taskItem
 
     sourceComponent: isSeparator ? separatorTask : iconTask
-
   }
 
   //! BEGIN: Drag&Drop
@@ -192,7 +190,6 @@ MouseArea {
   onWheel: {
     console.log(F.tostr(wheel.angleDelta))
   }
-
   //! END: MouseHandlers
 
   //! BEGIN: Animations
@@ -206,50 +203,47 @@ MouseArea {
   StateLayoutOrientation {
     horizontal: PropertyChanges {
       target: task
-      width: itemTarget.width
+      width: taskItem.width
       height: parent.height
     }
     vertical: PropertyChanges {
       target: task
       width: parent.width
-      height: itemTarget.height
+      height: taskItem.height
     }
   }
 
   StateLayoutEdge {
-    reset: [
-      AnchorChanges {
-        target: itemTarget
-        anchors {
-          top: undefined
-          right: undefined
-          bottom: undefined
-          left: undefined
-          horizontalCenter: undefined
-          verticalCenter: undefined
-        }
+    reset: AnchorChanges {
+      target: taskItem
+      anchors {
+        top: undefined
+        right: undefined
+        bottom: undefined
+        left: undefined
+        horizontalCenter: undefined
+        verticalCenter: undefined
       }
-    ]
+    }
     top: AnchorChanges {
-      target: itemTarget
+      target: taskItem
       anchors.top: task.top
       anchors.horizontalCenter: task.horizontalCenter
     }
     right: AnchorChanges {
-      target: itemTarget
+      target: taskItem
       anchors.right: task.right
       anchors.verticalCenter: task.verticalCenter
     }
     bottom: AnchorChanges {
-      target: itemTarget
+      target: taskItem
       anchors.bottom: task.bottom
       anchors.horizontalCenter: task.horizontalCenter
     }
     left: AnchorChanges {
-      target: itemTarget
+      target: taskItem
       anchors.left: task.left
       anchors.verticalCenter: task.verticalCenter
     }
   }
-
 }
