@@ -43,7 +43,7 @@ out.log
 packages/shell/qml.qrc
 node_modules/
 packages/dist/**/*.*
-!packages/dist/**/*.rcc
+# !packages/dist/**/*.rcc
 packages/muelle/dockconfig.hpp
 packages/shell.qrc
 
