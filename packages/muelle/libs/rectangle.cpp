@@ -74,7 +74,6 @@ void Rectangle::updatePath() noexcept {
 }
 
 void Rectangle::paint(QPainter *paint) {
-  qDebug() << "RENDER" << size();
   updatePath();
   paint->setRenderHint(QPainter::Antialiasing);
   paint->setPen(Qt::PenStyle::NoPen);
