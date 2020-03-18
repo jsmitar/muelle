@@ -23,6 +23,7 @@
 #include "libs/propertymap.hpp"
 #include "libs/qobjectpropertyvaluesource.hpp"
 #include "libs/rccwatcher.hpp"
+#include "libs/rectangle.hpp"
 #include "panelbehavior.hpp"
 #include "pressuredetector.hpp"
 #include "viewshadows.hpp"
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]) {
   qmlRegisterPropertyMap();
   qmlRegisterQObjectPropertyValueSource();
   qmlRegisterViewShadows();
+  qmlRegisterRectangle();
 
   QQuickWindow::setDefaultAlphaBuffer(true);
 
