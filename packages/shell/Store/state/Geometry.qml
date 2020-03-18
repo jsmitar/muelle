@@ -63,19 +63,25 @@ QObject {
     id: background
     objectName: 'background'
 
-    readonly property int paddingX: 30
+    readonly property int paddingX: 10
 
-    readonly property int paddingY: 0
+    readonly property int paddingY: 10
 
-    readonly property int x: Math.max(panel.next.x - paddingX, 0)
+    readonly property int x: 
+      Math.max(Math.min(panel.next.x, panel.x) - 
+      store.state.background.paddingX, 0)
 
     readonly property int y: _isTopOrLeftEdge
       ? 0
       : view.height - height
 
-    readonly property int width: panel.next.width + paddingX * 2
+    readonly property int width: 
+      Math.max(panel.next.width, panel.width) + 
+      store.state.background.paddingX * 2
 
-    readonly property int maxHeight: state.icon.size + paddingY
+    readonly property int maxHeight: 
+      state.icon.size + 
+      store.state.background.paddingY
 
     readonly property int height: Math.min(state.background.lift, maxHeight)
 
@@ -158,7 +164,7 @@ QObject {
       readonly property int gap: store.state.icon.size * 2
 
       readonly property rect rectHorizontal: mask.growing
-        ? Qt.rect(panel.next.x - gap / 2, 0, panel.next.width + gap, panel.next.height)
+        ? Qt.rect(panel.next.x - gap / 2, 0, panel.next.width + gap, view.height)
         : Qt.rect(background.x, 0, background.width, view.height)
 
       readonly property rect rectVertical: mask.growing
@@ -181,12 +187,10 @@ QObject {
       : noMask
   }
 
-  // Spy {
-  //   delayed: true
-  //   // properties: [
-  //   //   spy`${view}.size`,
-  //   //   spy`${panel}.rect,nextRect`,
-  //   //   spy`${mask}.rect`
-  //   // ]
-  // }
+  Spy {
+    delayed: true
+    properties: [
+      spy`${mask}.growing,rect`,
+    ]
+  }
 }

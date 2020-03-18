@@ -20,12 +20,26 @@ Item {
   //   anchors.fill: parent
   // }
 
+  // NOTE: Disabled for now
+  // Behavior on width {
+  //   NumberAnimation {
+  //     easing.type: Easing.InOutQuad
+  //     duration: store.state.animation.duration / 2
+  //   }
+  // }
+  // Behavior on x {
+  //   NumberAnimation {
+  //     easing.type: Easing.InOutQuad
+  //     duration: store.state.animation.duration / 2
+  //   }
+  // }
+
   Muelle.Rectangle {
     anchors.fill: parent
     color: '#222D32'
     radius {
-      topLeft: 4
-      topRight: 4
+      topLeft: 2
+      topRight: 2
     } 
   }
 }
