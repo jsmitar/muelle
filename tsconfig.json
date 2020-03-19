@@ -31,8 +31,8 @@
       "tslib": ["node_modules/tslib"],
       "*": ["packages/*"]
     },
-    "typeRoots": ["packages/types"],
-    "types": ["qt", "node"],
+    "typeRoots": ["packages/types", "node_modules/@types"],
+    "types": ["qt", "node", "jest"],
     "downlevelIteration": true,
     "esModuleInterop": false,
     "incremental": true,

@@ -19,7 +19,7 @@ const dirs = {
   shared: 'packages/shared',
   shell: 'packages/shell',
   dist: 'packages/dist',
-  build: development ? 'build' : 'build-release',
+  build: development ? 'build-dev' : 'build',
   bin: 'build/muelle',
   binArgs: [
     '-qmljsdebugger=port:5000,services:CanvasFrameRate,EngineControl,DebugMessages',
@@ -53,9 +53,10 @@ const dirs = {
   },
 };
 
-function cleanDist(cb) {
-  createCommand(`find ${dirs.dist} -type f -not -name 'qml.rcc' -delete`)(cb);
-}
+const cleanDist = cb =>
+  createCommand(
+    `if [ -f '${dirs.dist}' ]; then find ${dirs.dist} -type f -not -name 'qml.rcc' -delete; fi`
+  )(cb);
 
 const mkdirBuild = createCommand(`mkdir -p ${dirs.build}`);
 

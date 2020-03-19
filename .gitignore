@@ -40,12 +40,11 @@ out.log
 
 # generated files
 *.pro.user*
-packages/shell/qml.qrc
 node_modules/
 packages/dist/**/*.*
-# !packages/dist/**/*.rcc
+packages/**/*.rcc
+packages/**/*.qrc
 packages/muelle/dockconfig.hpp
-packages/shell.qrc
 
 # xemacs temporary files
 *.flc
@@ -79,4 +78,3 @@ packages/shell.qrc
 # --------
 *.dll
 *.exe
-packages/shell.qrc
