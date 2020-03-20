@@ -87,7 +87,9 @@
     "qpixmap": "cpp",
     "qqmlengine": "cpp",
     "qrect": "cpp",
-    "qjsvalue": "cpp"
+    "qjsvalue": "cpp",
+    "qqmlcontext": "cpp",
+    "qtquicktest": "cpp"
   },
   "C_Cpp.default.intelliSenseMode": "gcc-x64",
   "C_Cpp.default.cppStandard": "c++17",

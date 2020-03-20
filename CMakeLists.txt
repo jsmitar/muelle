@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(Muelle LANGUAGES CXX)
 
-# escape character
+# ESCAPE CHARACTER
 string(ASCII 27 Esc)
 
 execute_process(
@@ -28,7 +28,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 
-# Variables
+# VARIABLES
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -45,14 +45,14 @@ set(SHELL_QRC "packages/shell.qrc")
 set(SHELL_DIST_QRC "packages/dist/shell.qrc")
 set(MUELLE_DATADIR ${KDE_INSTALL_FULL_DATADIR}/muelle CACHE STRING "smith")
 
-# Packages: Qt-KDE Packages
-find_package(Qt5 REQUIRED COMPONENTS Core X11Extras Quick)
+# PACKAGES: Qt-KDE Packages
+find_package(Qt5 REQUIRED COMPONENTS Core Test Quick QuickTest X11Extras)
 find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config)
 
-# Packages: xcb
+# PACKAGES: xcb
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
 
-# Target: configure
+# TARGET: configure
 add_custom_target(configure 
   SOURCES 
   "${PACKAGE_MUELLE}/dockconfig.hpp.in"
@@ -69,7 +69,7 @@ configure_file(
   "${PACKAGE_DIR}/resources/muelle.desktop"
 )
 
-# Target: muelle
+# TARGET: muelle
 file(GLOB_RECURSE SOURCES RELATIVE "${CMAKE_SOURCE_DIR}/" "${PACKAGE_MUELLE}/*.cpp")
 file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/" "${PACKAGE_MUELLE}/*.hpp")
 
@@ -83,12 +83,23 @@ target_link_libraries(muelle
   KF5::Plasma
   ${XCB_LIBRARIES}
 )
-
-# Target: qml targets
-add_custom_target(shell SOURCES "${SHELL_QRC}")
-
-add_subdirectory(${PACKAGE_DIR}/resources)
 install(TARGETS muelle DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+
+# TARGET: qml targets
+add_custom_target(shell SOURCES "${SHELL_QRC}") 
+add_subdirectory(${PACKAGE_DIR}/resources)
+
+# TARGET: qml tests
+add_executable(test_qml 
+  "${PACKAGE_DIR}/tests/qml/test_qml.cpp"
+  "${PACKAGE_MUELLE}/helpers.hpp"
+)
+target_link_libraries(test_qml
+  Qt5::Core
+  Qt5::Quick
+  Qt5::Test
+  Qt5::QuickTest
+)
 
 # Info Messages
 message(STATUS " ")

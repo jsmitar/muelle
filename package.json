@@ -7,7 +7,8 @@
     "start": "NODE_ENV='development' gulp watch",
     "build": "gulp build",
     "install:bin": "gulp install",
-    "test": "jest"
+    "test": "jest",
+    "test:qml": "build/test_qml -input packages/tests/qml"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
