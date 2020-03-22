@@ -57,5 +57,5 @@ export const simpleSagaMonitor: SagaMonitor = {
       Object.assign(this, { ...this, ...sagaMonitorHooksDisabled });
     }
   },
-  ...sagaMonitorHooksDisabled,
+  ...sagaMonitorHooks,
 };

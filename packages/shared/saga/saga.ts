@@ -1,6 +1,6 @@
 import Qt from 'qt';
 import { ActionAny } from '../flux/flux';
-import { noop, zip } from '../functional';
+import { isEmpty, noop, zip } from '../functional';
 import genId from '../genId';
 import EventEmitter, { Connection, Listener } from './eventEmitter';
 import { isEffect } from './helpers';
@@ -122,6 +122,7 @@ export class TaskController implements Task {
       this.handleNext(result);
     } catch (e) {
       console.error(e.name, e.message, e.stack);
+
       if (this.m_status !== TaskStatus.Aborted) {
         this.m_status = TaskStatus.Aborted;
         this.releaseContextConnections();
@@ -141,12 +142,18 @@ export class TaskController implements Task {
         );
       }
     } else {
-      this.releaseContextConnections();
+      this.m_result = value;
       if (this.m_status === TaskStatus.Running) {
         this.m_status = TaskStatus.Done;
-        this.m_result = value;
-        this.notifyFinish();
       }
+      this.releaseContextConnections();
+      this.handleFinish();
+    }
+  }
+
+  handleFinish() {
+    if (isEmpty(this.subTasks)) {
+      this.notifyFinish();
       this.m_parent?.deleteSubTask(this);
     }
   }
@@ -159,8 +166,6 @@ export class TaskController implements Task {
 
   propagateCancel() {
     this.m_status = TaskStatus.Cancelled;
-    //this.notifyFinish();
-    this.releaseContextConnections();
     for (let id in this.subTasks) {
       this.subTasks[id].cancel();
     }
@@ -182,10 +187,12 @@ export class TaskController implements Task {
   deleteSubTask(task: TaskController) {
     task.m_parent = null;
     delete this.subTasks[task.taskId];
+
+    this.handleFinish();
   }
 
   cancel(effect?: CancelEffect) {
-    if (effect && effect.task !== this) {
+    if (effect && effect.task && effect.task !== this) {
       (<TaskController>effect.task).cancel();
       this.advancer(effect);
     } else if (this.m_status === TaskStatus.Running) {
@@ -363,7 +370,7 @@ export function makeTask<Fn extends SagaFn>(
 
 export function runSaga<Fn extends SagaFn>(
   context: TaskContext,
-  saga: Fn,
+  saga: Fn | { saga: Fn; name: string; onFinish: Listener<[any, TaskStatus]> },
   ...args: Parameters<Fn>
 ): Task {
   if (!context.sagaMonitor) {
@@ -374,10 +381,17 @@ export function runSaga<Fn extends SagaFn>(
       statusChanged: noop,
     };
   }
-  return new TaskController(
+
+  const task = new TaskController(
     <Required<TaskContext>>context,
     null,
-    saga(...args),
-    saga.name
-  ).run(/* delayed */ false);
+    'saga' in saga ? saga.saga(...args) : saga(...args),
+    'name' in saga ? saga.name : 'root'
+  );
+
+  if ('onFinish' in saga) {
+    task.onFinish(saga.onFinish);
+  }
+
+  return task.run(/* delayed */ false);
 }

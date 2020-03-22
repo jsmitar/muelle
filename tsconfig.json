@@ -1,5 +1,10 @@
 {
-  "include": ["packages/shell", "packages/shared", "packages/types"],
+  "include": [
+    "packages/shell",
+    "packages/shared",
+    "packages/types",
+    "packages/tests"
+  ],
   "compilerOptions": {
     "target": "ES2015",
     "module": "ESNext",

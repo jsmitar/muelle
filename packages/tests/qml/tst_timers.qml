@@ -1,4 +1,3 @@
-
 import QtQuick 2.12
 import QtTest 1.14
 

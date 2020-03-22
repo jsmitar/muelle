@@ -25,6 +25,14 @@ export function identity<T>(item: T) {
 
 export function noop() {}
 
+export function isEmpty(obj: Object) {
+  for (let k in obj) {
+    if (obj.hasOwnProperty(k)) return false;
+  }
+
+  return true;
+}
+
 export function each<T>(
   array: Iterable<T>,
   fn: (value: T, index: number, array: T[]) => void

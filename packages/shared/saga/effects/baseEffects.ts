@@ -1,5 +1,6 @@
 import { AnyActionCreator } from '../../flux/createAction';
 import { ActionAny } from '../../flux/flux';
+import { isString } from '../../functional';
 import {
   ALL,
   CALL,
@@ -50,7 +51,13 @@ export function take(type: string | AnyActionCreator): TakeEffect {
   return { [effectType]: TAKE, pattern };
 }
 
-export function put(action: ActionAny): PutEffect {
+export function put(action: ActionAny): PutEffect;
+export function put(type: string, payload?: any): PutEffect;
+
+export function put(action: any, payload?: any): PutEffect {
+  if (isString(action)) {
+    return { [effectType]: PUT, type: action, payload };
+  }
   return { [effectType]: PUT, ...action };
 }
 
