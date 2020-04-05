@@ -20,7 +20,7 @@ const dirs = {
   shell: 'packages/shell',
   dist: 'packages/dist',
   build: development ? 'build-dev' : 'build',
-  bin: 'build/muelle',
+  bin: development ? 'build-dev/muelle' : 'build/muelle',
   binArgs: [
     '-qmljsdebugger=port:5000,services:CanvasFrameRate,EngineControl,DebugMessages',
   ],
@@ -53,7 +53,7 @@ const dirs = {
   },
 };
 
-const cleanDist = cb =>
+const cleanDist = (cb) =>
   createCommand(
     `if [ -f '${dirs.dist}' ]; then find ${dirs.dist} -type f -not -name 'qml.rcc' -delete; fi`
   )(cb);
@@ -120,7 +120,7 @@ function buildQml(cb) {
           .src()
           .pipe(tsProject())
           .js.pipe(
-            rename(path => {
+            rename((path) => {
               path.extname = '.mjs';
             })
           )
@@ -168,14 +168,14 @@ function buildQml(cb) {
       }
     ),
     function createShellQrc(cb) {
-      [dirs.resources.shell].forEach(resource => {
+      [dirs.resources.shell].forEach((resource) => {
         const qrc = generateQrc(resource.qrc.from, resource.qrc.input);
         fs.writeFileSync(resource.qrc.output, qrc, { flag: 'w' }, () => {});
       });
       cb();
     },
     function createShellQrcQtCreator(cb) {
-      [dirs.resources.shell].forEach(resource => {
+      [dirs.resources.shell].forEach((resource) => {
         const qrc = generateQrc(
           resource.qrcQtCreator.from,
           resource.qrcQtCreator.input,
@@ -191,7 +191,7 @@ function buildQml(cb) {
       cb();
     },
     function createShellRcc(cb) {
-      [dirs.resources.shell].forEach(resource => {
+      [dirs.resources.shell].forEach((resource) => {
         createCommand(
           `rcc-qt5 --no-compress --binary -o ${resource.qrc.rcc} ${resource.qrc.output}`
         )(cb);
