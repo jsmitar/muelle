@@ -36,10 +36,10 @@ Item {
 
   Muelle.Rectangle {
     anchors.fill: parent
-    color: '#222D32'
+    color: '#222D3210'
     radius {
-      topLeft: 2
-      topRight: 2
-    } 
+      topLeft: 4
+      topRight: 4
+    }
   }
 }

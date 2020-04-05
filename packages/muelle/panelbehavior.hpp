@@ -40,7 +40,7 @@ class PanelBehavior : public QObject, public QQmlParserStatus {
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)
   Q_PROPERTY(Muelle::View *view MEMBER view)
-  Q_PROPERTY(QVariant region WRITE setRegion NOTIFY regionChanged)
+  Q_PROPERTY(QVariant region READ region WRITE setRegion NOTIFY regionChanged)
 
 public:
   explicit PanelBehavior(QObject *parent = nullptr);
@@ -55,6 +55,7 @@ public:
   Q_INVOKABLE void updateStruts();
 
   void setRegion(const QVariant &rects);
+  QVariant region() const;
 
   bool dodge() const;
 

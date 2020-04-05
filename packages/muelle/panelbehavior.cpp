@@ -62,6 +62,8 @@ void PanelBehavior::setRegion(const QVariant &rects) {
   emit regionChanged();
 }
 
+QVariant PanelBehavior::region() const { return dPtr->region; }
+
 bool PanelBehavior::dodge() const { return dPtr->dodgeValue; }
 
 } // namespace Muelle

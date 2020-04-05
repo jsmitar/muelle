@@ -6,6 +6,8 @@
 #include <KWindowShadowTile>
 #include <KWindowSystem>
 #include <Plasma/Svg>
+#include <QApplication>
+#include <QMap>
 #include <QObject>
 #include <QPainter>
 #include <QPixmap>
@@ -43,8 +45,8 @@ public:
   void setEnabled(bool enabled);
   bool enabled() const;
 
+private:
   void configureTiles();
-  void updateShadowGeometry();
 
 signals:
   void geometryChanged();
@@ -57,8 +59,11 @@ private:
   Types::Edges mEdges;
   QRect mRect;
   QWindow *mView{nullptr};
-  Plasma::Svg *mSvg;
   KWindowShadow *mShadow;
+
+  static Plasma::Svg *mSvg;
+  static QMap<QString, KWindowShadowTile::Ptr> mTile;
+  static QMap<QString, int> mHint;
 };
 } // namespace Muelle
 
