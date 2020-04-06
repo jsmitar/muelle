@@ -52,10 +52,10 @@ export const simpleSagaMonitor: SagaMonitor = {
   set enable(value) {
     this._enable = value;
     if (this._enable) {
-      Object.assign(this, { ...this, ...sagaMonitorHooks });
+      Object.assign(this, sagaMonitorHooks);
     } else {
-      Object.assign(this, { ...this, ...sagaMonitorHooksDisabled });
+      Object.assign(this, sagaMonitorHooksDisabled);
     }
   },
-  ...sagaMonitorHooks,
+  ...sagaMonitorHooksDisabled,
 };
