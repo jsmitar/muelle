@@ -5,7 +5,6 @@ import '../../shared/functional.ts' as F
 QObject {
   id: spy
   property var properties: spy``
-  property bool delayed: false
   property bool _disableAll: false
 
   function spy(strings, ...targets) {
@@ -15,7 +14,6 @@ QObject {
 
     if (targets.length === 0) {
       targets = [parentObject]
-
     }
 
     return F.zip(targets, properties)
@@ -28,10 +26,10 @@ QObject {
     Instantiator {
       id: targets
       model: modelData[1]
-      property var target: modelData[0]
+      readonly property var target: modelData[0]
 
       QObject {
-        property var property: targets.target[modelData]
+        readonly property var property: targets.target[modelData]
 
         function printProperty() {
           const targetName = targets.target.objectName || `${targets.target}`.replace(/[_(].*/g, '')
@@ -40,13 +38,7 @@ QObject {
           console.log(`${propName}: ${F.tostr(property, 1, -1)}`)
         }
 
-        onPropertyChanged: {
-          if (spy.delayed) {
-            Qt.callLater(printProperty)
-          } else {
-            printProperty()
-          }
-        }
+        onPropertyChanged: printProperty()
       }
     }
   }
