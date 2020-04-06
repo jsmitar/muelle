@@ -1,24 +1,63 @@
 import QtQuick 2.12
 import org.muelle.extra 1.0 as Muelle
+import org.muelle.types 1.0
+import org.kde.plasma.core 2.0
 import '../../shared/functional.ts' as F
+import '../Components'
 
 Item {
-  readonly property rect backgroundRect: store.state.geometry.backgroundRect
+  id: background
+  readonly property rect rect: store.state.geometry.backgroundRect
 
-  x: backgroundRect.x
-  y: backgroundRect.y
-  width: backgroundRect.width
-  height: backgroundRect.height
+  x: rect.x
+  y: rect.y
+  width: rect.width
+  height: rect.height
 
-  // Rectangle {
-  //   antialiasing: true
-  //   color: '#222D32'
-  //   border.width: 0
-  //   radius: 2
-  //   opacity: 1
-    
+  EdgeSlideAnimation {
+    target: frame
+    distance: store.state.animation.edgeDistance
+  }
+
+  // Muelle.Rectangle {
   //   anchors.fill: parent
+  //   color: theme.backgroundColor
+  //   radius {
+  //     topLeft: 4
+  //     topRight: 4
+  //   }
   // }
+
+  FrameSvgItem {
+    id: frame
+
+    anchors.centerIn: background
+    width: background.width
+    height: background.height
+    
+    imagePath: 'widgets/background'
+    enabledBorders: edgeToBorder[store.state.panel.edge]
+
+    Binding {
+      target: store.state.background
+      property: 'paddingX'
+      value: Math.max(frame.margins.left, frame.margins.right)
+    }
+
+    Binding {
+      target: store.state.background
+      property: 'paddingY'
+      value: Math.max(frame.margins.top, frame.margins.bottom)
+    }
+
+
+    readonly property var edgeToBorder: ({ 
+      [Types.Top]: FrameSvg.AllBorders ^ FrameSvg.TopBorder,
+      [Types.Right]: FrameSvg.AllBorders ^ FrameSvg.RightBorder,
+      [Types.Bottom]: FrameSvg.AllBorders ^ FrameSvg.BottomBorder,
+      [Types.Left]: FrameSvg.AllBorders ^ FrameSvg.LeftBorder,
+    })
+  }
 
   // NOTE: Disabled for now
   // Behavior on width {
@@ -33,13 +72,4 @@ Item {
   //     duration: store.state.animation.duration / 2
   //   }
   // }
-
-  Muelle.Rectangle {
-    anchors.fill: parent
-    color: '#222D3210'
-    radius {
-      topLeft: 4
-      topRight: 4
-    }
-  }
 }

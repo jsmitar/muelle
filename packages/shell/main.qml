@@ -99,14 +99,14 @@ Item {
     }
   }
 
-  ViewShadows {
-    view: $view
-    geometry: store.state.geometry.backgroundRect
-    enabled: store.state.panel.visible
-    edges: 
-      (Types.Top | Types.Right | Types.Bottom | Types.Left) 
-      & ~(store.state.panel.edge)
-  }
+  // ViewShadows {
+  //   view: $view
+  //   geometry: store.state.geometry.backgroundRect
+  //   enabled: store.state.panel.visible && false
+  //   edges: 
+  //     (Types.Top | Types.Right | Types.Bottom | Types.Left) 
+  //     & ~(store.state.panel.edge)
+  // }
 
   PanelBackground {
     id: panelBackground

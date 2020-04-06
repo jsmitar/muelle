@@ -21,7 +21,7 @@ QObject {
 
   readonly property Background background: Background {
     parentObject: state
-    lift: 400
+    lift: 20
   }
   
   readonly property Geometry geometry: Geometry {

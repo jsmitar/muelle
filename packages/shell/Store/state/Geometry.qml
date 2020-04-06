@@ -43,7 +43,7 @@ QObject {
    * The last step is turn the values sizes,point for create the geometries
    */
 
-  QObject {
+  readonly property QObject view: QObject {
     id: view
     objectName: 'view'
 
@@ -59,7 +59,7 @@ QObject {
 
   }
 
-  QObject {
+  readonly property QObject background: QObject {
     id: background
     objectName: 'background'
 
@@ -68,8 +68,10 @@ QObject {
     readonly property int paddingY: 10
 
     readonly property int x: 
-      Math.max(Math.min(panel.next.x, panel.x) - 
-      store.state.background.paddingX, 0)
+      Math.max(
+        Math.min(panel.next.x, panel.x) - store.state.background.paddingX, 
+        -store.state.background.paddingX
+      )
 
     readonly property int y: _isTopOrLeftEdge
       ? 0
@@ -90,7 +92,7 @@ QObject {
       : Qt.rect(y, x, height, width)
   }
 
-  QObject {
+  readonly property QObject panel: QObject {
     id: panel
     objectName: 'panel'
 
@@ -150,7 +152,7 @@ QObject {
     }
   }
 
-  QObject {
+  readonly property QObject mask: QObject {
     id: mask
     objectName: 'mask'
 
@@ -188,7 +190,6 @@ QObject {
   }
 
   Spy {
-    delayed: true
     properties: [
       spy`${mask}.growing,rect`,
     ]

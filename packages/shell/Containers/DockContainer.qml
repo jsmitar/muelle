@@ -7,12 +7,22 @@ import org.kde.taskmanager 0.1 as TaskManager
 import '../../shared/functional.ts' as F
 import '../Components'
 import '../../shared/components'
+import '../Store/actions.ts' as Action
+
 
 Item {
   id: dockContainer
 
-  PanelSlideAnimation {
+  EdgeSlideAnimation {
     target: panelContainer
+    distance: store.state.animation.edgeDistance
+
+    onSlideInFinished: {
+      store.dispatch(Action.slideInFinished())
+    }
+    onSlideOutFinished: {
+      store.dispatch(Action.slideOutFinished())
+    }
   }
 
   PanelContainer {

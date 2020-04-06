@@ -7,7 +7,10 @@ QObject {
   property Item target
 
   property real value: -distance 
-  property real distance: store.state.icon.size
+  property real distance: 0
+
+  signal slideInFinished
+  signal slideOutFinished
 
   Connections {
     target: store.state.panel
@@ -37,7 +40,7 @@ QObject {
       to: 0
     }
     ScriptAction {
-      script: store.dispatch(Action.slideInFinished())
+      script: slide.slideInFinished()
     }
   }
 
@@ -56,7 +59,7 @@ QObject {
       to: -distance
     }
     ScriptAction {
-      script: store.dispatch(Action.slideOutFinished())
+      script: slide.slideOutFinished()
     }
   }
 

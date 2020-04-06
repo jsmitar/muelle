@@ -4,11 +4,11 @@ import '../../../shared/components'
 QObject {
   objectName: '@State/Background'
 
-  property int paddingX: 10
+  property int paddingX: 0
 
-  property int paddingY: 5
+  property int paddingY: 0
 
-  property int lift: 10
+  property int lift: 0
 
   property int borderRadius: 0
 
