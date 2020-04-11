@@ -12,7 +12,10 @@ QObject {
   signal slideInFinished
   signal slideOutFinished
 
+  property bool enabled: true
+
   Connections {
+    enabled: slide.enabled
     target: store.state.panel
 
     onSlideChanged: {

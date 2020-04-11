@@ -14,7 +14,10 @@ QObject {
 
   property bool shadow: true
 
-  property real shadowBlur: 10
+  property real shadowBlur: 0
+
+  // type Style = 'solid' | 'svg' | 'none'
+  property string style: 'svg'
 
   readonly property bool visible: lift > 0 
 }

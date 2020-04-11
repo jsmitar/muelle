@@ -21,7 +21,7 @@ Item {
     id: anim
     enabled: false
     NumberAnimation {
-      easing.type: Easing.InOutQuad
+      easing.type: Easing.OutQuad
       duration: store.state.animation.duration / 2
     }
   }

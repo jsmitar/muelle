@@ -43,7 +43,7 @@ Item {
     }
 
     resources: [
-      PaintItem { target: icon; enabled: false; showSize: true },
+      PaintItem { target: icon; enabled: false; showSize: false },
       PaintItem { target: iconItem; enabled: false; showSize: false }
     ]
   }

@@ -27,16 +27,16 @@ SettingsForm {
     property: 'value'
     initial: $positioner.centerOffset
 
-    property var enableMask: F.debounce(() => {
-      store.state.geometry.maskEnabled = true
+    readonly property var updatingOffset: F.debounce((v) => {
+      store.state.panel.updatingOffset = v
     }, 500)
 
     then: offset => {
-      if (store.state.geometry.maskEnabled) {
-        store.state.geometry.maskEnabled = false
+      if (!store.state.panel.updatingOffset) {
+        store.state.panel.updatingOffset = true
       }
-      enableMask()
       store.state.geometry.panelOffset = offset
+      updatingOffset(false)
     }
     otherwise: then
   }

@@ -12,7 +12,8 @@ QObject {
   property bool addEnabled: true
 
   readonly property int edgeDistance: Math.max(
-    parentObject.geometry.background.height,
+    parentObject.geometry.background.height + 
+    parentObject.geometry.background.shadow,
     parentObject.geometry.panel.height
   ) 
 }

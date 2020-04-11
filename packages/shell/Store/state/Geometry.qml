@@ -26,9 +26,7 @@ QObject {
   readonly property alias maskRect: mask.rect
   property alias maskGrowing: mask.growing
   property alias maskEnabled: mask.enabled
-
-  property bool lockMaskGrowing: false
-
+  property alias maskFull: mask.full
 
   readonly property bool _isHorizontal: state.panel.isHorizontal
 
@@ -51,7 +49,7 @@ QObject {
       _isHorizontal ? Screen.width : Screen.height
 
     readonly property int height:
-      Math.max(background.height, panel.height)
+      Math.max(background.height + background.shadow, panel.height)
 
     readonly property size size: state.panel.isHorizontal
       ? Qt.size(width, height)
@@ -63,13 +61,11 @@ QObject {
     id: background
     objectName: 'background'
 
-    readonly property int paddingX: 10
-
-    readonly property int paddingY: 10
+    readonly property int shadow: store.state.background.shadowBlur
 
     readonly property int x: 
       Math.max(
-        Math.min(panel.next.x, panel.x) - store.state.background.paddingX, 
+        panel.next.x - store.state.background.paddingX, 
         -store.state.background.paddingX
       )
 
@@ -78,12 +74,12 @@ QObject {
       : view.height - height
 
     readonly property int width: 
-      Math.max(panel.next.width, panel.width) + 
+      panel.next.width + 
       store.state.background.paddingX * 2
 
     readonly property int maxHeight: 
       state.icon.size + 
-      store.state.background.paddingY
+      store.state.background.paddingY * 2
 
     readonly property int height: Math.min(state.background.lift, maxHeight)
 
@@ -158,20 +154,26 @@ QObject {
 
     property bool growing: false
 
+    property bool full: 
+      state.panel.updatingOffset ||
+      state.panel.updatingOrientation
+
     property bool enabled: true
 
     QtObject {
       id: visible
 
-      readonly property int gap: store.state.icon.size * 2
+      readonly property int gap: mask.growing 
+        ? store.state.icon.size * 2 + background.shadow * 2
+        : background.shadow * 2
 
       readonly property rect rectHorizontal: mask.growing
         ? Qt.rect(panel.next.x - gap / 2, 0, panel.next.width + gap, view.height)
-        : Qt.rect(background.x, 0, background.width, view.height)
+        : Qt.rect(background.x - gap / 2, 0, background.width + gap, view.height)
 
       readonly property rect rectVertical: mask.growing
         ? Qt.rect(0, panel.next.x - gap / 2, view.height, panel.next.width + gap)
-        : Qt.rect(0, background.x, view.height, background.width)
+        : Qt.rect(0, background.x - gap / 2, view.height, background.width + gap)
 
       readonly property rect rect: _isHorizontal ? rectHorizontal : rectVertical
     }
@@ -184,9 +186,14 @@ QObject {
 
     readonly property rect noMask: Qt.rect(0, 0, 0, 0)
 
-    readonly property rect rect: enabled 
-      ? state.panel.visible ? visible.rect : hidden.rect
-      : noMask
+    readonly property rect rect: 
+      full 
+        ? noMask
+        : enabled 
+          ? state.panel.visible 
+            ? visible.rect 
+            : hidden.rect
+          : noMask
   }
 
   Spy {

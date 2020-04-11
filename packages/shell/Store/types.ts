@@ -27,7 +27,8 @@ export interface Panel extends Qt.QtObject<{}> {
 
   slide: string;
 
-  updatingPosition: boolean;
+  updatingOffset: boolean;
+  updatingOrientation: boolean;
   nextEdge: Types.Edge;
   nextAlignment: Types.Alignment;
   alignment: Types.Alignment;

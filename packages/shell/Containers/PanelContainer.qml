@@ -35,10 +35,10 @@ Loader {
 
     anchors {
       fill: parent
-      leftMargin: rect.x
-      rightMargin: parent.width - rect.width - rect.x
       topMargin: rect.y
+      rightMargin: parent.width - rect.width - rect.x
       bottomMargin: parent.height - rect.height - rect.y
+      leftMargin: rect.x
     }
 
     property var syncLaunchers: F.debounce(store.tasksModel.syncLaunchers, 500)
@@ -93,7 +93,7 @@ Loader {
 
       FlexSpacing {
         fill: true
-        smoothFill: store.state.geometry.maskEnabled
+        smoothFill: true
 
         Layout.preferredWidth: store.state.geometry.panelNextPoint.x
       }
@@ -101,7 +101,11 @@ Loader {
         id: row
         spacing: store.state.icon.spacing
         layoutDirection: Qt.LeftToRight
+
         Layout.fillHeight: true
+
+        Layout.topMargin: store.state.background.paddingY
+        Layout.bottomMargin: store.state.background.paddingY
 
         Component.onCompleted: {
           panelContainer.positioner = row
@@ -109,10 +113,10 @@ Loader {
 
         move: Transition {
           NumberAnimation {
-            alwaysRunToEnd: true
-            properties: 'x';
-            easing.type: Easing.InOutQuad
+            property: 'x';
+            easing.type: Easing.OutQuad
             duration: store.state.animation.duration / 2
+            alwaysRunToEnd: true
           }
           NumberAnimation {
             property: 'y'
@@ -147,14 +151,17 @@ Loader {
       
       FlexSpacing {
         fill: true
-        smoothFill: store.state.geometry.maskEnabled
+        smoothFill: true
 
         Layout.preferredHeight: store.state.geometry.panelNextPoint.y
       }
       Column {
         id: column
         spacing: store.state.icon.spacing
+
         Layout.fillWidth: true
+        Layout.rightMargin: store.state.background.paddingY
+        Layout.leftMargin: store.state.background.paddingY
 
         Component.onCompleted: {
           panelContainer.positioner = column
@@ -162,10 +169,10 @@ Loader {
 
         move: Transition {
           NumberAnimation {
-            alwaysRunToEnd: true
-            properties: 'y';
-            easing.type: Easing.InOutQuad
+            property: 'y';
+            easing.type: Easing.OutQuad
             duration: store.state.animation.duration / 2
+            alwaysRunToEnd: true
           }
           NumberAnimation {
             property: 'x'

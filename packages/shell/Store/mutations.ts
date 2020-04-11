@@ -1,3 +1,5 @@
+import { Types } from '@qml/org.muelle.types-1.0';
+import Qt from 'qt';
 import { Mutations } from '../../shared/flux/flux';
 import {
   ADD_TRANSITION,
@@ -15,7 +17,7 @@ import {
   SLIDE_STATUS,
   UPDATE_POSITION,
   UPDATE_TASK_COUNT_1,
-  UPDATING_POSITION,
+  UPDATING_ORIENTATION,
 } from './mutationTypes';
 import { ShellState } from './types';
 
@@ -27,6 +29,19 @@ export const mutations: Mutations<ShellState> = {
     state.panel.edge = state.panel.nextEdge;
     state.panel.alignment = state.panel.nextAlignment;
   },
+  [UPDATING_ORIENTATION](state, nextEdge: Types.Edge) {
+    const { edge } = state.panel;
+    const { Types } = Qt.Muelle;
+    // prettier-ignore
+    if (
+      (nextEdge & Types.Horizontal && edge & Types.Vertical) ||
+      (nextEdge & Types.Vertical   && edge & Types.Horizontal)
+    ) {
+      state.panel.updatingOrientation = true
+    } else {
+      state.panel.updatingOrientation = false
+    }
+  },
   [NEXT_EDGE](state, edge) {
     state.panel.nextEdge = edge;
   },
@@ -35,9 +50,6 @@ export const mutations: Mutations<ShellState> = {
   },
   [NEXT_BEHAVIOR](state, behavior) {
     state.panel.behavior = behavior;
-  },
-  [UPDATING_POSITION](state, value) {
-    state.panel.updatingPosition = value;
   },
   [SHOW_PANEL](state) {
     state.panel.visible = true;
