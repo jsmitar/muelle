@@ -7,9 +7,10 @@ namespace Muelle {
 
 Rectangle::Rectangle(QQuickItem *parent) noexcept
     : QQuickPaintedItem(parent), mRadius(new RadiusGroup(this)) {
-  // connect(mRadius, &RadiusGroup::changed, this, &Rectangle::updatePath);
-  // connect(this, &Rectangle::widthChanged, this, &Rectangle::updatePath);
-  // connect(this, &Rectangle::heightChanged, this, &Rectangle::updatePath);
+
+  connect(mRadius, &RadiusGroup::changed, this, &Rectangle::updatePolish);
+  connect(this, &Rectangle::widthChanged, this, &Rectangle::updatePolish);
+  connect(this, &Rectangle::heightChanged, this, &Rectangle::updatePolish);
 }
 
 Rectangle::~Rectangle() noexcept {};
@@ -20,6 +21,7 @@ QColor Rectangle::color() const noexcept { return mColor; };
 void Rectangle::setColor(const QColor &color) noexcept {
   mColor = color;
   emit colorChanged();
+  update();
 }
 
 template <typename V> constexpr auto min(const V &v) { return v; }
@@ -29,7 +31,7 @@ constexpr auto min(const L &l, const R &r, const Tail &... tail) {
   return min(l < r ? l : r, tail...);
 }
 
-void Rectangle::updatePath() noexcept {
+void Rectangle::updatePolish() {
   const auto w = width();
   const auto h = height();
   const auto maxRadius = min(w, h) * 2;
@@ -40,21 +42,21 @@ void Rectangle::updatePath() noexcept {
 
   mPath.clear();
 
-  // topLeft
+  // topLeft radius
   if (topLeft) {
     mPath.arcTo(0, 0, topLeft, topLeft, 90, 90);
   } else {
     mPath.lineTo(0, 0);
   }
 
-  // bottomLeft
+  // bottomLeft radius
   if (bottomLeft) {
     mPath.arcTo(0, h - bottomLeft, bottomLeft, bottomLeft, 180, 90);
   } else {
     mPath.lineTo(0, h);
   }
 
-  // bottomRight
+  // bottomRight radius
   if (bottomRight) {
     mPath.arcTo(w - bottomRight, h - bottomRight, bottomRight, bottomRight, 270,
                 90);
@@ -62,7 +64,7 @@ void Rectangle::updatePath() noexcept {
     mPath.lineTo(w, h);
   }
 
-  // bottomLeft
+  // bottomLeft radius
   if (topRight) {
     mPath.arcTo(w - topRight, 0, topRight, topRight, 0, 90);
   } else {
@@ -71,10 +73,11 @@ void Rectangle::updatePath() noexcept {
 
   mPath.lineTo(topRight / 2, 0);
   mPath.closeSubpath();
+
+  update();
 }
 
 void Rectangle::paint(QPainter *paint) {
-  updatePath();
   paint->setRenderHint(QPainter::Antialiasing);
   paint->setPen(Qt::PenStyle::NoPen);
   paint->setBrush(mColor);

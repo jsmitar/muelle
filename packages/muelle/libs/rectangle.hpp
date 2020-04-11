@@ -74,7 +74,7 @@ public:
   QColor color() const noexcept;
   void setColor(const QColor &color) noexcept;
 
-  void updatePath() noexcept;
+  void updatePolish() override;
 
   void paint(QPainter *painter) override;
 
