@@ -6,14 +6,14 @@ declare module '@qml/org.muelle.types-1.0' {
     export const Bottom: 8;
     export const Right: 16;
 
-    export type Orientation = 32 | 64;
-    export const Horizontal: 32;
-    export const Vertical: 64;
+    export type Orientation = 10 | 20;
+    export const Horizontal: 10;
+    export const Vertical: 20;
 
-    export type Alignment = 128 | 256 | 512;
-    export const Start: 128;
-    export const Center: 256;
-    export const End: 512;
+    export type Alignment = 32 | 64 | 128;
+    export const Start: 32;
+    export const Center: 64;
+    export const End: 128;
 
     export type Behavior = 0 | 1 | 2 | 3 | 4;
     export const None: 0;

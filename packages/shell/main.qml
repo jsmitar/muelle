@@ -23,14 +23,14 @@ Item {
   height: store.state.geometry.viewSize.height
 
   Component.onCompleted: {
-    // Start: Set Globals
+    // START: Set Global Properties
+    Qt.Muelle = { Types }
     Qt.setTimeout = setTimeout
-    Qt.clearTimeout = clearTimeout
     Qt.setInterval = setInterval
+    Qt.clearTimeout = clearTimeout
     Qt.clearInterval = clearInterval
     Qt.__muelle_separator__ = __muelle_separator__
-    Qt.Muelle = { Types }
-    // End: Set Globals
+    // END: Set Global Properties
   }
 
   PaintItem {

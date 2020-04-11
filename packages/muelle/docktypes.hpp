@@ -28,7 +28,7 @@ class Types {
   Q_DISABLE_COPY(Types)
 
 public:
-  enum class Edge : uint {
+  enum class Edge {
     Top = 1 << 1,
     Right = 1 << 2,
     Bottom = 1 << 3,
@@ -38,15 +38,15 @@ public:
   Q_DECLARE_FLAGS(Edges, Edge)
 
   enum class Orientation {
-    Horizontal = 1 << 5,
-    Vertical = 1 << 6,
+    Horizontal = 1 << 1 | 1 << 3,
+    Vertical = 1 << 2 | 1 << 4,
   };
   Q_ENUM(Orientation)
 
   enum class Alignment {
-    Start = 1 << 7,
-    Center = 1 << 8,
-    End = 1 << 9,
+    Start = 1 << 5,
+    Center = 1 << 6,
+    End = 1 << 7,
   };
   Q_ENUM(Alignment)
 

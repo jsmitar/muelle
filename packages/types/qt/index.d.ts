@@ -1,7 +1,9 @@
 export = Qt;
 export as namespace Qt;
 
+import { Types } from '@qml/org.muelle.types-1.0';
 import QtQml from '@qml/QtQml-2.14';
+import { A } from 'ts-toolbelt';
 import { type } from './symbols';
 
 declare namespace Qt {
@@ -29,6 +31,7 @@ declare namespace Qt {
   const setInterval: (handler: () => any, ms: number) => Timer;
   const clearInterval: (timer: Timer) => void;
   const __muelle_separator__: '__separator__.desktop';
+  const Muelle: { Types: A.Compute<typeof Types> };
   //END: No standard
 
   //START: Qt QML Type

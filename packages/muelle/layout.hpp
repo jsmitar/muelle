@@ -84,8 +84,7 @@ constexpr Types::Orientation Layout::orientation() const {
 constexpr Types::Alignment Layout::alignment() const { return mAlignment; }
 
 constexpr uint Layout::layout() const {
-  return static_cast<uint>(mEdge) | static_cast<uint>(mOrientation) |
-         static_cast<uint>(mAlignment);
+  return static_cast<uint>(mEdge) | static_cast<uint>(mAlignment);
 }
 
 constexpr bool Layout::isHorizontal() const {
