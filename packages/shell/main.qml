@@ -5,6 +5,7 @@ import QtQuick.Window 2.12
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1
+import org.kde.plasma.core 2.0
 
 import 'Components'
 import 'Containers'
@@ -31,6 +32,7 @@ Item {
     Qt.clearInterval = clearInterval
     Qt.__muelle_separator__ = __muelle_separator__
     // END: Set Global Properties
+
   }
 
   PaintItem {

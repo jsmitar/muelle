@@ -21,7 +21,7 @@ QObject {
 
   readonly property Background background: Background {
     parentObject: state
-    lift: 80
+    lift: 20
     shadowBlur: 5
     borderRadius: 30
     paddingX: 10
@@ -35,6 +35,7 @@ QObject {
 
   readonly property Animation animation: Animation {
     parentObject: state
+    duration: 500
   }
 
   readonly property Context context: Context {}
