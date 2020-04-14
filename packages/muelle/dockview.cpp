@@ -36,7 +36,7 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   setFlag(Qt::WindowDoesNotAcceptFocus);
   setFlag(Qt::WindowCloseButtonHint);
   setFlag(Qt::FramelessWindowHint);
-  // setFlag(Qt::X11BypassWindowManagerHint);
+  setFlag(Qt::X11BypassWindowManagerHint);
   setFlag(Qt::NoDropShadowWindowHint);
 
   //  setResizeMode(QQuickView::SizeRootObjectToView);
@@ -55,18 +55,6 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   connect(this, &QQuickWindow::heightChanged, this, &View::sizeChanged);
   connect(this, &View::panelPositionChanged, this, &View::panelGeometryChanged);
   connect(this, &View::panelSizeChanged, this, &View::panelGeometryChanged);
-  connect(this, &View::panelGeometryChanged, [&]() {
-    // KWindowEffects::enableBlurBehind(
-    //     winId(), true,
-    //     Extensions::setRadius(mPanelGeometry, {
-    //                                               .size = 3,
-    //                                               .topLeft = true,
-    //                                               .topRight = false,
-    //                                               .bottomLeft = true,
-    //                                               .bottomRight = false,
-    //                                           }));
-  });
-
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
 }

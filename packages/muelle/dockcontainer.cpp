@@ -4,6 +4,7 @@ namespace Muelle {
 
 Container::Container(QObject *parent)
     : QObject(parent), mEngine(new EnhancedQmlEngine(this)),
+      mTheme(new Plasma::Theme(this)),
       mConfig(KSharedConfig::openConfig(QStringLiteral("muellerc"))) {
 
   Muelle::registerExtensions(*mEngine);
@@ -71,4 +72,11 @@ QScreen *Container::findScreen(const QString &name) const {
   return screen != std::cend(screens) ? *screen : nullptr;
 }
 
+Plasma::Theme *Container::theme() { return mTheme; }
+
+Container *Container::instance() noexcept {
+  static auto container{new Container()};
+
+  return container;
+}
 } // namespace Muelle

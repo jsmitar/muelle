@@ -13,6 +13,7 @@ QObject {
   readonly property alias viewSize: view.size
 
   readonly property alias backgroundRect: background.rect
+  readonly property alias backgroundPoint: background.point
 
   property alias panelOffset: panel.offset
 
@@ -36,7 +37,7 @@ QObject {
   /*
    * the approach for the calculation is calc all sizes(width x height) as a 
    * horizontal panel.
-   * the strategy is the same for the point(topLeft x,y), calc, the values for 
+   * the strategy is the same for the point(topLeft x,y) calc, the values for 
    * Edge::Top, Edge::Left panel
    * The last step is turn the values sizes,point for create the geometries
    */
@@ -82,6 +83,10 @@ QObject {
       store.state.background.paddingY * 2
 
     readonly property int height: Math.min(state.background.lift, maxHeight)
+
+    readonly property point point: _isHorizontal 
+      ? Qt.point(x, y)
+      : Qt.point(y, x)
 
     readonly property rect rect: _isHorizontal
       ? Qt.rect(x, y, width, height)
@@ -187,18 +192,10 @@ QObject {
     readonly property rect noMask: Qt.rect(0, 0, 0, 0)
 
     readonly property rect rect: 
-      full 
-        ? noMask
-        : enabled 
-          ? state.panel.visible 
-            ? visible.rect 
-            : hidden.rect
-          : noMask
-  }
-
-  Spy {
-    properties: [
-      spy`${mask}.growing,rect`,
-    ]
+      full ? noMask 
+           : enabled 
+              ? state.panel.visible ? visible.rect 
+                                    : hidden.rect
+              : noMask
   }
 }

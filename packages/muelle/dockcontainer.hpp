@@ -9,6 +9,7 @@
 #include <KConfig>
 #include <KConfigGroup>
 #include <KSharedConfig>
+#include <Plasma/Theme>
 #include <QApplication>
 #include <QMap>
 #include <QMetaObject>
@@ -41,9 +42,14 @@ public:
 
   QScreen *findScreen(const QString &name) const;
 
+  Plasma::Theme *theme();
+
+  static Container *instance() noexcept;
+
 private:
   QMap<UUID, View *> mViews;
   EnhancedQmlEngine *mEngine;
+  Plasma::Theme *mTheme;
   KSharedConfig::Ptr mConfig;
 };
 } // namespace Muelle

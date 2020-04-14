@@ -26,8 +26,8 @@
 #include "libs/rectangle.hpp"
 #include "panelbehavior.hpp"
 #include "pressuredetector.hpp"
+#include "viewcontrast.hpp"
 #include "viewshadows.hpp"
-
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -51,6 +51,11 @@ int main(int argc, char *argv[]) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
   QApplication app(argc, argv);
   QQmlDebuggingEnabler qmldebugging;
+  QQuickWindow::setDefaultAlphaBuffer(true);
+
+  qInfo() << "Version:" << MUELLE_VERSION;
+  qInfo() << "Commit:" << MUELLE_COMMIT;
+
   Muelle::qmlRegisterTypes();
   qmlRegisterPressureDetector();
   qmlRegisterPanelBehavior();
@@ -58,14 +63,10 @@ int main(int argc, char *argv[]) {
   qmlRegisterQObjectPropertyValueSource();
   qmlRegisterViewShadows();
   qmlRegisterRectangle();
+  qmlRegisterViewContrast();
 
-  QQuickWindow::setDefaultAlphaBuffer(true);
-
-  qInfo() << "Version:" << MUELLE_VERSION;
-  qInfo() << "Commit:" << MUELLE_COMMIT;
-
-  auto muelle = Muelle::Container();
-  muelle.loadConfiguration();
+  auto muelle = Muelle::Container::instance();
+  muelle->loadConfiguration();
 
   return QApplication::exec();
 }

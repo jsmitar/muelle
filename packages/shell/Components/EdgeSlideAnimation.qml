@@ -6,8 +6,9 @@ QObject {
   id: slide
   property Item target
 
-  property real value: -distance 
-  property real distance: 0
+  property int value: -distance 
+  property int distance: 0
+  property int delay: 0
 
   signal slideInFinished
   signal slideOutFinished
@@ -32,6 +33,9 @@ QObject {
     id: slideIn
     alwaysRunToEnd: false
 
+    PauseAnimation {
+      duration: delay
+    }
     ScriptAction {
       script: slideOut.stop()
     }
@@ -51,6 +55,9 @@ QObject {
     id: slideOut
     alwaysRunToEnd: false
 
+    PauseAnimation {
+      duration: delay
+    }
     ScriptAction {
       script: slideIn.stop()
     }

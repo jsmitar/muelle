@@ -1,9 +1,10 @@
 import QtQuick 2.12
 import org.muelle.extra 1.0 as Muelle
 import org.muelle.types 1.0
-import org.kde.plasma.core 2.0
+import org.kde.plasma.core 2.0 as PlasmaCore
 import QtGraphicalEffects 1.12
 import '../../shared/functional.ts' as F
+import '../../shared/components'
 import '../Components'
 
 Item {
@@ -53,6 +54,21 @@ Item {
   EdgeSlideAnimation {
     target: frame
     distance: store.state.animation.edgeDistance
+  }
+
+  Item {
+    id: contrast_sync
+    visible: false
+
+    anchors.centerIn: background
+    width: background.width
+    height: background.height
+
+    EdgeSlideAnimation {
+      target: contrast_sync
+      distance: store.state.animation.edgeDistance
+      delay: 59
+    }
   }
 
   Loader {
@@ -184,18 +200,25 @@ Item {
 
     Item {
       readonly property var edgeToBorder: ({ 
-        [Types.Top]: FrameSvg.AllBorders ^ FrameSvg.TopBorder,
-        [Types.Right]: FrameSvg.AllBorders ^ FrameSvg.RightBorder,
-        [Types.Bottom]: FrameSvg.AllBorders ^ FrameSvg.BottomBorder,
-        [Types.Left]: FrameSvg.AllBorders ^ FrameSvg.LeftBorder,
+        [Types.Top]: PlasmaCore.FrameSvg.AllBorders ^ PlasmaCore.FrameSvg.TopBorder,
+        [Types.Right]: PlasmaCore.FrameSvg.AllBorders ^ PlasmaCore.FrameSvg.RightBorder,
+        [Types.Bottom]: PlasmaCore.FrameSvg.AllBorders ^ PlasmaCore.FrameSvg.BottomBorder,
+        [Types.Left]: PlasmaCore.FrameSvg.AllBorders ^ PlasmaCore.FrameSvg.LeftBorder,
+      })
+
+      readonly property var edgeToCardinal: ({
+        [Types.Top]: 'north',
+        [Types.Right]: 'east',
+        [Types.Bottom]: 'south',
+        [Types.Left]: 'west',
       })
 
       Binding {
         target: store.state.background
         property: 'paddingX'
         value: Math.max(
-          frame.margins.left, 
-          frame.margins.right
+          bgSvg.margins.left, 
+          bgSvg.margins.right
         )
       }
 
@@ -203,8 +226,8 @@ Item {
         target: store.state.background
         property: 'paddingY'
         value: Math.max(
-          frame.margins.top, 
-          frame.margins.bottom
+          bgSvg.margins.top, 
+          bgSvg.margins.bottom
         )
       }
 
@@ -219,7 +242,25 @@ Item {
         )
       }
 
-      FrameSvgItem {
+      Muelle.ViewContrast {
+        id: contrast
+        view: $view
+
+        mask: bgSvg.mask
+        position: Qt.point(
+          background.x + contrast_sync.x,
+          background.y + contrast_sync.y
+        )
+
+        enabled: 
+          store.state.panel.visible && 
+          !store.state.panel.updatingOffset &&
+          !store.state.panel.updatingOrientation
+
+        usePlasmaTheme: true
+      }
+
+      PlasmaCore.FrameSvgItem {
         id: shadow
 
         anchors { 
@@ -228,21 +269,22 @@ Item {
         }
 
         imagePath: 'widgets/panel-background'
-        prefix: 'shadow'
         enabledBorders: edgeToBorder[store.state.panel.edge]
+        prefix: 'shadow'
       }
 
-      FrameSvgItem {
-        id: frame
-
+      PlasmaCore.FrameSvgItem {
+        id: bgSvg
+        
         anchors { 
           fill: parent
         }
       
         imagePath: 'widgets/panel-background'
         enabledBorders: edgeToBorder[store.state.panel.edge]
+        prefix: [edgeToCardinal[store.state.panel.edge], '']
+        colorGroup: PlasmaCore.Theme.NormalColorGroup
       }
     }
-
   }
 }
