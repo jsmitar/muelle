@@ -10,4 +10,14 @@ DebounceSignal::DebounceSignal(int timeout, QObject *parent)
 
 void DebounceSignal::setTimeout(int timeout) { mTimer->setInterval(timeout); }
 
-void DebounceSignal::start() { mTimer->start(); }
+void DebounceSignal::start() {
+  if (mThrotle) {
+    if (!mTimer->isActive()) {
+      mTimer->start();
+    }
+  } else {
+    mTimer->start();
+  }
+}
+
+void DebounceSignal::setThrotle(bool enable) { mThrotle = enable; }

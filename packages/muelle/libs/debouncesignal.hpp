@@ -12,12 +12,21 @@ public:
   explicit DebounceSignal(int timeout = 0, QObject *parent = nullptr);
 
   void setTimeout(int timeout);
+  void setThrotle(bool enable);
   void start();
+  void setBlock(bool block);
 
   template <typename Object, typename Signal>
   QMetaObject::Connection debounce(const Object *member, Signal &&signal) {
     return connect(member, std::forward<Signal>(signal), this,
                    &DebounceSignal::start);
+  }
+
+  template <typename Object, typename Signal>
+  bool remove(const Object *member, Signal &&signal) {
+    mTimer->stop();
+    return disconnect(member, std::forward<Signal>(signal), this,
+                      &DebounceSignal::start);
   }
 
   template <typename Object, typename Functor>
@@ -31,6 +40,7 @@ signals:
 
 private:
   QTimer *mTimer;
+  bool mThrotle{false};
 };
 
 #endif // DEBOUNCESIGNAL_HPP
