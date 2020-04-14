@@ -8,7 +8,7 @@
       "name": "muelle",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/muelle",
+      "program": "${workspaceFolder}/build-dev/muelle",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

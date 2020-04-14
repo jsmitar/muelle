@@ -1,5 +1,5 @@
 {
-  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.buildDirectory": "${workspaceFolder}/build-dev",
   "cmake.generator": "Ninja",
   "cmake.buildEnvironment": { "CXX": "/usr/bin/g++" },
   "typescript.tsdk": "node_modules/typescript/lib",
