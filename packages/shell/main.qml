@@ -32,7 +32,6 @@ Item {
     Qt.clearInterval = clearInterval
     Qt.__muelle_separator__ = __muelle_separator__
     // END: Set Global Properties
-
   }
 
   PaintItem {
