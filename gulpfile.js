@@ -110,20 +110,16 @@ ${'\u001b[0m'}`);
   };
 })();
 
-function buildQml(cb) {
-  const tsProject = ts.createProject(dirs.tsconfig);
+const tsProject = ts.createProject(dirs.tsconfig);
 
+function buildQml(cb) {
   return series(
     parallel(
       function transpileTs() {
         return tsProject
           .src()
           .pipe(tsProject())
-          .js.pipe(
-            rename((path) => {
-              path.extname = '.mjs';
-            })
-          )
+          .js.pipe(rename((path) => void (path.extname = '.mjs')))
           .pipe(
             replace([
               {
@@ -155,7 +151,11 @@ function buildQml(cb) {
           .pipe(dest(dirs.dist));
       },
       function copyShellQmlResources() {
-        return src(['packages/**/*.qml', 'packages/**/*.js'])
+        return src([
+          'packages/**/*.qml',
+          'packages/**/*.js',
+          '!packages/dist/**/*.*',
+        ])
           .pipe(
             replace([
               {
@@ -201,13 +201,19 @@ function buildQml(cb) {
 }
 
 function watchTask() {
-  return series(() =>
+  series(mkdirBuild, cleanDist)();
+
+  return series(mkdirBuild, cleanDist, () =>
     watch(
       [...dirs.resources.muelle.watch, ...dirs.resources.watchQmlPackages],
       { ignoreInitial: false, delay: 500, useFsEvents: true },
-      series(clear, buildTask(), function START(cb) {
-        runMuelle(true, cb);
-      })
+      series(
+        clear,
+        parallel(series(runCMake, runNinja), series(buildQml)),
+        function START(cb) {
+          runMuelle(true, cb);
+        }
+      )
     )
   );
 }

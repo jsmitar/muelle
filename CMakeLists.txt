@@ -53,8 +53,8 @@ find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config)
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
 
 # TARGET: configure
-add_custom_target(configure 
-  SOURCES 
+add_custom_target(configure
+  SOURCES
   "${PACKAGE_MUELLE}/dockconfig.hpp.in"
   "${PACKAGE_MUELLE}/resources/muelle.desktop.in"
 )
@@ -86,11 +86,11 @@ target_link_libraries(muelle
 install(TARGETS muelle DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 # TARGET: qml targets
-add_custom_target(shell SOURCES "${SHELL_QRC}") 
+add_custom_target(shell SOURCES "${SHELL_QRC}" "${SHELL_DIST_QRC}")
 add_subdirectory(${PACKAGE_DIR}/resources)
 
 # TARGET: qml tests
-add_executable(test_qml 
+add_executable(test_qml
   "${PACKAGE_DIR}/tests/qml/test_qml.cpp"
   "${PACKAGE_MUELLE}/helpers.hpp"
 )

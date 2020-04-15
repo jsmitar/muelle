@@ -6,21 +6,22 @@
   "scripts": {
     "start": "NODE_ENV='development' gulp watch",
     "build": "gulp build",
+    "build:dev": "NODE_ENV='development' gulp build",
     "install:bin": "gulp install",
     "test": "jest",
     "test:qml": "build/test_qml -input packages/tests/qml"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.4",
-    "@types/node": "^13.9.1",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.1",
     "gulp": "^4.0.2",
     "gulp-just-replace": "^1.0.2",
     "gulp-remove-code": "^3.0.4",
     "gulp-rename": "^2.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "jest": "^25.1.0",
-    "ts-jest": "^25.2.1",
-    "ts-toolbelt": "^6.3.6",
+    "jest": "^25.3.0",
+    "ts-jest": "^25.3.1",
+    "ts-toolbelt": "^6.4.2",
     "tslib": "^1.11.1",
     "typescript": "^3.8.3"
   },
