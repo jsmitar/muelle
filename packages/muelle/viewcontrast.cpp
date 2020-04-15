@@ -42,6 +42,7 @@ void ViewContrast::setEnabled(bool enabled) noexcept {
     disconnect(this, &ViewContrast::maskChanged, this, &ViewContrast::update);
   }
   emit enabledChanged();
+  update();
 }
 
 bool ViewContrast::enabled() const noexcept { return mEnabled; }
