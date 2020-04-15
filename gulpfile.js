@@ -201,8 +201,6 @@ function buildQml(cb) {
 }
 
 function watchTask() {
-  series(mkdirBuild, cleanDist)();
-
   return series(mkdirBuild, cleanDist, () =>
     watch(
       [...dirs.resources.muelle.watch, ...dirs.resources.watchQmlPackages],
