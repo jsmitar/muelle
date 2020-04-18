@@ -58,16 +58,16 @@ Item {
 
   Item {
     id: contrast_sync
-    visible: false
+    visible: false  
 
     anchors.centerIn: background
-    width: background.width
-    height: background.height
+    width: rect.width
+    height: rect.height
 
     EdgeSlideAnimation {
       target: contrast_sync
       distance: store.state.animation.edgeDistance
-      delay: 59
+      delay: 60
     }
   }
 
@@ -80,8 +80,8 @@ Item {
       undefined
 
     anchors.centerIn: background
-    width: background.width
-    height: background.height
+    width: rect.width
+    height: rect.height
   }
 
   Component {
