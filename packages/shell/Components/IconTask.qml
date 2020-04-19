@@ -47,4 +47,62 @@ Item {
       PaintItem { target: iconItem; enabled: false; showSize: false }
     ]
   }
+
+  Rectangle {
+    id: indicator
+    color: 
+      m.IsActive 
+        ? theme.highlightColor
+        : m.IsDemandingAttention 
+          ? "#FFDE3F"
+          : theme.textColor
+    
+    visible: !m.IsLauncher
+
+    width: 4
+    height: 4
+    radius: 2
+
+    StateLayoutEdge {
+      reset: AnchorChanges { 
+        target: indicator
+        anchors {
+          top: undefined
+          right: undefined
+          bottom: undefined
+          left: undefined
+          horizontalCenter: undefined
+          verticalCenter: undefined
+        }
+      }
+      top: AnchorChanges {
+        target: indicator
+        anchors {
+          top: icon.top
+          horizontalCenter: icon.horizontalCenter
+        }
+      }
+      right: AnchorChanges {
+        target: indicator
+        anchors {
+          right: icon.right
+          verticalCenter: icon.verticalCenter
+        }
+      }
+      bottom: AnchorChanges {
+        target: indicator
+        anchors {
+          bottom: icon.bottom
+          horizontalCenter: icon.horizontalCenter
+        }
+      }
+      left: AnchorChanges {
+        target: indicator
+        anchors {
+          left: icon.left
+          verticalCenter: icon.verticalCenter
+        }
+      }
+    }
+  } 
 }
