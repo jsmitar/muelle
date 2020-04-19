@@ -7,7 +7,7 @@ import { Saga, SagaFn, Task } from '../private/types';
 import { call, cancel, delayed, fork, take } from './baseEffects';
 
 export function delay(ms: number) {
-  return delayed((resolve) => {
+  return delayed(resolve => {
     const timer = Qt.setTimeout(resolve, ms);
     return () => Qt.clearTimeout(timer);
   });

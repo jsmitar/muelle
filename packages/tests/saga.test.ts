@@ -55,18 +55,18 @@ const saga = (fn: SagaFn) => {
 
 test('effect call', async () => {
   expect.assertions(2);
-  const callback = jest.fn(function*(val: boolean) {
+  const callback = jest.fn(function* (val: boolean) {
     expect(val).toBeTruthy();
   });
 
-  await saga(function*() {
+  await saga(function* () {
     yield call(callback, true);
     yield call(callback, true);
   });
 });
 
 test('effect select', async () => {
-  const [r] = await saga(function*() {
+  const [r] = await saga(function* () {
     return yield select((state: State) => state.arr);
   });
 
@@ -74,8 +74,8 @@ test('effect select', async () => {
 });
 
 test('effect take/put', async () => {
-  const [r] = await saga(function*() {
-    yield fork(function*() {
+  const [r] = await saga(function* () {
+    yield fork(function* () {
       yield put('value', 1);
     });
 
@@ -86,8 +86,8 @@ test('effect take/put', async () => {
 });
 
 test('effect commit', async () => {
-  await saga(function*() {
-    const t = yield fork(function*() {
+  await saga(function* () {
+    const t = yield fork(function* () {
       yield commit('commit-1', 1, 2, 3);
       yield commit('commit-2', 3, 4, 5);
     });
@@ -100,7 +100,7 @@ test('effect commit', async () => {
 });
 
 test('effect delay', async () => {
-  await saga(function*() {
+  await saga(function* () {
     yield delay(200);
   });
 });
@@ -126,17 +126,17 @@ test('effect cancel', async () => {
 
 test('effect race/delay', async () => {
   const cb = jest.fn((_: number) => {});
-  await saga(function*() {
-    yield fork(function*() {
+  await saga(function* () {
+    yield fork(function* () {
       yield delay(100);
       yield put('stop');
     });
 
     yield race([
-      call(function*() {
+      call(function* () {
         yield take('stop');
       }),
-      call(function*() {
+      call(function* () {
         try {
           yield delay(5000);
         } finally {
@@ -146,7 +146,7 @@ test('effect race/delay', async () => {
           }
         }
       }),
-      call(function*() {
+      call(function* () {
         try {
           yield delay(5000);
         } finally {
@@ -169,10 +169,10 @@ test('effect race/delay', async () => {
 test('effect all', async () => {
   const arr = Array.from({ length: 50 }).map((_, i) => i);
 
-  const r = await saga(function*() {
+  const r = await saga(function* () {
     return yield all(
       arr.map((_, i) =>
-        call(function*() {
+        call(function* () {
           yield delay(10);
           return i;
         })
