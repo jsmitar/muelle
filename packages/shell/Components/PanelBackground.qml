@@ -53,7 +53,6 @@ Item {
 
   EdgeSlideAnimation {
     target: frame
-    distance: store.state.animation.edgeDistance
   }
 
   Item {
@@ -61,12 +60,11 @@ Item {
     visible: false  
 
     anchors.centerIn: background
-    width: rect.width
-    height: rect.height
+    width: background.width
+    height: background.height
 
     EdgeSlideAnimation {
       target: contrast_sync
-      distance: store.state.animation.edgeDistance
       delay: 60
     }
   }
@@ -80,8 +78,8 @@ Item {
       undefined
 
     anchors.centerIn: background
-    width: rect.width
-    height: rect.height
+    width: background.width
+    height: background.height
   }
 
   Component {

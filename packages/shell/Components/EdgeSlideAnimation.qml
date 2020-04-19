@@ -7,7 +7,7 @@ QObject {
   property Item target
 
   property int value: -distance 
-  property int distance: 0
+  property int distance: store.state.animation.edgeDistance
   property int delay: 0
 
   signal slideInFinished
@@ -22,9 +22,15 @@ QObject {
     onSlideChanged: {
       const slide = target.slide
       if (slide === 'slide-in-running') {
-        slideIn.start()
+        if (delay)
+          Qt.setTimeout(() => slideIn.start(), delay)
+        else
+          slideIn.start()
       } else if (slide === 'slide-out-running') {
-        slideOut.start()
+        if (delay)
+          Qt.setTimeout(() => slideOut.start(), delay)
+        else
+          slideOut.start()
       }
     }
   }
@@ -33,9 +39,6 @@ QObject {
     id: slideIn
     alwaysRunToEnd: false
 
-    PauseAnimation {
-      duration: delay
-    }
     ScriptAction {
       script: slideOut.stop()
     }
@@ -55,9 +58,6 @@ QObject {
     id: slideOut
     alwaysRunToEnd: false
 
-    PauseAnimation {
-      duration: delay
-    }
     ScriptAction {
       script: slideIn.stop()
     }

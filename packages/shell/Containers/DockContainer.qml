@@ -15,7 +15,6 @@ Item {
 
   EdgeSlideAnimation {
     target: panelContainer
-    distance: store.state.animation.edgeDistance
 
     onSlideInFinished: {
       store.dispatch(Action.slideInFinished())
