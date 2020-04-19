@@ -200,7 +200,7 @@ function buildQml(cb) {
   )(cb);
 }
 
-function watchTask() {
+function _watch() {
   return series(mkdirBuild, cleanDist, () =>
     watch(
       [...dirs.resources.muelle.watch, ...dirs.resources.watchQmlPackages],
@@ -216,17 +216,17 @@ function watchTask() {
   );
 }
 
-function buildTask() {
+function _build() {
   return parallel(
     series(mkdirBuild, runCMake, runNinja),
     series(cleanDist, buildQml)
   );
 }
 
-function install() {
+function _install() {
   return series(runNinjaInstall);
 }
 
-exports.watch = watchTask();
-exports.build = buildTask();
-exports.install = install();
+exports.watch = _watch();
+exports.build = _build();
+exports.install = _install();
