@@ -21,7 +21,7 @@ QObject {
 
   readonly property Background background: Background {
     parentObject: state
-    lift: 20
+    lift: 8
     shadowBlur: 5
     borderRadius: 30
     paddingX: 10
