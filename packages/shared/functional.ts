@@ -84,6 +84,13 @@ export function zip<T, U>(arrayL: T[], arrayR: U[]) {
   );
 }
 
+export function every<T>(
+  array: T[],
+  predicate: (item: T, index: number, array: T[]) => boolean
+) {
+  return Array.prototype.every.call(array, predicate);
+}
+
 export function flat<T>(array: T[][]) {
   return Array.prototype.reduce.call<T[][], any, T[]>(
     array,
@@ -425,7 +432,13 @@ export function debounce<Fn extends (...args: any[]) => any>(
     return (...args: Parameters<Fn>) => {
       lastArgs = args;
       Qt.clearTimeout(timer);
-      timer = Qt.setTimeout(() => fn(...lastArgs), time);
+      timer = Qt.setTimeout(() => {
+        try {
+          fn(...lastArgs);
+        } catch (e) {
+          console.error(e);
+        }
+      }, time);
     };
   }
 }
@@ -445,7 +458,11 @@ export function throttle<Fn extends (...args: any[]) => any>(
     if (!timer) {
       timer = Qt.setInterval(() => {
         if (called) {
-          timer = fn(...lastArgs);
+          try {
+            timer = fn(...lastArgs);
+          } catch (e) {
+            console.error(e);
+          }
           called = false;
         } else {
           timer = void Qt.clearInterval(timer!);
