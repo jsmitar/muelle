@@ -153,11 +153,14 @@ MouseArea {
         hold = true
         panel.Drag.imageSource = img.url
         panel.dragging = task
+        panel.Drag.active = true
       })
     } else {
       panel.dragging = null
-      hold = false
       opacity = 1
+      Qt.callLater(() => {
+        hold = false
+      })
     }
   }
   //! END: Drag&Drop
@@ -173,7 +176,7 @@ MouseArea {
   }
 
   onReleased: {
-    if (panel.dragging) return
+    if (hold) return
 
    const action = {
       [Qt.LeftButton]() {
