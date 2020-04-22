@@ -40,6 +40,13 @@ export function each<T>(
   return Array.prototype.forEach.call(array, fn);
 }
 
+export function find<T>(
+  array: T[],
+  predicate: (value: T, index: number, array: T[]) => void
+) {
+  return Array.prototype.find.call<T[], any, T | undefined>(array, predicate);
+}
+
 export function map<T, U>(
   iterable: T[],
   fn: (value: T, index: number, array: T[]) => U

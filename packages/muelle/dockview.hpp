@@ -23,6 +23,7 @@
 #include "layout.hpp"
 #include "libs/enhancedqmlengine.hpp"
 #include "positionhandler.hpp"
+#include "windoweventfilter.hpp"
 
 #include <memory>
 
@@ -47,7 +48,6 @@ namespace Muelle {
 class View : public QQuickWindow {
   Q_OBJECT
   Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
-  Q_PROPERTY(bool dragging READ dragging NOTIFY draggingChanged)
   Q_PROPERTY(QRect mask READ mask WRITE setMask NOTIFY maskChanged)
   Q_PROPERTY(QRect geometry READ geometry NOTIFY maskChanged)
   Q_PROPERTY(QRect panelGeometry READ panelGeometry NOTIFY panelGeometryChanged)
@@ -95,9 +95,6 @@ public:
   bool containsMouse() const;
   void setContainsMouse(bool containsMouse);
 
-  bool dragging() const;
-  void setDragging(bool dragging);
-
   Configuration *configuration() const;
 
 signals:
@@ -115,17 +112,9 @@ signals:
   void entered();
   void exited();
 
-  void draggingChanged();
-
   void release();
 
-protected:
-  bool event(QEvent *ev) override;
-
 private:
-  bool mContainsMouse = false;
-  bool mDragging = false;
-
   Layout mLayout;
   PositionHandler mPositionHandler;
 

@@ -46,23 +46,27 @@ QObject {
     launchInPlace: true
     separateLaunchers: true
     groupMode: TasksModel.GroupApplications
-    groupInline: true
+    groupInline: false
     groupingWindowTasksThreshold: -1
     filterByVirtualDesktop: false
     filterByScreen: false
     filterByActivity: true
     sortMode: TasksModel.SortManual
-    launcherList: [
-      'applications:org.qt-project.qtcreator.desktop', 
-      'applications:firefox.desktop',
-      'applications:code.desktop',
-      'applications:telegramdesktop.desktop',
-      __muelle_separator__,
-      'applications:org.kde.dolphin.desktop',
-    ]
+
+    property bool ready: false
 
     Component.onCompleted: {
+      launcherList = JSON.parse($configuration.launcherList || '[]')
+      // launcherList = [
+      //   'applications:org.qt-project.qtcreator.desktop', 
+      //   'applications:firefox.desktop',
+      //   'applications:code.desktop',
+      //   'applications:telegramdesktop.desktop',
+      //   __muelle_separator__,
+      //   'applications:org.kde.dolphin.desktop',
+      // ]
       countChanged()
+      ready = true
     }
   }
 }

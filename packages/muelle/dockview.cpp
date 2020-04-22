@@ -39,7 +39,6 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   setFlag(Qt::X11BypassWindowManagerHint);
   setFlag(Qt::NoDropShadowWindowHint);
 
-  //  setResizeMode(QQuickView::SizeRootObjectToView);
   setTextRenderType(QQuickWindow::NativeTextRendering);
   setPersistentSceneGraph(true);
   setPersistentOpenGLContext(true);
@@ -57,6 +56,8 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   connect(this, &View::panelSizeChanged, this, &View::panelGeometryChanged);
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
+
+  new WindowEventFilter(this);
 }
 
 View::~View() {}
@@ -98,22 +99,14 @@ void View::load() {
       });
 }
 
-bool View::containsMouse() const { return mContainsMouse; }
-
-void View::setContainsMouse(bool containsMouse) {
-  if (mContainsMouse != containsMouse) {
-    mContainsMouse = containsMouse;
-    emit containsMouseChanged();
-    containsMouse ? emit entered() : emit exited();
-  }
+bool View::containsMouse() const {
+  return absolutePanelGeometry().contains(QCursor::pos());
 }
 
-bool View::dragging() const { return mDragging; }
-
-void View::setDragging(bool dragging) {
-  if (mDragging != dragging) {
-    mDragging = dragging;
-    emit draggingChanged();
+void View::setContainsMouse(bool value) {
+  if (value != containsMouse()) {
+    emit containsMouseChanged();
+    value ? emit entered() : emit exited();
   }
 }
 
@@ -203,27 +196,5 @@ Configuration *View::configuration() const { return mConfigMap; }
 void View::setOpacity(qreal level) { QQuickWindow::setOpacity(level); }
 
 const Layout &View::layout() const { return mLayout; }
-
-bool View::event(QEvent *ev) {
-  switch (ev->type()) {
-  case QEvent::Enter:
-    setContainsMouse(true);
-    break;
-  case QEvent::Leave:
-    setContainsMouse(false);
-    break;
-  case QEvent::DragEnter:
-    setDragging(true);
-    break;
-  case QEvent::DragLeave:
-    setDragging(false);
-    setContainsMouse(false);
-    break;
-  case QEvent::Drop:
-    setDragging(false);
-  default:;
-  }
-  return QQuickWindow::event(ev);
-}
 
 } // namespace Muelle

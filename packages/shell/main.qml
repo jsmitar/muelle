@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
@@ -79,6 +79,15 @@ Item {
       property: 'panelSize'
       value: store.state.geometry.panelNextSize
       delayed: true
+    }
+    Connections {
+      enabled: store.state.tasksModel.ready
+      target: store.state.tasksModel
+
+      onLauncherListChanged: {
+        $configuration.launcherList = JSON.stringify(target.launcherList)
+        $configuration.save()
+      }
     }
     Connections {
       target: store.state.tasksModel

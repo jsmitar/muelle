@@ -9,7 +9,7 @@ export function* syncLaunchers(): Saga {
 
   const model: TasksModel = yield tasksModelSelect;
   model.syncLaunchers();
-  yield delay(2000);
+  yield delay(200);
 
   yield commit(ADD_TRANSITION, true);
 }

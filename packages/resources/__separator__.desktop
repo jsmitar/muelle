@@ -4,4 +4,5 @@ Encoding=UTF-8
 Comment=Muelle Task Separator
 Name=__separator__
 GenericName=__separator__
-Exec=NONE
+Exec=echo
+Icon=

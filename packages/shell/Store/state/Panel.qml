@@ -13,6 +13,8 @@ QObject {
 
   property bool updatingOffset: false
   property bool updatingOrientation: false
+  property bool updatingLaunchers: false
+
   property int nextEdge: $configuration.edge || Types.Top
   property int nextAlignment: Types.Center
 

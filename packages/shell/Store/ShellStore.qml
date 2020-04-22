@@ -30,12 +30,13 @@ FluxStore {
 
   readonly property TaskManagerApplet.Backend backend: TaskManagerApplet.Backend {
     taskManagerItem: root
-    toolTipItem: Rectangle {
-      color: "#c83232"
+    toolTipItem: Item {
       visible: true
     }
     onAddLauncher: {
       tasksModel.requestAddLauncher(url)
+    }
+    Component.onCompleted: {
     }
   }
 }

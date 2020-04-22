@@ -57,7 +57,7 @@ Item {
 
   Item {
     id: contrast_sync
-    visible: false  
+    visible: false
 
     anchors.centerIn: background
     width: background.width
@@ -250,7 +250,7 @@ Item {
           background.y + contrast_sync.y
         )
 
-        enabled: 
+        enabled:
           store.state.panel.visible && 
           !store.state.panel.updatingOffset &&
           !store.state.panel.updatingOrientation

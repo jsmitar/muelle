@@ -16,6 +16,8 @@ class Configuration : public PropertyMap {
 public:
   explicit Configuration(QObject *parent, KConfigGroup &config);
 
+  ~Configuration() noexcept;
+
   void init();
   void setDefaults();
 

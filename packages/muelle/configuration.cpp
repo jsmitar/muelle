@@ -7,6 +7,8 @@ Configuration::Configuration(QObject *parent, KConfigGroup &config)
   init();
 }
 
+Configuration::~Configuration() noexcept { save(); }
+
 void Configuration::init() {
   foreach (auto key, mConfig.keyList()) { insert(key, mConfig.readEntry(key)); }
 

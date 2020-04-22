@@ -153,6 +153,7 @@ MouseArea {
         hold = true
         panel.Drag.imageSource = img.url
         panel.dragging = task
+        panel.removedLauncher = ''
         panel.Drag.active = true
       })
     } else {
