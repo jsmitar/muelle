@@ -47,7 +47,6 @@ DropArea {
   }
 
   property var positionHandler: F.throttle(() => {
-    Qt.clearTimeout(removeLauncher)
     const item = target.positioner.childAt(drag.x, drag.y)
 
     const appId = item ? item.m.AppId : ''
