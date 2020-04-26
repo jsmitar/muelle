@@ -5,16 +5,14 @@ namespace Muelle {
 
 WindowEventFilter::WindowEventFilter(QObject *parent) noexcept
     : QObject(parent), mCursorWatcher(new QTimer(this)) {
-  mCursorWatcher->setInterval(250);
+  mCursorWatcher->setInterval(400);
   mCursorWatcher->setSingleShot(false);
   mCursorWatcher->callOnTimeout([&, view = qobject_cast<View *>(parent)] {
-    const auto containsMouse{
-        view->absolutePanelGeometry().contains(QCursor::pos())};
-
-    view->setContainsMouse(containsMouse);
-
-    if (!containsMouse)
-      mCursorWatcher->stop();
+    if (view->containsMouse()) {
+      emit view->entered();
+    } else {
+      emit view->exited();
+    }
   });
 
   parent->installEventFilter(this);
@@ -25,22 +23,13 @@ bool WindowEventFilter::eventFilter(QObject *object, QEvent *event) {
 
   switch (event->type()) {
   case QEvent::Enter:
+  case QEvent::DragEnter:
+  case QEvent::Drop:
     view->setContainsMouse(true);
     break;
   case QEvent::Leave:
-    view->setContainsMouse(false);
-    break;
-  case QEvent::DragEnter:
-    view->setContainsMouse(true);
-    // mCursorWatcher->start();
-    break;
   case QEvent::DragLeave:
     view->setContainsMouse(false);
-    // mCursorWatcher->stop();
-    break;
-  case QEvent::Drop:
-    view->setContainsMouse(true);
-    // mCursorWatcher->stop();
   default:;
   }
 

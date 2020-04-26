@@ -104,9 +104,9 @@ bool View::containsMouse() const {
 }
 
 void View::setContainsMouse(bool value) {
-  if (value != containsMouse()) {
+  if (value != mContainsMouse) {
+    (mContainsMouse = value) ? emit entered() : emit exited();
     emit containsMouseChanged();
-    value ? emit entered() : emit exited();
   }
 }
 

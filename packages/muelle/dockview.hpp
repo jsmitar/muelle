@@ -115,6 +115,7 @@ signals:
   void release();
 
 private:
+  bool mContainsMouse{false};
   Layout mLayout;
   PositionHandler mPositionHandler;
 

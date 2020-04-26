@@ -116,6 +116,13 @@ MouseArea {
   hoverEnabled: true
   acceptedButtons: Qt.LeftButton | Qt.RightButton
 
+  opacity: panel.dragging === task ? 0.5 : 1
+
+  Component.onCompleted: { 
+    TaskHelper.publishGeometry(store.tasksModel, $view.position, task)
+    const model = store.tasksModel.makeModelIndex(m.index)
+  }
+
   Component {
     id: iconTask
     IconTask {
@@ -148,17 +155,14 @@ MouseArea {
 
   drag.onActiveChanged: {
     if (drag.active) {
-      opacity = 0
       drag.target.grabToImage(img => {
         hold = true
-        panel.Drag.imageSource = img.url
         panel.dragging = task
         panel.removedLauncher = ''
+        panel.Drag.imageSource = img.url
         panel.Drag.active = true
       })
     } else {
-      panel.dragging = null
-      opacity = 1
       Qt.callLater(() => {
         hold = false
       })
@@ -181,6 +185,7 @@ MouseArea {
 
    const action = {
       [Qt.LeftButton]() {
+        TaskHelper.publishGeometry(store.tasksModel, $view.position, task)
         TaskHelper.activate(store.tasksModel, task, mouse)
       },
       [Qt.RightButton]() {

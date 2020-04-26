@@ -47,28 +47,31 @@ DropArea {
   }
 
   property var positionHandler: F.throttle(() => {
-    const item = target.positioner.childAt(drag.x, drag.y)
+    const prevAppId = hovered && hovered.m ? hovered.m.AppId : ''
 
-    const appId = item ? item.m.AppId : ''
-    const prevAppId = hovered ? hovered.m.AppId : ''
+    hovered = target.positioner.childAt(drag.x, drag.y)
+    const appId = hovered && hovered.m ? hovered.m.AppId : ''
 
     if (prevAppId !== appId) {
-      hovered = item
-      moveTask(dragging, item)
+      moveTask(dragging, hovered)
     }
   }, 250)
 
   function addLauncher(url) {
     store.backend.addLauncher(url)
-    syncLaunchers()
+  }
+
+  function isApplication(url) {
+    return url && store.backend.isApplication(url)
   }
 
   drag.onPositionChanged: positionHandler()
 
   property var removeLauncher: F.debounce(() => {
-    if (dragging && !$view.containsMouse) {
-      const url = dragging.m.LauncherUrlWithoutIcon
+    if ($view.containsMouse) return
 
+    if (dragging && dragging.m.IsLauncher) {
+      const url = dragging.m.LauncherUrlWithoutIcon
       store.tasksModel.requestRemoveLauncher(url)
       removedLauncher = url
       dragging = null
@@ -86,25 +89,24 @@ DropArea {
   onEntered: {
     const url = drag.hasUrls ? drag.urls[0] : removedLauncher
 
-    if (url && (store.backend.isApplication(url) || removedLauncher)) {
+    if (removedLauncher || isApplication(url)) {
       addLauncher(url)
       dragging = findLauncher(url)
-      dragging.opacity = 0
-      removedLauncher = ''
-    } else {
-      drag.accept(Qt.IgnoreAction)
+
+      drag.accept()
     }
+    removedLauncher = ''
   }
 
   onDropped: {
     if (dragging && dragging.objectName === 'IconTaskContainer') {
-      dragging.opacity = 1
       syncLaunchers()
     } else {
       const url = drop.hasUrls ? drop.urls[0] : ''
 
       if (url) {
         addLauncher(url)
+        syncLaunchers()
       } else if (hovered) {
         const modelIndex = store.tasksModel.makeModelIndex(hovered.index)
         F.each(drop.urls, url => {
