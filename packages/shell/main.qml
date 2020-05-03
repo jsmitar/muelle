@@ -32,7 +32,6 @@ Item {
     Qt.clearInterval = clearInterval
     Qt.__muelle_separator__ = __muelle_separator__
     // END: Set Global Properties
-    console.log(F.tostr($container.screens, 3))
   }
 
   PaintItem {
@@ -47,59 +46,6 @@ Item {
   readonly property ShellStore store: ShellStore {
     id: store
 
-    Binding {
-      target: $layout
-      property: 'edge'
-      value: store.state.panel.edge
-    }
-    Binding {
-      target: $layout
-      property: 'alignment'
-      value: store.state.panel.alignment
-    }
-    Binding {
-      target: $view
-      property: 'size'
-      value: store.state.geometry.viewSize
-      delayed: true
-    }
-    Binding {
-      target: $view
-      property: 'mask'
-      value: store.state.geometry.maskRect
-      delayed: true
-    }
-    Binding {
-      target: $view
-      property: 'panelPosition'
-      value: store.state.geometry.panelNextPoint
-      delayed: true
-    }
-    Binding {
-      target: $view
-      property: 'panelSize'
-      value: store.state.geometry.panelNextSize
-      delayed: true
-    }
-    Connections {
-      enabled: store.state.tasksModel.ready
-      target: store.state.tasksModel
-
-      onLauncherListChanged: {
-        $configuration.launcherList = JSON.stringify(target.launcherList)
-        $configuration.save()
-      }
-    }
-    Connections {
-      target: store.state.tasksModel
-
-      onCountChanged: {
-        store.dispatch(Action.updateTaskCount1({ 
-          tasks: target.count, 
-          launcherList: target.launcherList
-        }))
-      }
-    }
 
     contextMenu: DockMenu {
       parent: root
@@ -111,8 +57,7 @@ Item {
         .map(screen => ({
           text: `${screen.name} (${screen.model})`,
           trigger() { 
-            $view.screen = screen 
-            $positioner.update(0)
+            store.dispatch(Action.changeScreen(screen.name))
           }
         }))
       )
@@ -140,4 +85,68 @@ Item {
   DockMenu {}
 
   BehaviorManager {}
+
+  Binding {
+    target: $layout
+    property: 'edge'
+    value: store.state.panel.edge
+  }
+  Binding {
+    target: $layout
+    property: 'alignment'
+    value: store.state.panel.alignment
+  }
+  Binding {
+    target: $view
+    property: 'size'
+    value: store.state.geometry.viewSize
+    delayed: true
+  }
+  Binding {
+    target: $view
+    property: 'mask'
+    value: store.state.geometry.maskRect
+    delayed: true
+  }
+  Binding {
+    target: $view
+    property: 'panelPosition'
+    value: store.state.geometry.panelNextPoint
+    delayed: true
+  }
+  Binding {
+    target: $view
+    property: 'panelSize'
+    value: store.state.geometry.panelNextSize
+    delayed: true
+  }
+  Connections {
+    enabled: store.state.tasksModel.ready
+    target: store.state.tasksModel
+
+    onLauncherListChanged: {
+      $configuration.launcherList = JSON.stringify(target.launcherList)
+      $configuration.save()
+    }
+  }
+  Connections {
+    target: $view.screen
+
+    onGeometryChanged: {
+      console.count('screen.onGeometryChanged')
+      setTimeout(() => {
+        $positioner.update(0)
+      }, 1000)
+    }
+  }
+  Connections {
+    target: store.state.tasksModel
+
+    onCountChanged: {
+      store.dispatch(Action.updateTaskCount1({ 
+        tasks: target.count, 
+        launcherList: target.launcherList
+      }))
+    }
+  }
 }

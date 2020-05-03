@@ -40,29 +40,36 @@ class PanelBehavior : public QObject, public QQmlParserStatus {
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)
   Q_PROPERTY(Muelle::View *view MEMBER view)
+  Q_PROPERTY(
+      QPoint position READ position WRITE setPosition NOTIFY positionChanged)
   Q_PROPERTY(QVariant region READ region WRITE setRegion NOTIFY regionChanged)
 
 public:
-  explicit PanelBehavior(QObject *parent = nullptr);
+  explicit PanelBehavior(QObject *parent = nullptr) noexcept;
   virtual ~PanelBehavior() override;
 
   void classBegin() override;
   void componentComplete() override;
 
-  Types::Behavior behavior() const;
-  void setBehavior(Types::Behavior behavior);
+  Types::Behavior behavior() const noexcept;
+  void setBehavior(Types::Behavior behavior) noexcept;
 
-  Q_INVOKABLE void updateStruts();
+  void setPosition(const QPoint &point) noexcept;
+  QPoint position() const noexcept;
 
-  void setRegion(const QVariant &rects);
-  QVariant region() const;
+  void setRegion(const QVariant &rects) noexcept;
+  QVariant region() const noexcept;
 
-  bool dodge() const;
+  bool dodge() const noexcept;
+
+  Q_INVOKABLE void updateStruts() noexcept;
+  Q_INVOKABLE void scanWindows() noexcept;
 
 signals:
   void behaviorChanged();
   void dodgeChanged();
   void regionChanged();
+  void positionChanged();
 
 private:
   Private::PanelBehavior *dPtr;

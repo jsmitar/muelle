@@ -443,7 +443,7 @@ export function debounce<Fn extends (...args: any[]) => any>(
         try {
           fn(...lastArgs);
         } catch (e) {
-          console.error(e);
+          console.error(e.name, e.message, e.stack);
         }
       }, time);
     };
@@ -468,7 +468,7 @@ export function throttle<Fn extends (...args: any[]) => any>(
           try {
             timer = fn(...lastArgs);
           } catch (e) {
-            console.error(e);
+            console.error(e.name, e.message, e.stack);
           }
           called = false;
         } else {

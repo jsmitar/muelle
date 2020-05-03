@@ -142,4 +142,42 @@ declare namespace Qt {
     acceptProposedAction(): void;
     accept(): void;
   }
+
+  interface QScreen extends QtObject {
+    name: string;
+    manufacturer: string;
+    model: string;
+    serialNumber: string;
+    depth: number;
+    size: size;
+    availableSize: size;
+    virtualSize: size;
+    availableVirtualSize: size;
+    geometry: rect;
+    availableGeometry: rect;
+    virtualGeometry: rect;
+    availableVirtualGeometry: rect;
+    physicalSize: size;
+    physicalDotsPerInchX: number;
+    physicalDotsPerInchY: number;
+    physicalDotsPerInch: number;
+    logicalDotsPerInchX: number;
+    logicalDotsPerInchY: number;
+    logicalDotsPerInch: number;
+    devicePixelRatio: number;
+    primaryOrientation: number;
+    orientation: number;
+    nativeOrientation: number;
+    refreshRate: number;
+    objectNameChanged: Signal;
+    geometryChanged: Signal;
+    availableGeometryChanged: Signal;
+    physicalSizeChanged: Signal;
+    physicalDotsPerInchChanged: Signal;
+    logicalDotsPerInchChanged: Signal;
+    virtualGeometryChanged: Signal;
+    primaryOrientationChanged: Signal;
+    orientationChanged: Signal;
+    refreshRateChanged: Signal;
+  }
 }

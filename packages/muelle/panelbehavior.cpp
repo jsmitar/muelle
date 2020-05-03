@@ -19,7 +19,7 @@
 #include "panelbehavior_p.hpp"
 
 namespace Muelle {
-PanelBehavior::PanelBehavior(QObject *parent)
+PanelBehavior::PanelBehavior(QObject *parent) noexcept
     : QObject(parent), dPtr(new Private::PanelBehavior(this)) {}
 
 PanelBehavior::~PanelBehavior() { delete dPtr; }
@@ -32,18 +32,23 @@ void PanelBehavior::componentComplete() {
   dPtr->updateBehavior();
 }
 
-Types::Behavior PanelBehavior::behavior() const { return mBehavior; }
+Types::Behavior PanelBehavior::behavior() const noexcept { return mBehavior; }
 
-void PanelBehavior::setBehavior(Types::Behavior behavior) {
+void PanelBehavior::setBehavior(Types::Behavior behavior) noexcept {
   if (mBehavior != behavior) {
     mBehavior = behavior;
     emit behaviorChanged();
   }
 }
 
-void PanelBehavior::updateStruts() { dPtr->updateStruts(); }
+void PanelBehavior::setPosition(const QPoint &position) noexcept {
+  dPtr->position = position;
+  emit positionChanged();
+}
 
-void PanelBehavior::setRegion(const QVariant &rects) {
+QPoint PanelBehavior::position() const noexcept { return dPtr->position; }
+
+void PanelBehavior::setRegion(const QVariant &rects) noexcept {
   const QJSValue array = rects.value<QJSValue>();
 
   if (!array.isArray()) {
@@ -55,15 +60,17 @@ void PanelBehavior::setRegion(const QVariant &rects) {
   for (int i = 0; i < array.property(QStringLiteral("length")).toInt(); ++i) {
     region += array.property(i).toVariant().toRect();
   }
-
-  region.translate(view->position());
   dPtr->region = region;
 
   emit regionChanged();
 }
 
-QVariant PanelBehavior::region() const { return dPtr->region; }
+QVariant PanelBehavior::region() const noexcept { return dPtr->region; }
 
-bool PanelBehavior::dodge() const { return dPtr->dodgeValue; }
+bool PanelBehavior::dodge() const noexcept { return dPtr->dodgeValue; }
+
+void PanelBehavior::updateStruts() noexcept { dPtr->updateStruts(); }
+
+void PanelBehavior::scanWindows() noexcept { dPtr->scanAllWindows(); }
 
 } // namespace Muelle

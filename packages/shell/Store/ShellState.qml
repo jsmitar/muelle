@@ -16,12 +16,12 @@ QObject {
     parentObject: state
     iconSize: 48
     padding: 4
-    spacing: 8
+    spacing: 4
   }
 
   readonly property Background background: Background {
     parentObject: state
-    lift: 8
+    lift: 10
     shadowBlur: 5
     borderRadius: 30
     paddingX: 10

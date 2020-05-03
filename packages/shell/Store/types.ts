@@ -29,6 +29,7 @@ export interface Panel extends Qt.QtObject<{}> {
 
   updatingOffset: boolean;
   updatingOrientation: boolean;
+  updatingScreen: any;
   nextEdge: Types.Edge;
   nextAlignment: Types.Alignment;
   alignment: Types.Alignment;
@@ -83,6 +84,7 @@ export interface Context extends QtObject {
   view: Dock.view;
   layout: Dock.layout;
   positioner: Dock.positioner;
+  container: Dock.container;
   configuration: Configuration;
 }
 
@@ -95,6 +97,7 @@ export namespace Dock {
     size: Qt.size;
     position: Qt.point;
     mousePosition: Qt.point;
+    screen: Qt.QScreen;
     setOpacity(level: number): void;
   }
 
@@ -110,5 +113,9 @@ export namespace Dock {
   export interface positioner extends Qt.QtObject {
     centerOffset: number;
     update(duration: number): void;
+  }
+
+  export interface container extends Qt.QtObject {
+    screens: { [screen: string]: Qt.QScreen };
   }
 }

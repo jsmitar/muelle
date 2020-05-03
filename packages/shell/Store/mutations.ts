@@ -18,6 +18,7 @@ import {
   UPDATE_POSITION,
   UPDATE_TASK_COUNT_1,
   UPDATING_ORIENTATION,
+  UPDATING_SCREEN,
 } from './mutationTypes';
 import { ShellState } from './types';
 
@@ -28,6 +29,9 @@ export const mutations: Mutations<ShellState> = {
   [UPDATE_POSITION](state) {
     state.panel.edge = state.panel.nextEdge;
     state.panel.alignment = state.panel.nextAlignment;
+  },
+  [UPDATING_SCREEN](state, value) {
+    state.panel.updatingScreen = value;
   },
   [UPDATING_ORIENTATION](state, nextEdge: Types.Edge) {
     const { edge } = state.panel;

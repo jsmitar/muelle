@@ -15,7 +15,7 @@ export function delay(ms: number) {
 
 // @ts-ignore
 export function takeLeading<Fn extends SagaFn>(
-  pattern: string,
+  pattern: string | AnyActionCreator,
   saga: Fn,
   ...args: L.Pop<Parameters<Fn>>
 ) {

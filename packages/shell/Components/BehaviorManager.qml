@@ -27,6 +27,8 @@ QObject {
     id: behavior
     view: $view
     behavior: store.state.panel.behavior
+
+    position: $view.position
     region: [
       store.state.geometry.panelRect,
       store.state.geometry.backgroundRect
@@ -55,6 +57,7 @@ QObject {
     property var dodge: F.debounce(() => {
       // console.count('dodge')
       // console.log($view.containsMouse, $view.dragging, !behavior.dodge)
+      if (store.state.panel.updatingScreen) return
 
       if ($view.containsMouse || !behavior.dodge) {
         if (store.state.panel.slide === 'slide-out-running' ||
@@ -71,6 +74,8 @@ QObject {
       }
     }, 50)
 
+    property var scanWindows: F.debounce(behavior.scanWindows, 400)
+
     Connections {
       target: $view
       onEntered: dodgeWindow.dodge()
@@ -82,7 +87,20 @@ QObject {
     }
     Connections {
       target: manager
-      onForceUpdate: dodgeWindow.dodge()
+      onForceUpdate: dodgeWindow.scanWindows()
+    }
+    Connections {
+      target: store.state.panel
+
+      onUpdatingScreenChanged: {
+        if (!target.updatingScreen) dodgeWindow.scanWindows()
+      }
+      onUpdatingOffsetChanged: {
+        if (!target.updatingOffset) dodgeWindow.scanWindows()
+      }
+      onUpdatingEdgeChanged: {
+        if (!target.updatingEdge) dodgeWindow.scanWindows()
+      }
     }
   }
 
@@ -103,10 +121,6 @@ QObject {
     Connections {
       target: store.state.geometry
       onPanelSizeChanged: alwaysVisible.updateStruts()
-    }
-    Connections {
-      target: manager
-      onForceUpdate: alwaysVisible.updateStruts()
     }
   }
 }

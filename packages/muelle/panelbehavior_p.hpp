@@ -199,17 +199,6 @@ public:
     if (!info.valid() || info.win() == qPtr->view->winId())
       return false;
 
-    const auto panel = qPtr->view->absolutePanelGeometry();
-    //    qDebug() << "valid:" << info.valid() << "panel:" << panel
-    //             << "frameRect:" << info.frameGeometry()
-    //             << "isOnCurrentDesktop:" << info.isOnCurrentDesktop()
-    //             << "allDesktops:" << info.onAllDesktops()
-    //             << "desktop:" << info.desktop()
-    //             << "isMinimized:" << info.isMinimized() << "winType:"
-    //             << info.windowType(NET::DockMask | NET::MenuMask |
-    //                                NET::DesktopMask)
-    //             << "intersects:" << info.frameGeometry().intersects(panel);
-
     const bool validType = info.windowType(NET::NormalMask | NET::DialogMask |
                                            NET::ComboBoxMask) >= 0;
 
@@ -218,7 +207,7 @@ public:
         (desktop != -1 ? info.desktop() == desktop : info.isOnCurrentDesktop());
 
     return isOnCurrentDesktop && !info.isMinimized() && validType &&
-           region.intersects(info.frameGeometry());
+           region.translated(position).intersects(info.frameGeometry());
   }
 
   void scanAllWindows(int desktop = -1) {
@@ -288,6 +277,7 @@ public:
 
 public:
   Muelle::PanelBehavior *qPtr{nullptr};
+  QPoint position;
   QRegion region;
   QTimer dodgeDebounce;
   QVector<QMetaObject::Connection> connections;

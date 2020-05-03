@@ -1,7 +1,8 @@
-import { takeLatest } from '../../shared/saga/effects';
+import { takeLatest, takeLeading } from '../../shared/saga/effects';
 import { Saga } from '../../shared/saga/private/types';
 import * as action from './actions';
 import { disableMask } from './disableMask';
+import { changeScreen } from './sagas/changeScreen';
 import { edge } from './sagas/edge';
 import { slide } from './sagas/slide';
 import { updateTaskCount1 } from './sagas/updateTaskCount1';
@@ -13,4 +14,5 @@ export function* sagaRoot(): Saga {
   yield takeLatest(action.changeEdge, edge);
   yield takeLatest(action.disableMask, disableMask);
   yield takeLatest(action.syncLaunchers, syncLaunchers);
+  yield takeLeading(action.changeScreen, changeScreen);
 }

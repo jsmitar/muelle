@@ -7,7 +7,10 @@ QtObject {
 
   readonly property QtObject layout: $layout
 
+  readonly property QtObject container: $container
+
   readonly property QtObject positioner: $positioner
 
   readonly property QtObject configuration: $configuration
+
 }

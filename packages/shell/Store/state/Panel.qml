@@ -12,8 +12,10 @@ QObject {
   property string slide: 'None'
 
   property bool updatingOffset: false
+  property bool updatingEdge: nextEdge !== edge
   property bool updatingOrientation: false
   property bool updatingLaunchers: false
+  property bool updatingScreen: false
 
   property int nextEdge: $configuration.edge || Types.Top
   property int nextAlignment: Types.Center

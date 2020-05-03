@@ -44,4 +44,6 @@ export const updateTaskCount1 = createAction(
 
 export const updateLayout = createAction('updateLayout');
 
+export const changeScreen = createAction<string>('changeScreen');
+
 export const syncLaunchers = createAction('syncLaunchers');
