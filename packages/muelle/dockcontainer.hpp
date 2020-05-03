@@ -5,18 +5,19 @@
 #include "helpers.hpp"
 #include "libs/enhancedqmlengine.hpp"
 
-#include "dockview.hpp"
 #include <KConfig>
 #include <KConfigGroup>
 #include <KSharedConfig>
 #include <Plasma/Theme>
 #include <QApplication>
+#include <QGuiApplication>
 #include <QMap>
 #include <QMetaObject>
 #include <QObject>
 #include <QQmlEngine>
 #include <QScreen>
 #include <QUuid>
+#include <QVariant>
 #include <QVector>
 #include <algorithm>
 
@@ -25,6 +26,8 @@ using UUID = QString;
 namespace Muelle {
 class Container : public QObject {
   Q_OBJECT
+  Q_PROPERTY(QVariantMap screens READ screensVariant NOTIFY screensChanged)
+
 public:
   explicit Container(QObject *parent = nullptr);
 
@@ -46,11 +49,17 @@ public:
 
   static Container *instance() noexcept;
 
+  QVariantMap screensVariant() const noexcept;
+
+signals:
+  void screensChanged();
+
 private:
   QMap<UUID, View *> mViews;
   EnhancedQmlEngine *mEngine;
   Plasma::Theme *mTheme;
   KSharedConfig::Ptr mConfig;
+  QVariantMap mScreens;
 };
 } // namespace Muelle
 #endif // DOCKCONTAINER_H

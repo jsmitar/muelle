@@ -2,6 +2,7 @@ import QtQuick 2.14
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
+import QtGraphicalEffects 1.12
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1
@@ -14,7 +15,6 @@ import 'Store/actions.ts' as Action
 import '../shared/functional.ts' as F
 import '../shared/components'
 import 'Store'
-import QtGraphicalEffects 1.12
 
 Item {
   id: root
@@ -32,6 +32,7 @@ Item {
     Qt.clearInterval = clearInterval
     Qt.__muelle_separator__ = __muelle_separator__
     // END: Set Global Properties
+    console.log(F.tostr($container.screens, 3))
   }
 
   PaintItem {
@@ -104,8 +105,17 @@ Item {
       parent: root
       model: [{
         text: 'Preferences',
-        trigger: () => { settings.visible = true }
-      }]
+        trigger() { settings.visible = true }
+      }].concat(Object.values($container.screens)
+        .filter(screen => screen.name !== $view.screen.name)
+        .map(screen => ({
+          text: `${screen.name} (${screen.model})`,
+          trigger() { 
+            $view.screen = screen 
+            $positioner.update(0)
+          }
+        }))
+      )
     }
   }
 

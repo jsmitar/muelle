@@ -15,13 +15,14 @@ Window {
   onVisibleChanged: {
     if (visible) {
       const {x, y} = $view.mousePosition
-      win.x = Math.min(x, win.screen.width - menu.width)
-      win.y = Math.min(y, win.screen.height - menu.height)
+
+      win.x = F.clamp(0, x, Math.max(x, $view.screen.geometry.right) - menu.width)
+      win.y = F.clamp(0, y, Math.max(y, $view.screen.geometry.bottom) - menu.height)
     }
   }
 
   width: menu.width
-  height: 30
+  height: menu.height
 
   BindingModel {
     initial: false
@@ -40,16 +41,12 @@ Window {
 
     Instantiator {
       model: win.model.length
+
       delegate: MenuItem {
         id: menuItem
-        property var name: ''
-        property var trigger: F.noop
 
-        onTriggered: trigger(name)
-        Component.onCompleted: {
-          menuItem.name = win.model[index].name
-          menuItem.trigger = win.model[index].trigger
-        }
+        text: win.model[index].text
+        onTriggered: win.model[index].trigger()
       }
 
       onObjectAdded: menu.insertItem(index, object)

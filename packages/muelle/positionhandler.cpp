@@ -32,12 +32,12 @@ void PositionHandler::update(int duration) {
   if (auto screen = mView->screen(); screen) {
     if (mView->compositing()) {
       const auto newPosition = computePosition(
-          screen->geometry().size(), {{0, 0}, mView->size()}, mView->layout());
+          screen->geometry(), {{0, 0}, mView->size()}, mView->layout());
 
       mView->setPosition(newPosition);
     } else {
       const auto newPosition = computePosition(
-          screen->geometry().size(), mView->panelGeometry(), mView->layout());
+          screen->geometry(), mView->panelGeometry(), mView->layout());
       if (duration > 0) {
         animation->setDuration(duration);
         animation->setStartValue(mView->position());
@@ -59,47 +59,48 @@ void PositionHandler::setCenterOffset(float offset) {
 
 float PositionHandler::centerOffset() { return mOffset; }
 
-constexpr QPoint PositionHandler::computePosition(const QSize &screen,
+constexpr QPoint PositionHandler::computePosition(const QRect &screen,
                                                   const QRect &view,
                                                   const Layout &layout) {
   switch (layout.orientation()) {
   case Types::Orientation::Horizontal:
-    return {
-        calcAlign(screen.width(), view.x(), view.width(), layout.alignment()),
-        calcEdge(screen, view, layout.edge())};
+    return {calcAlign(screen.left(), screen.width(), view.left(), view.width(),
+                      layout.alignment()),
+            calcEdge(screen, view, layout.edge())};
 
   case Types::Orientation::Vertical:
     return {calcEdge(screen, view, layout.edge()),
-            calcAlign(screen.height(), view.y(), view.height(),
+            calcAlign(screen.top(), screen.height(), view.top(), view.height(),
                       layout.alignment())};
   }
   return {};
 }
 
-constexpr int PositionHandler::calcEdge(const QSize &screen, const QRect &view,
+constexpr int PositionHandler::calcEdge(const QRect &screen, const QRect &view,
                                         Types::Edge edge) {
   switch (edge) {
   case Types::Edge::Top:
-    return 0;
+    return screen.top();
   case Types::Edge::Right:
-    return screen.width() - view.width();
+    return screen.left() + screen.width() - view.width();
   case Types::Edge::Bottom:
-    return screen.height() - view.height();
+    return screen.top() + screen.height() - view.height();
   case Types::Edge::Left:
-    return 0;
+    return screen.left();
   }
   return 0;
 }
 
-constexpr int PositionHandler::calcAlign(int screenWide, int viewStart,
-                                         int viewWide, Types::Alignment align) {
+constexpr int PositionHandler::calcAlign(int screenStart, int screenWide,
+                                         int viewStart, int viewWide,
+                                         Types::Alignment align) {
   switch (align) {
   case Types::Alignment::Start:
     return -viewStart;
   case Types::Alignment::Center:
-    return int(screenWide - (viewStart * 2 + viewWide) +
-               mOffset * (screenWide - viewWide)) /
-           2;
+    return screenStart + int(screenWide - (viewStart * 2 + viewWide) +
+                             mOffset * (screenWide - viewWide)) /
+                             2;
   case Types::Alignment::End:
     return screenWide - (viewStart + viewWide);
   }

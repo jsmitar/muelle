@@ -57,6 +57,8 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
 
+  connect(this, &QQuickWindow::screenChanged, this, &View::screenChanged);
+
   new WindowEventFilter(this);
 }
 

@@ -52,14 +52,14 @@ signals:
   void centerOffsetChanged();
 
 private:
-  constexpr QPoint computePosition(const QSize &screen, const QRect &view,
+  constexpr QPoint computePosition(const QRect &screen, const QRect &view,
                                    const Layout &layout);
 
-  constexpr int calcEdge(const QSize &screen, const QRect &view,
+  constexpr int calcEdge(const QRect &screen, const QRect &view,
                          Types::Edge edge);
 
-  constexpr int calcAlign(int screenWide, int viewStart, int viewWide,
-                          Types::Alignment align);
+  constexpr int calcAlign(int screenStart, int screenWide, int viewStart,
+                          int viewWide, Types::Alignment align);
 
   View *mView;
   float mOffset{0};

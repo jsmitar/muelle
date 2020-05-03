@@ -8,6 +8,21 @@ Container::Container(QObject *parent)
       mConfig(KSharedConfig::openConfig(QStringLiteral("muellerc"))) {
 
   Muelle::registerExtensions(*mEngine);
+
+  const auto updateScreens = [&] {
+    mScreens.clear();
+    foreach (auto screen, qGuiApp->screens()) {
+      mScreens[screen->name()] = QVariant::fromValue(screen);
+    }
+    emit screensChanged();
+  };
+  updateScreens();
+
+  connect(qGuiApp, &QGuiApplication::screenAdded, updateScreens);
+  connect(qGuiApp, &QGuiApplication::screenRemoved, updateScreens);
+
+  mEngine->rootContext()->setContextProperty(QStringLiteral("$container"),
+                                             this);
 }
 
 void Container::loadConfiguration() {
@@ -78,5 +93,9 @@ Container *Container::instance() noexcept {
   static auto container{new Container()};
 
   return container;
+}
+
+QMap<QString, QVariant> Container::screensVariant() const noexcept {
+  return mScreens;
 }
 } // namespace Muelle

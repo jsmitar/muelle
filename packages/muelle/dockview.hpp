@@ -41,6 +41,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QRect>
+#include <QScreen>
 #include <QSharedPointer>
 #include <QSize>
 
@@ -62,6 +63,7 @@ class View : public QQuickWindow {
   Q_PROPERTY(QPoint mousePosition READ mousePosition)
   Q_PROPERTY(bool compositing READ compositing NOTIFY compositingChanged)
   Q_PROPERTY(Muelle::Configuration *configuration READ configuration CONSTANT)
+  Q_PROPERTY(QScreen *screen READ screen WRITE setScreen NOTIFY screenChanged)
 
 public:
   View(EnhancedQmlEngine *engine, KConfigGroup &config);
@@ -113,6 +115,8 @@ signals:
   void exited();
 
   void release();
+
+  void screenChanged();
 
 private:
   bool mContainsMouse{false};
