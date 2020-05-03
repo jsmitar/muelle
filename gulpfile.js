@@ -5,7 +5,7 @@ const replace = require('gulp-just-replace');
 const { generateQrc, createCommand, clear } = require('./gulputils');
 
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 
 const development = process.env.NODE_ENV === 'development';
 
@@ -20,6 +20,10 @@ const dirs = {
   shell: 'packages/shell',
   dist: 'packages/dist',
   build: development ? 'build-dev' : 'build',
+  env: {
+    ...process.env,
+    QT_QUICK_CONTROLS_STYLE: 'org.kde.desktop',
+  },
   bin: development ? 'build-dev/muelle' : 'build/muelle',
   binArgs: [
     '-qmljsdebugger=port:5000,services:CanvasFrameRate,EngineControl,DebugMessages',
@@ -53,7 +57,7 @@ const dirs = {
   },
 };
 
-const cleanDist = (cb) =>
+const cleanDist = cb =>
   createCommand(
     `if [ -f '${dirs.dist}' ]; then find ${dirs.dist} -type f -not -name 'qml.rcc' -delete; fi`
   )(cb);
@@ -82,7 +86,8 @@ const runMuelle = (() => {
   return function muelleApp(restart, cb) {
     if (restart && muelle) {
       muelle.on('close', () => ((muelle = null), muelleApp(false, cb)));
-      muelle.kill('SIGTERM');
+      muelle.kill();
+      exec('killall muelle', { shell: true });
       return;
     }
 
@@ -93,8 +98,9 @@ const runMuelle = (() => {
 ╙───────────────────────────────────╜
 ${'\u001b[0m'}`);
       muelle = spawn(`${dirs.bin}`, dirs.binArgs, {
+        detached: true,
         cwd: __dirname,
-        env: { ...process.env, QML_IMPORT_TRACE: 0 },
+        env: dirs.env,
       });
       muelle.unref();
       muelle
@@ -119,7 +125,7 @@ function buildQml(cb) {
         return tsProject
           .src()
           .pipe(tsProject())
-          .js.pipe(rename((path) => void (path.extname = '.mjs')))
+          .js.pipe(rename(path => void (path.extname = '.mjs')))
           .pipe(
             replace([
               {
@@ -168,14 +174,14 @@ function buildQml(cb) {
       }
     ),
     function createShellQrc(cb) {
-      [dirs.resources.shell].forEach((resource) => {
+      [dirs.resources.shell].forEach(resource => {
         const qrc = generateQrc(resource.qrc.from, resource.qrc.input);
         fs.writeFileSync(resource.qrc.output, qrc, { flag: 'w' }, () => {});
       });
       cb();
     },
     function createShellQrcQtCreator(cb) {
-      [dirs.resources.shell].forEach((resource) => {
+      [dirs.resources.shell].forEach(resource => {
         const qrc = generateQrc(
           resource.qrcQtCreator.from,
           resource.qrcQtCreator.input,
@@ -191,7 +197,7 @@ function buildQml(cb) {
       cb();
     },
     function createShellRcc(cb) {
-      [dirs.resources.shell].forEach((resource) => {
+      [dirs.resources.shell].forEach(resource => {
         createCommand(
           `rcc-qt5 --no-compress --binary -o ${resource.qrc.rcc} ${resource.qrc.output}`
         )(cb);
