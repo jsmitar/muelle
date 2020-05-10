@@ -156,7 +156,7 @@ public:
     connections += QConnect(qPtr, &Muelle::PanelBehavior::regionChanged, this,
                             &Private::PanelBehavior::updateDodge);
 
-    dodgeActiveWindow(kwindow()->activeWindow());
+    dodgeActiveWindow();
   }
 
   void enableAlwaysVisible() {
@@ -165,16 +165,13 @@ public:
   }
 
   void dodge(bool value) {
-    if (value == nextDodgeValue)
-      return;
-
     nextDodgeValue = value;
     dodgeDebounce.start();
   }
 
   void dodgeWindowProps(WId wid, NET::Properties props) {
     if ((props & propsFilter()) != 0) {
-      qPtr->mBehavior == Types::Behavior::DodgeActive ? dodgeActiveWindow(wid)
+      qPtr->mBehavior == Types::Behavior::DodgeActive ? dodgeActiveWindow()
                                                       : dodgeWindow(wid);
     }
   }
@@ -187,12 +184,22 @@ public:
     }
   }
 
-  void dodgeActiveWindow(WId wid) {
+  void dodgeActiveWindow() {
     if (kwindow()->showingDesktop()) {
-      dodge(false);
-    } else if (kwindow()->activeWindow() == wid) {
-      dodge(intersects({wid, propsFilter()}));
+      return dodge(false);
     }
+
+    auto active = kwindow()->activeWindow();
+
+    foreach (auto wid, kwindow()->windows()) {
+      const KWindowInfo info{wid, propsFilter()};
+
+      if (wid == active || info.hasState(NET::FullScreen)) {
+        if (intersects(info, -1))
+          return dodge(true);
+      }
+    }
+    dodge(false);
   }
 
   bool intersects(const KWindowInfo &info, int desktop = -1) const {
@@ -235,7 +242,7 @@ public:
     if (auto behavior = qPtr->mBehavior; behavior == Behavior::DodgeAll) {
       scanAllWindows();
     } else if (behavior == Behavior::DodgeActive) {
-      dodgeActiveWindow(kwindow()->activeWindow());
+      dodgeActiveWindow();
     }
   }
 
