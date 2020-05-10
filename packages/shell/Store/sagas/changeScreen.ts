@@ -28,10 +28,10 @@ export function* changeScreen(action: Action<string>): Saga {
 
   // prepare for slide in
   if (container.screens[screenName]) {
-    view.screen = container.screens[screenName];
-    positioner.update(0);
     configuration.screen = screenName;
     configuration.save();
+    view.screen = container.screens[screenName];
+    positioner.update(0);
   }
   yield delay(200);
 

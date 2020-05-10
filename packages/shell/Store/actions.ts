@@ -36,7 +36,7 @@ export const updateTaskCount1 = createAction(
     ).length;
 
     return {
-      tasks: tasks - separators,
+      tasks: tasks - separators || 1,
       separators,
     };
   }

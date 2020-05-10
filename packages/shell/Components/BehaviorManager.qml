@@ -11,6 +11,10 @@ QObject {
 
   signal forceUpdate
 
+  Component.onCompleted: {
+    setTimeout(() => dodgeWindow.scanWindows(), 2000)
+  }
+
   PressureDetector {
     id: pressure
     view: $view

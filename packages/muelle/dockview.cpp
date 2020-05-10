@@ -62,43 +62,67 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
   new WindowEventFilter(this);
 }
 
-View::~View() {}
-
-void View::init() {
-  mContext->setContextProperty("$view", this);
-  mContext->setContextProperty("$layout", &mLayout);
-  mContext->setContextProperty("$positioner", &mPositionHandler);
-  mContext->setContextProperty("$configuration", mConfigMap);
-
-  connect(mEngine, &EnhancedQmlEngine::sourceChanged, this, &View::load);
-  connect(mEngine, &EnhancedQmlEngine::clearSource, [this] {
-    releaseResources();
-    hide();
-  });
-  if (mEngine->ready()) {
-    load();
-  }
+View::~View() {
+  mEngine->collectGarbage();
+  mEngine->clearComponentCache();
+  mEngine->trimComponentCache();
 }
 
 void View::load() {
   qInfo() << "Window-Id:" << winId();
 
+  mContext->setContextProperty("$view", this);
+  mContext->setContextProperty("$layout", &mLayout);
+  mContext->setContextProperty("$positioner", &mPositionHandler);
+  mContext->setContextProperty("$configuration", mConfigMap);
+
   auto component = new QQmlComponent(mEngine, QUrl("qrc:/shell/main.qml"),
                                      QQmlComponent::Asynchronous);
 
-  connect(
-      component, &QQmlComponent::statusChanged, [&, component](auto status) {
-        if (status == QQmlComponent::Ready) {
-          auto item = qobject_cast<QQuickItem *>(component->create(mContext));
-          item->setParent(contentItem());
-          item->setParentItem(contentItem());
+  if (component->isLoading()) {
+    connect(component, &QQmlComponent::statusChanged,
+            [=] { continueLoad(component); });
+  } else {
+    continueLoad(component);
+  }
+}
 
-          show();
-          setOpacity(0.01);
-        } else if (status == QQmlComponent::Error) {
-          qWarning() << component->errors();
-        }
-      });
+void View::continueLoad(QQmlComponent *component) {
+  if (component->isReady()) {
+    auto root = qobject_cast<QQuickItem *>(component->create(mContext));
+    root->setObjectName(QStringLiteral("__root__"));
+    root->setParent(contentItem());
+    root->setParentItem(contentItem());
+
+    show();
+    setOpacity(0.01);
+  } else if (component->isError()) {
+    qWarning() << component->errors();
+  }
+}
+
+void View::unload() {
+  emit release();
+
+  auto root = contentItem()->findChild<QQuickItem *>(
+      QStringLiteral("__root__"), Qt::FindDirectChildrenOnly);
+
+  root->setVisible(false);
+  root->setEnabled(false);
+
+  auto timer = new QTimer(this);
+  timer->setSingleShot(true);
+  timer->callOnTimeout(this, [&, root] {
+    if (root) {
+      root->setParentItem(nullptr);
+      root->setParent(nullptr);
+      root->deleteLater();
+      deleteLater();
+    } else {
+      qDebug() << "unload: root(null) this should never ocurr";
+    }
+  });
+  timer->start(100);
 }
 
 bool View::containsMouse() const {

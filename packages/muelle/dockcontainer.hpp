@@ -36,6 +36,9 @@ public:
   bool loadView(const UUID &uuid);
   void unloadView(const UUID &uuid);
 
+  void loadViews(QScreen *screen);
+  void unloadViews(QScreen *screen);
+
   void addView(QScreen *screen);
   void removeView(const UUID &view);
 

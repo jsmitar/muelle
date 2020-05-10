@@ -21,6 +21,10 @@ Container::Container(QObject *parent)
   connect(qGuiApp, &QGuiApplication::screenAdded, updateScreens);
   connect(qGuiApp, &QGuiApplication::screenRemoved, updateScreens);
 
+  connect(qGuiApp, &QGuiApplication::screenAdded, this, &Container::loadViews);
+  connect(qGuiApp, &QGuiApplication::screenRemoved, this,
+          &Container::unloadViews);
+
   mEngine->rootContext()->setContextProperty(QStringLiteral("$container"),
                                              this);
 }
@@ -38,38 +42,67 @@ void Container::loadConfiguration() {
 }
 
 bool Container::loadView(const UUID &uuid) {
+  if (mViews.value(uuid, nullptr))
+    return false;
+
   auto group = mConfig->group("shell");
   if (!group.hasGroup(uuid))
     return false;
 
-  auto screen = findScreen(group.readEntry("screen", "Primary"));
+  auto shellGroup = group.group(uuid);
+
+  auto screen = findScreen(shellGroup.readEntry("screen", "Primary"));
 
   if (!screen)
     return false;
 
-  auto shellGroup = group.group(uuid);
   auto view = new View(mEngine, shellGroup);
 
   mViews[uuid] = view;
   view->setScreen(screen);
-  view->init();
-
+  view->load();
   return true;
 }
 
 void Container::unloadView(const UUID &uuid) {
-  if (!mViews.contains(uuid))
-    return;
+  if (mViews.value(uuid, nullptr)) {
+    std::exchange(mViews[uuid], nullptr)->unload();
+    qInfo() << "unload" << uuid;
+  }
+}
 
-  std::exchange(mViews[uuid], nullptr)->deleteLater();
+void Container::loadViews(QScreen *screen) {
+  auto shellGroup = mConfig->group("shell");
+  auto screenName = screen->name();
+
+  foreach (const auto uuid, shellGroup.groupList()) {
+    const auto shellScreen = shellGroup.group(uuid).readEntry("screen");
+
+    if (shellScreen == screenName) {
+      loadView(uuid);
+    }
+  }
+}
+
+void Container::unloadViews(QScreen *screen) {
+  auto shellGroup = mConfig->group("shell");
+  auto screenName = screen->name();
+
+  foreach (const auto uuid, shellGroup.groupList()) {
+    const auto shellScreen = shellGroup.group(uuid).readEntry("screen");
+
+    if (shellScreen == screenName) {
+      unloadView(uuid);
+    }
+  }
 }
 
 UUID Container::createDefaultView() {
   const auto screens = QApplication::screens();
 
   auto uuid = QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
-  mConfig->group("shell").group(uuid).writeEntry("screen", "Primary");
-
+  mConfig->group("shell").group(uuid).writeEntry(
+      "screen", QApplication::primaryScreen()->name());
   return uuid;
 }
 

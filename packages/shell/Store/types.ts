@@ -99,6 +99,7 @@ export namespace Dock {
     mousePosition: Qt.point;
     screen: Qt.QScreen;
     setOpacity(level: number): void;
+    release: Qt.Signal;
   }
 
   export interface layout extends Qt.QtObject {

@@ -69,8 +69,9 @@ public:
   View(EnhancedQmlEngine *engine, KConfigGroup &config);
   ~View() override;
 
-  void init();
   void load();
+  void continueLoad(QQmlComponent *component);
+  void unload();
 
   bool compositing() const;
   void setMask(const QRect &region);
@@ -114,9 +115,9 @@ signals:
   void entered();
   void exited();
 
-  void release();
-
   void screenChanged();
+
+  void release();
 
 private:
   bool mContainsMouse{false};

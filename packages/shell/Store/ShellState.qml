@@ -57,15 +57,7 @@ QObject {
 
     Component.onCompleted: {
       launcherList = JSON.parse($configuration.launcherList || '[]')
-      // launcherList = [
-      //   'applications:org.qt-project.qtcreator.desktop', 
-      //   'applications:firefox.desktop',
-      //   'applications:code.desktop',
-      //   'applications:telegramdesktop.desktop',
-      //   __muelle_separator__,
-      //   'applications:org.kde.dolphin.desktop',
-      // ]
-      countChanged()
+      Qt.callLater(countChanged)
       ready = true
     }
   }

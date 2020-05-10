@@ -25,13 +25,22 @@ Item {
 
   Component.onCompleted: {
     // START: Set Global Properties
-    Qt.Muelle = { Types }
-    Qt.setTimeout = setTimeout
-    Qt.setInterval = setInterval
-    Qt.clearTimeout = clearTimeout
-    Qt.clearInterval = clearInterval
-    Qt.__muelle_separator__ = __muelle_separator__
+    if (!Qt._set_global_) {
+      Qt.Muelle = { Types }
+      Qt.setTimeout = setTimeout
+      Qt.setInterval = setInterval
+      Qt.clearTimeout = clearTimeout
+      Qt.clearInterval = clearInterval
+      Qt.__muelle_separator__ = __muelle_separator__
+      Qt._set_global_ = true
+    }
     // END: Set Global Properties
+
+    console.info('Shell created')
+  }
+
+  Component.onDestruction: {
+    console.info('Shell destroyed')
   }
 
   PaintItem {
@@ -46,6 +55,69 @@ Item {
   readonly property ShellStore store: ShellStore {
     id: store
 
+    Binding {
+      target: $layout
+      property: 'edge'
+      value: store.state.panel.edge
+    }
+    Binding {
+      target: $layout
+      property: 'alignment'
+      value: store.state.panel.alignment
+    }
+    Binding {
+      target: $view
+      property: 'size'
+      value: store.state.geometry.viewSize
+      delayed: true
+    }
+    Binding {
+      target: $view
+      property: 'mask'
+      value: store.state.geometry.maskRect
+      delayed: true
+    }
+    Binding {
+      target: $view
+      property: 'panelPosition'
+      value: store.state.geometry.panelNextPoint
+      delayed: true
+    }
+    Binding {
+      target: $view
+      property: 'panelSize'
+      value: store.state.geometry.panelNextSize
+      delayed: true
+    }
+    Connections {
+      enabled: store.state.tasksModel.ready
+      target: store.state.tasksModel
+
+      onLauncherListChanged: {
+        $configuration.launcherList = JSON.stringify(target.launcherList)
+        $configuration.save()
+      }
+    }
+    Connections {
+      target: $view.screen
+
+      onGeometryChanged: {
+        console.count('screen.onGeometryChanged')
+        setTimeout(() => {
+          $positioner.update(0)
+        }, 1000)
+      }
+    }
+    Connections {
+      target: store.state.tasksModel
+
+      onCountChanged: {
+        store.dispatch(Action.updateTaskCount1({ 
+          tasks: target.count, 
+          launcherList: target.launcherList
+        }))
+      }
+    }
 
     contextMenu: DockMenu {
       parent: root
@@ -86,67 +158,4 @@ Item {
 
   BehaviorManager {}
 
-  Binding {
-    target: $layout
-    property: 'edge'
-    value: store.state.panel.edge
-  }
-  Binding {
-    target: $layout
-    property: 'alignment'
-    value: store.state.panel.alignment
-  }
-  Binding {
-    target: $view
-    property: 'size'
-    value: store.state.geometry.viewSize
-    delayed: true
-  }
-  Binding {
-    target: $view
-    property: 'mask'
-    value: store.state.geometry.maskRect
-    delayed: true
-  }
-  Binding {
-    target: $view
-    property: 'panelPosition'
-    value: store.state.geometry.panelNextPoint
-    delayed: true
-  }
-  Binding {
-    target: $view
-    property: 'panelSize'
-    value: store.state.geometry.panelNextSize
-    delayed: true
-  }
-  Connections {
-    enabled: store.state.tasksModel.ready
-    target: store.state.tasksModel
-
-    onLauncherListChanged: {
-      $configuration.launcherList = JSON.stringify(target.launcherList)
-      $configuration.save()
-    }
-  }
-  Connections {
-    target: $view.screen
-
-    onGeometryChanged: {
-      console.count('screen.onGeometryChanged')
-      setTimeout(() => {
-        $positioner.update(0)
-      }, 1000)
-    }
-  }
-  Connections {
-    target: store.state.tasksModel
-
-    onCountChanged: {
-      store.dispatch(Action.updateTaskCount1({ 
-        tasks: target.count, 
-        launcherList: target.launcherList
-      }))
-    }
-  }
 }
