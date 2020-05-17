@@ -58,8 +58,7 @@ bool Container::loadView(const UUID &uuid) {
   if (!screen)
     return false;
 
-  auto view = new View(mEngine, shellGroup);
-  mViews[uuid] = view;
+  auto view = mViews[uuid] = new View(mEngine, shellGroup);
 
   connect(view, &View::loaded, [&, uuid, screen] {
     if (auto view = mViews[uuid]; view)
