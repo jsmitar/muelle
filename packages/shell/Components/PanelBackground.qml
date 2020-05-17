@@ -250,6 +250,9 @@ Item {
           background.y + contrast_sync.y
         )
 
+        contrastEnabled: false
+        blurEnabled: false
+
         enabled:
           store.state.panel.visible && 
           !store.state.panel.updatingOffset &&
