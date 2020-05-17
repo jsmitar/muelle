@@ -100,6 +100,7 @@ export namespace Dock {
     screen: Qt.QScreen;
     setOpacity(level: number): void;
     release: Qt.Signal;
+    loaded: Qt.Signal;
   }
 
   export interface layout extends Qt.QtObject {
