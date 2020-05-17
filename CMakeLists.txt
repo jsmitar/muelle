@@ -50,7 +50,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core Test Quick QuickTest X11Extras)
 find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config)
 
 # PACKAGES: xcb
-find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RENDER SHAPE XINPUT)
+find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RANDR RENDER SHAPE XINPUT)
 
 # TARGET: configure
 add_custom_target(configure
