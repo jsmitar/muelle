@@ -7,26 +7,28 @@ Container::Container(QObject *parent)
       mTheme(new Plasma::Theme(this)),
       mConfig(KSharedConfig::openConfig(QStringLiteral("muellerc"))) {
 
-  Muelle::registerExtensions(*mEngine);
-
-  const auto updateScreens = [&] {
-    mScreens.clear();
-    foreach (auto screen, qGuiApp->screens()) {
-      mScreens[screen->name()] = QVariant::fromValue(screen);
-    }
-    emit screensChanged();
-  };
+  auto debounce = new DebounceSignal(250, this);
+  debounce->add(qGuiApp, &QGuiApplication::screenAdded);
+  debounce->add(qGuiApp, &QGuiApplication::screenRemoved);
+  debounce->add(qGuiApp, &QGuiApplication::primaryScreenChanged);
+  debounce->add(this, &Container::nativeScreensChanged);
+  debounce->callOnTrigger(this, &Container::updateScreens);
   updateScreens();
 
-  connect(qGuiApp, &QGuiApplication::screenAdded, updateScreens);
-  connect(qGuiApp, &QGuiApplication::screenRemoved, updateScreens);
+  connect(this, &Container::screensChanged, this, &Container::reloadViews);
+  qGuiApp->installNativeEventFilter(this);
 
-  connect(qGuiApp, &QGuiApplication::screenAdded, this, &Container::loadViews);
-  connect(qGuiApp, &QGuiApplication::screenRemoved, this,
-          &Container::unloadViews);
-
+  Muelle::registerExtensions(*mEngine);
   mEngine->rootContext()->setContextProperty(QStringLiteral("$container"),
                                              this);
+}
+
+void Container::updateScreens() {
+  mScreens.clear();
+  foreach (auto screen, qGuiApp->screens()) {
+    mScreens[screen->name()] = QVariant::fromValue(screen);
+  }
+  emit screensChanged();
 }
 
 void Container::loadConfiguration() {
@@ -57,41 +59,35 @@ bool Container::loadView(const UUID &uuid) {
     return false;
 
   auto view = new View(mEngine, shellGroup);
-
   mViews[uuid] = view;
-  view->setScreen(screen);
+
+  connect(view, &View::loaded, [&, uuid, screen] {
+    if (auto view = mViews[uuid]; view)
+      view->setScreen(screen);
+  });
   view->load();
+
   return true;
 }
 
 void Container::unloadView(const UUID &uuid) {
   if (mViews.value(uuid, nullptr)) {
     std::exchange(mViews[uuid], nullptr)->unload();
-    qInfo() << "unload" << uuid;
+    qInfo() << "unload" << uuid << mViews[uuid];
   }
 }
 
-void Container::loadViews(QScreen *screen) {
+void Container::reloadViews() {
+  qDebug() << "reload views";
+
   auto shellGroup = mConfig->group("shell");
-  auto screenName = screen->name();
 
   foreach (const auto uuid, shellGroup.groupList()) {
-    const auto shellScreen = shellGroup.group(uuid).readEntry("screen");
+    const auto screenName = shellGroup.group(uuid).readEntry("screen");
 
-    if (shellScreen == screenName) {
+    if (findScreen(screenName)) {
       loadView(uuid);
-    }
-  }
-}
-
-void Container::unloadViews(QScreen *screen) {
-  auto shellGroup = mConfig->group("shell");
-  auto screenName = screen->name();
-
-  foreach (const auto uuid, shellGroup.groupList()) {
-    const auto shellScreen = shellGroup.group(uuid).readEntry("screen");
-
-    if (shellScreen == screenName) {
+    } else {
       unloadView(uuid);
     }
   }
@@ -131,4 +127,27 @@ Container *Container::instance() noexcept {
 QMap<QString, QVariant> Container::screensVariant() const noexcept {
   return mScreens;
 }
+
+bool Container::nativeEventFilter(const QByteArray &eventType, void *message,
+                                  long *) {
+
+  // see https://bugs.kde.org/show_bug.cgi?id=373880
+  if (eventType != "xcb_generic_event_t") {
+    return false;
+  }
+
+  auto *ev = static_cast<xcb_generic_event_t *>(message);
+
+  const auto responseType = XCB_EVENT_RESPONSE_TYPE(ev);
+
+  const xcb_query_extension_reply_t *reply =
+      xcb_get_extension_data(QX11Info::connection(), &xcb_randr_id);
+
+  if (responseType == reply->first_event + XCB_RANDR_SCREEN_CHANGE_NOTIFY) {
+    emit nativeScreensChanged();
+  }
+
+  return false;
+}
+
 } // namespace Muelle

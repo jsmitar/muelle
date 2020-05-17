@@ -102,7 +102,6 @@ Item {
       target: $view.screen
 
       onGeometryChanged: {
-        console.count('screen.onGeometryChanged')
         setTimeout(() => {
           $positioner.update(0)
         }, 1000)

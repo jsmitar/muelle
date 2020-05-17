@@ -3,12 +3,14 @@
 
 #include "dockview.hpp"
 #include "helpers.hpp"
+#include "libs/debouncesignal.hpp"
 #include "libs/enhancedqmlengine.hpp"
 
 #include <KConfig>
 #include <KConfigGroup>
 #include <KSharedConfig>
 #include <Plasma/Theme>
+#include <QAbstractNativeEventFilter>
 #include <QApplication>
 #include <QGuiApplication>
 #include <QMap>
@@ -21,26 +23,28 @@
 #include <QVector>
 #include <algorithm>
 
+#include <QtX11Extras/QX11Info>
+#include <xcb/randr.h>
+#include <xcb/xcb.h>
+#include <xcb/xcb_event.h>
+
 using UUID = QString;
 
 namespace Muelle {
-class Container : public QObject {
+class Container : public QObject, public QAbstractNativeEventFilter {
   Q_OBJECT
   Q_PROPERTY(QVariantMap screens READ screensVariant NOTIFY screensChanged)
 
 public:
   explicit Container(QObject *parent = nullptr);
 
+  void updateScreens();
+
   void loadConfiguration();
 
+  void reloadViews();
   bool loadView(const UUID &uuid);
   void unloadView(const UUID &uuid);
-
-  void loadViews(QScreen *screen);
-  void unloadViews(QScreen *screen);
-
-  void addView(QScreen *screen);
-  void removeView(const UUID &view);
 
   KConfigGroup configuration(const UUID &view);
 
@@ -54,8 +58,12 @@ public:
 
   QVariantMap screensVariant() const noexcept;
 
+  bool nativeEventFilter(const QByteArray &eventType, void *message,
+                         long *) override;
+
 signals:
   void screensChanged();
+  void nativeScreensChanged();
 
 private:
   QMap<UUID, View *> mViews;

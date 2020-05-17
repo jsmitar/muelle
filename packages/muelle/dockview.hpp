@@ -117,6 +117,7 @@ signals:
 
   void screenChanged();
 
+  void loaded();
   void release();
 
 private:

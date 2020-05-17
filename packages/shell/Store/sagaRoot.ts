@@ -27,6 +27,8 @@ export function* sagaRoot(): Saga {
   });
 
   const { view }: Context = yield contextSelect;
+
+  view.loaded();
   yield delayed(resolve => {
     view.release.connect(resolve);
     return () => view.release.disconnect(resolve);
