@@ -65,7 +65,7 @@ Item {
 
     EdgeSlideAnimation {
       target: contrast_sync
-      delay: 60
+      delay: 0
     }
   }
 
