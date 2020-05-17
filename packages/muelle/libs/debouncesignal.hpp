@@ -17,7 +17,7 @@ public:
   void setBlock(bool block);
 
   template <typename Object, typename Signal>
-  QMetaObject::Connection debounce(const Object *member, Signal &&signal) {
+  QMetaObject::Connection add(const Object *member, Signal &&signal) {
     return connect(member, std::forward<Signal>(signal), this,
                    &DebounceSignal::start);
   }

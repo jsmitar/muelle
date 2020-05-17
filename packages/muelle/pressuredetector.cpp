@@ -38,12 +38,11 @@ void PressureDetector::componentComplete() {
             &PressureDetector::geometryChanged);
 
     auto debouncer = new DebounceSignal(250, this);
-
-    debouncer->debounce(this, &PressureDetector::edgeChanged);
-    debouncer->debounce(this, &PressureDetector::geometryChanged);
-    debouncer->debounce(this, &PressureDetector::enabledChanged);
-
+    debouncer->add(this, &PressureDetector::edgeChanged);
+    debouncer->add(this, &PressureDetector::geometryChanged);
+    debouncer->add(this, &PressureDetector::enabledChanged);
     debouncer->callOnTrigger(this, &PressureDetector::updateBarrier);
+
     qGuiApp->installNativeEventFilter(this);
   }
 }
@@ -79,7 +78,7 @@ bool PressureDetector::nativeEventFilter(const QByteArray &eventType,
   if (mBarrier && eventType == "xcb_generic_event_t") {
     auto *ev = static_cast<xcb_generic_event_t *>(message);
 
-    switch (ev->response_type) {
+    switch (XCB_EVENT_RESPONSE_TYPE(ev)) {
     case XCB_GE_GENERIC: {
       switch (static_cast<xcb_ge_event_t *>(message)->event_type) {
       case XCB_INPUT_BARRIER_HIT: {
