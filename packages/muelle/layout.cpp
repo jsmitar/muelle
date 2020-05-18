@@ -19,14 +19,14 @@
 
 namespace Muelle {
 
-Layout::Layout(QObject *parent) : QObject(parent) {
+Layout::Layout(QObject *parent) noexcept : QObject(parent) {
   connect(this, &Layout::edgeChanged, this, &Layout::layoutChanged);
   connect(this, &Layout::alignmentChanged, this, &Layout::layoutChanged);
 }
 
 Layout::~Layout() {}
 
-void Layout::setEdge(Types::Edge edge) {
+void Layout::setEdge(Types::Edge edge) noexcept {
   switch (edge) {
   case Types::Edge::Top:
   case Types::Edge::Bottom:
@@ -53,7 +53,7 @@ void Layout::setEdge(Types::Edge edge) {
   }
 }
 
-void Layout::setAlignment(Types::Alignment alignment) {
+void Layout::setAlignment(Types::Alignment alignment) noexcept {
   if (mAlignment != alignment) {
     mAlignment = alignment;
     emit alignmentChanged();

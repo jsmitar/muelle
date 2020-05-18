@@ -49,19 +49,19 @@ class Layout : public QObject {
   Q_PROPERTY(bool isVertical READ isVertical NOTIFY orientationChanged)
 
 public:
-  explicit Layout(QObject *parent = nullptr);
+  explicit Layout(QObject *parent = nullptr) noexcept;
   virtual ~Layout();
 
-  constexpr Types::Edge edge() const;
-  constexpr Types::Orientation orientation() const;
-  constexpr Types::Alignment alignment() const;
-  constexpr uint layout() const;
+  constexpr Types::Edge edge() const noexcept;
+  constexpr Types::Orientation orientation() const noexcept;
+  constexpr Types::Alignment alignment() const noexcept;
+  constexpr uint layout() const noexcept;
 
-  constexpr bool isHorizontal() const;
-  constexpr bool isVertical() const;
+  constexpr bool isHorizontal() const noexcept;
+  constexpr bool isVertical() const noexcept;
 
-  void setEdge(Types::Edge edge);
-  void setAlignment(Types::Alignment alignment);
+  void setEdge(Types::Edge edge) noexcept;
+  void setAlignment(Types::Alignment alignment) noexcept;
 
 signals:
   void edgeChanged();
@@ -75,23 +75,25 @@ private:
   Types::Alignment mAlignment = Types::Alignment::Center;
 };
 
-constexpr Types::Edge Layout::edge() const { return mEdge; }
+constexpr Types::Edge Layout::edge() const noexcept { return mEdge; }
 
-constexpr Types::Orientation Layout::orientation() const {
+constexpr Types::Orientation Layout::orientation() const noexcept {
   return mOrientation;
 }
 
-constexpr Types::Alignment Layout::alignment() const { return mAlignment; }
+constexpr Types::Alignment Layout::alignment() const noexcept {
+  return mAlignment;
+}
 
-constexpr uint Layout::layout() const {
+constexpr uint Layout::layout() const noexcept {
   return static_cast<uint>(mEdge) | static_cast<uint>(mAlignment);
 }
 
-constexpr bool Layout::isHorizontal() const {
+constexpr bool Layout::isHorizontal() const noexcept {
   return mOrientation == Types::Orientation::Horizontal;
 }
 
-constexpr bool Layout::isVertical() const {
+constexpr bool Layout::isVertical() const noexcept {
   return mOrientation == Types::Orientation::Vertical;
 }
 } // namespace Muelle
