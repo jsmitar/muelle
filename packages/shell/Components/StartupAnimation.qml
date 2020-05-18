@@ -1,6 +1,5 @@
 import QtQuick 2.12
 import '../../shared/components'
-import '../../shared/functional.ts' as F
 
 QObject {
   property string objectName: ''
