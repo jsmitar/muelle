@@ -19,6 +19,8 @@ Item {
     rightMargin: margin.right || margin.x || margins
     bottomMargin: margin.bottom || margin.y || margins
     leftMargin: margin.left || margin.x || margins
+    verticalCenterOffset: margin.y
+    horizontalCenterOffset: margin.x
   }
 
   Item {

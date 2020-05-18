@@ -13,10 +13,16 @@ Item {
   objectName: 'IconTask'
 
   readonly property Item target: innerIcon
-  property var m
+  property var m: ({})
+  property bool hover: false
 
-  width: store.state.icon.size
-  height: width
+  readonly property int size: store.state.icon.size
+
+  property bool isStartup: !!m.IsStartup
+  property bool hasLauncher: !!m.HasLauncher
+
+  width: size
+  height: size
 
   DropShadow {
     source: innerIcon
@@ -28,18 +34,46 @@ Item {
     color: "#80000000" 
   }
 
+  SequentialAnimation {
+    running: !hasLauncher
+    
+    NumberAnimation {
+      target: innerIcon.margin
+      property: $layout.isVertical ? 'x' : 'y'
+      from: 
+        store.state.animation.edgeDistance *
+        ($layout.layout & (Types.Left | Types.Top) ? -1 : 1) 
+      to: 0 
+      easing.type: Easing.OutQuad
+      duration: store.state.animation.duration / 2
+    }
+  }
+
+  StartupAnimation {
+    id: startupAnimation
+    objectName: m.AppName
+
+    running: isStartup
+    target: iconItem
+  }
+
   Box {
     id: innerIcon
     objectName: 'innerIcon'
 
-    anchors.fill: icon
+    anchors.centerIn: icon
+    width: size
+    height: size
+
     paddings: store.state.icon.padding
 
     PlasmaCore.IconItem {
       id: iconItem
       source: m.decoration
-      roundToIconSize: true
+      roundToIconSize: false
       usesPlasmaTheme: false
+      active: hover
+      animated: false
     }
 
     resources: [

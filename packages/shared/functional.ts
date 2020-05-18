@@ -515,3 +515,11 @@ export function memoize<Fn extends (...args: any[]) => any>(
 
   return memoized;
 }
+
+export function countdown<F extends () => any>(
+  onStart: F,
+  onStop: F,
+  time: number
+) {
+  return onStart(), Qt.setTimeout(onStop, time);
+}

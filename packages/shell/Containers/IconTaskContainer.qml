@@ -127,6 +127,7 @@ MouseArea {
     id: iconTask
     IconTask {
       m: model
+      hover: task.containsMouse
     }
   }
 

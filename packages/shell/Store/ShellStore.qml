@@ -39,4 +39,6 @@ FluxStore {
     Component.onCompleted: {
     }
   }
+
+  readonly property PropertyBuffer propertyBuffer: PropertyBuffer {}
 }
