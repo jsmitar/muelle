@@ -8,23 +8,16 @@ QObject {
   property bool running: false
 
   onRunningChanged: {
-    if (!running) return
-
-    const animation = store.propertyBuffer[`${objectName}:startupAnimation`]
-
-    if (animation && !animation.running) {
-      F.countdown(
-        animation.start,
-        animation.stop, 
-        store.state.animation.duration * 1.5
-      )
+    if (running) {
+      const animation = store.propertyBuffer[`${objectName}:startupAnimation`]
+      animation && animation.start()
     }
   }
 
   onObjectNameChanged: {
-    const itemName = `${objectName}:startupAnimation`
     const buffer = store.propertyBuffer
 
+    const itemName = `${objectName}:startupAnimation`
     let animation = buffer[itemName]
 
     if (!animation) {
@@ -42,41 +35,42 @@ QObject {
       id: _target
 
       property string objectName
-      property var running: rotationAnim.running
+
       property var start: rotationAnim.start
 
-      property var stop: () => {
-        rotationAnim.stop()
-        restoreAnim.start()
-      }
       property real rotation: 0
+
+      property real duration: store.state.animation.shortDuration / 2
 
       SequentialAnimation {
         id: rotationAnim
-        loops: Animation.Infinite
+        loops: 2
 
-        RotationAnimation {
+        RotationAnimation { 
           target: _target
-          to: -12
-          easing.type: Easing.OutQuad
-          duration: store.state.animation.shortDuration
+          to: -10
+          easing.type: Easing.OutSine
+          duration: target.duration
         }
-        RotationAnimation {
+        RotationAnimation { 
           target: _target
-          to: 12
-          easing.type: Easing.OutQuad
-          duration: store.state.animation.shortDuration
+          to: 0
+          easing.type: Easing.InSine
+          duration: target.duration / 2
         }
-      }
-
-      RotationAnimation {
-        id: restoreAnim
-        target: _target
-        to: 0
-        easing.type: Easing.OutQuad
-        duration: store.state.animation.shortDuration
+        RotationAnimation { 
+          target: _target
+          to: 10
+          easing.type: Easing.OutSine
+          duration: target.duration
+        }
+        RotationAnimation { 
+          target: _target
+          to: 0
+          easing.type: Easing.InSine
+          duration: target.duration / 2
+        }
       }
     }
   }
-
 }
