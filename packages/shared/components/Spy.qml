@@ -6,6 +6,7 @@ QObject {
   id: spy
   property var properties: spy``
   property bool _disableAll: false
+  property string name: ''
 
   function spy(strings, ...targets) {
     const properties = strings
@@ -35,7 +36,7 @@ QObject {
           const targetName = targets.target.objectName || `${targets.target}`.replace(/[_(].*/g, '')
           const parent = `${targets.target.parentObject || ''}`.replace(/[_(].*/g, '')
           const propName = `${parent ? parent + '.' : ''}${targetName}.${modelData}`
-          console.log(`${propName}: ${F.tostr(property, 1, -1)}`)
+          console.log(`${name ? name + ' ' : ''}${propName}: ${F.tostr(property, 1, -1)}`)
         }
 
         onPropertyChanged: printProperty()
