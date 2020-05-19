@@ -2,7 +2,6 @@ import QtQuick 2.12
 import '../../shared/components'
 
 QObject {
-  property string objectName: ''
   property Item target
   property bool running: false
 
@@ -14,17 +13,19 @@ QObject {
   }
 
   onObjectNameChanged: {
-    const buffer = store.propertyBuffer
+    if (objectName) {
+      const buffer = store.propertyBuffer
 
-    const itemName = `${objectName}:startupAnimation`
-    let animation = buffer[itemName]
+      const itemName = `${objectName}:startupAnimation`
+      let animation = buffer[itemName]
 
-    if (!animation) {
-      animation = startupComponent.createObject(root, { objectName })
-      buffer[itemName] = animation
+      if (!animation) {
+        animation = startupComponent.createObject(root, { objectName })
+        buffer[itemName] = animation
+      }
+
+      target.rotation = Qt.binding(() => animation.rotation)
     }
-
-    target.rotation = Qt.binding(() => animation.rotation)
   }
 
   Component {
@@ -32,8 +33,6 @@ QObject {
 
     QObject {
       id: _target
-
-      property string objectName
 
       property var start: rotationAnim.start
 
@@ -47,7 +46,7 @@ QObject {
 
         RotationAnimation { 
           target: _target
-          to: -10
+          to: -5
           easing.type: Easing.OutSine
           duration: target.duration
         }
@@ -59,7 +58,7 @@ QObject {
         }
         RotationAnimation { 
           target: _target
-          to: 10
+          to: 5
           easing.type: Easing.OutSine
           duration: target.duration
         }
