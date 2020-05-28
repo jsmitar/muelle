@@ -54,7 +54,6 @@ Loader {
         layoutDirection: Qt.LeftToRight
 
         Layout.fillHeight: true
-
         Layout.topMargin: store.state.background.paddingY
         Layout.bottomMargin: store.state.background.paddingY
 

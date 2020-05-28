@@ -108,6 +108,7 @@ declare namespace Qt {
   type QtObject<Properties = {}> = {
     objectName: string;
     destroy(delay?: number): void;
+    Component: { destruction: Qt.Signal };
   } & {
     [P in keyof Properties]: Properties[P];
   };

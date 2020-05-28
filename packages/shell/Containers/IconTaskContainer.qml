@@ -1,13 +1,13 @@
 import QtQuick 2.12
-import QtQml.Models 2.3
+import QtQml.Models 2.12
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1 as TaskManager
-import QtQml.Models 2.12
+
+import '../../shared/components'
 import '../../shared/functional.ts' as F
 import '../helpers/taskHelper.ts' as TaskHelper
 import '../helpers/constants.ts' as Consts
 import '../Components'
-import '../../shared/components'
 
 /*!
   \code model:
@@ -97,19 +97,21 @@ MouseArea {
   id: task
   objectName: 'IconTaskContainer'
 
-  property var m: model
   property Item panel
-  readonly property int index: m.index
 
-  // readonly property int size: store.state.icon.size
   readonly property int spacing: store.state.icon.spacing
   readonly property int padding: store.state.icon.padding
 
   property bool hold: false
   
+  property bool inPopup: false
   readonly property Item itemDragTarget: taskItem.item.target
 
+  property var m: model
+  readonly property int index: m.index
+  readonly property bool isStartup: !!m.IsStartup
   readonly property bool isSeparator: m.GenericName === '__separator__'
+  readonly property bool smartLauncherEnabled: !inPopup && isStartup && !isSeparator
 
   property DelegateModel delegateModel: panel.model
 
@@ -132,7 +134,7 @@ MouseArea {
   }
 
   Component {
-    id: separatorTask 
+    id: separatorTask
     SeparatorTask {
       m: model
     }

@@ -28,6 +28,7 @@
 #include "pressuredetector.hpp"
 #include "viewcontrast.hpp"
 #include "viewshadows.hpp"
+
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -41,6 +42,8 @@
 #include <QSharedPointer>
 #include <QTimer>
 
+#include <KDBusService>
+
 void customMessageOutput(QtMsgType type, const QMessageLogContext &context,
                          const QString &msg);
 
@@ -50,6 +53,8 @@ int main(int argc, char *argv[]) {
 
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
   QApplication app(argc, argv);
+  // app.setApplicationName("muelle");
+  // app.setOrganizationDomain("org.muelle");
   QQmlDebuggingEnabler qmldebugging;
   QQuickWindow::setDefaultAlphaBuffer(true);
 
@@ -66,7 +71,10 @@ int main(int argc, char *argv[]) {
   qmlRegisterViewContrast();
 
   auto muelle = Muelle::Container::instance();
-  muelle->loadConfiguration();
+  KDBusService service(KDBusService::Unique);
+  if (service.isRegistered()) {
+    muelle->loadConfiguration();
+  }
 
   return QApplication::exec();
 }

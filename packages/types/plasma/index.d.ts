@@ -219,4 +219,21 @@ declare module 'plasma/org.kde.plasma.private.taskmanager-0.1' {
     SkipTaskbar: boolean;
     SkipPager: boolean;
   }
+
+  export interface TaskManagerApplet extends Qt.QtObject {
+    launcherUrl: Qt.url;
+    count: number;
+    countVisible: boolean;
+    progress: number;
+    progressVisible: boolean;
+    urgent: boolean;
+
+    objectNameChanged: Qt.Signal;
+    launcherUrlChanged: Qt.Signal;
+    countChanged: Qt.Signal;
+    countVisibleChanged: Qt.Signal;
+    progressChanged: Qt.Signal;
+    progressVisibleChanged: Qt.Signal;
+    urgentChanged: Qt.Signal;
+  }
 }

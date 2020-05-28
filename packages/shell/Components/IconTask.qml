@@ -49,14 +49,6 @@ Item {
     }
   }
 
-  StartupAnimation {
-    id: startupAnimation
-    objectName: m.AppName
-
-    running: isStartup
-    target: iconItem
-  }
-
   Box {
     id: innerIcon
     objectName: 'innerIcon'
@@ -69,7 +61,7 @@ Item {
 
     PlasmaCore.IconItem {
       id: iconItem
-      source: m.decoration
+      source: m.decoration || 'application-default-icon'
       roundToIconSize: false
       usesPlasmaTheme: false
       active: hover
@@ -82,8 +74,92 @@ Item {
     ]
   }
 
-  Rectangle {
+  StartupAnimation {
+    id: startupAnimation
+    objectName: m.AppName
+    running: isStartup
+    target: iconItem
+  }
+
+  SmartLauncher {
+    id: smartLauncher
+    objectName: m.AppName
+    launcherUrl: m.LauncherUrlWithoutIcon
+  }
+
+  Badge {
+    visible: smartLauncher.countVisible
+    label: smartLauncher.count
+    
+    anchors {
+      right: icon.right
+      bottom: icon.bottom
+      rightMargin: innerIcon.paddings + 2
+      bottomMargin: innerIcon.paddings + 2
+    }
+  }
+
+  Item {
     id: indicator
+
+    implicitWidth: 4
+    implicitHeight: 4
+
+    ProgressBar {
+      id: progress
+      active: smartLauncher.progressVisible
+      value: smartLauncher.progress / 100
+
+      anchors.fill: indicator
+    }
+
+    StateLayoutEdge {
+      reset: AnchorChanges { 
+        target: indicator
+        anchors {
+          top: undefined
+          right: undefined
+          bottom: undefined
+          left: undefined
+        }
+      }
+      top: AnchorChanges {
+        target: indicator
+        anchors {
+          top: icon.top
+          left: icon.left
+          right: icon.right
+        }
+      }
+      right: AnchorChanges {
+        target: indicator
+        anchors {
+          top: icon.top
+          right: icon.right
+          bottom: icon.bottom
+        }
+      }
+      bottom: AnchorChanges {
+        target: indicator
+        anchors {
+          left: icon.left
+          right: icon.right
+          bottom: icon.bottom
+        }
+      }
+      left: AnchorChanges {
+        target: indicator
+        anchors {
+          top: icon.top
+          left: icon.left
+          bottom: icon.bottom
+        }
+      }
+    }
+  }
+
+  Rectangle {
+    id: indicator_
     color: 
       m.IsActive 
         ? theme.highlightColor
@@ -97,46 +173,6 @@ Item {
     height: 4
     radius: 2
 
-    StateLayoutEdge {
-      reset: AnchorChanges { 
-        target: indicator
-        anchors {
-          top: undefined
-          right: undefined
-          bottom: undefined
-          left: undefined
-          horizontalCenter: undefined
-          verticalCenter: undefined
-        }
-      }
-      top: AnchorChanges {
-        target: indicator
-        anchors {
-          top: icon.top
-          horizontalCenter: icon.horizontalCenter
-        }
-      }
-      right: AnchorChanges {
-        target: indicator
-        anchors {
-          right: icon.right
-          verticalCenter: icon.verticalCenter
-        }
-      }
-      bottom: AnchorChanges {
-        target: indicator
-        anchors {
-          bottom: icon.bottom
-          horizontalCenter: icon.horizontalCenter
-        }
-      }
-      left: AnchorChanges {
-        target: indicator
-        anchors {
-          left: icon.left
-          verticalCenter: icon.verticalCenter
-        }
-      }
-    }
+    
   } 
 }

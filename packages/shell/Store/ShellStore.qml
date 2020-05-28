@@ -9,6 +9,7 @@ import '../../shared/flux'
 import 'mutations.ts' as M
 import 'sagaRoot.ts' as Saga
 import 'actions.ts' as Action
+import '../helpers/memoComponent.ts' as MC
 
 FluxStore {
   id: store
@@ -41,4 +42,5 @@ FluxStore {
   }
 
   readonly property PropertyBuffer propertyBuffer: PropertyBuffer {}
+
 }

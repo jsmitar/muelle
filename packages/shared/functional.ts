@@ -253,6 +253,7 @@ export function otostr(
     .concat(Object.entries(object).filter(([k]) => !k.startsWith('_')));
 
   if (!entries.length) {
+    if ('toString' in object) return `"${object}"`;
     return '{}';
   }
 
@@ -522,4 +523,11 @@ export function countdown<F extends () => any>(
   time: number
 ) {
   return onStart(), Qt.setTimeout(onStop, time);
+}
+
+export function qassign(object: Qt.QtObject<any>, props: Record<any, any>) {
+  for (let k in props) {
+    object[k] = props[k];
+  }
+  return object;
 }

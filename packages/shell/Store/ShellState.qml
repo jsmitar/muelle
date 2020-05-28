@@ -15,7 +15,7 @@ QObject {
   readonly property Icon icon: Icon {
     parentObject: state
     iconSize: 48
-    padding: 4
+    padding: 2
     spacing: 4
   }
 
@@ -23,9 +23,9 @@ QObject {
     parentObject: state
     lift: 999
     shadowBlur: 5
-    borderRadius: 30
-    paddingX: 10
-    paddingY: 4
+    borderRadius: 10
+    paddingX: 0
+    paddingY: 0
   }
   
   readonly property Geometry geometry: Geometry {

@@ -46,8 +46,8 @@ set(SHELL_DIST_QRC "packages/dist/shell.qrc")
 set(MUELLE_DATADIR ${KDE_INSTALL_FULL_DATADIR}/muelle CACHE STRING "smith")
 
 # PACKAGES: Qt-KDE Packages
-find_package(Qt5 REQUIRED COMPONENTS Core Test Quick QuickTest X11Extras)
-find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config)
+find_package(Qt5 REQUIRED COMPONENTS DBus Core Test Quick QuickTest X11Extras)
+find_package(KF5 REQUIRED COMPONENTS WindowSystem Plasma Config DBusAddons)
 
 # PACKAGES: xcb
 find_package(XCB REQUIRED COMPONENTS XCB EVENT XFIXES RANDR RENDER SHAPE XINPUT)
@@ -75,12 +75,14 @@ file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/" "${PACKAGE_MUELLE}/*.h
 
 add_executable(muelle ${HEADERS} ${SOURCES})
 target_link_libraries(muelle
+  Qt5::DBus
   Qt5::Core
   Qt5::Quick
   Qt5::X11Extras
   KF5::WindowSystem
   KF5::ConfigCore
   KF5::Plasma
+  KF5::DBusAddons
   ${XCB_LIBRARIES}
 )
 install(TARGETS muelle DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

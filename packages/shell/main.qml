@@ -14,6 +14,7 @@ import 'Settings'
 import 'Store/actions.ts' as Action
 import '../shared/functional.ts' as F
 import '../shared/components'
+import 'helpers/memoComponent.ts' as MC
 import 'Store'
 
 Item {
@@ -22,6 +23,8 @@ Item {
 
   width: store.state.geometry.viewSize.width
   height: store.state.geometry.viewSize.height
+
+  readonly property var memoComponent: MC.createMemoComponent($view.release, root)
 
   Component.onCompleted: {
     // START: Set Global Properties
@@ -156,5 +159,6 @@ Item {
   DockMenu {}
 
   BehaviorManager {}
+
 
 }

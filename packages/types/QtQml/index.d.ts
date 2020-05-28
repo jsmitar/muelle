@@ -11,7 +11,7 @@ declare module '@qml/QtQml-2.14' {
     start: Qt.Method;
     stop: Qt.Method;
   }
-  export interface Component<T extends Qt.QtObject> {
+  export interface Component<T extends Qt.QtObject = Qt.QtObject> {
     progress: number;
     status: Component.Status;
     url: Qt.url;
@@ -19,7 +19,7 @@ declare module '@qml/QtQml-2.14' {
     destruction: Qt.Signal;
     createObject(
       parent: Qt.QtObject<any> | null,
-      properties: Partial<T>
+      properties?: Partial<T>
     ): T | null;
     errorString(): string;
     incubateObject(

@@ -66,8 +66,8 @@ QObject {
 
     readonly property int x: 
       Math.max(
-        panel.next.x - store.state.background.paddingX, 
-        -store.state.background.paddingX
+        panel.next.x - store.state.background.paddingX - shadow, 
+        -store.state.background.paddingX - shadow
       )
 
     readonly property int y: _isTopOrLeftEdge
@@ -76,11 +76,13 @@ QObject {
 
     readonly property int width: 
       panel.next.width + 
-      store.state.background.paddingX * 2
+      store.state.background.paddingX * 2 +
+      shadow * 2
 
     readonly property int maxHeight: 
       state.icon.size + 
-      store.state.background.paddingY * 2
+      store.state.background.paddingY * 2 +
+      shadow
 
     readonly property int height: Math.min(state.background.lift, maxHeight)
 

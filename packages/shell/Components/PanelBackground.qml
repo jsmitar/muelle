@@ -90,20 +90,8 @@ Item {
 
       readonly property int shadowBlur: store.state.background.shadowBlur
       readonly property int borderRadius: store.state.background.borderRadius
-      readonly property int paddingX: store.state.background.paddingX
-      readonly property int paddingY: store.state.background.paddingY
-
-      Binding {
-        target: store.state.background
-        property: 'paddingX'
-        value: content.shadowBlur * 3
-      }
-
-      Binding {
-        target: store.state.background
-        property: 'paddingY'
-        value: content.shadowBlur * 3
-      }
+      readonly property int paddingX: store.state.background.paddingX + shadowBlur
+      readonly property int paddingY: store.state.background.paddingY + shadowBlur
 
       RectangularGlow {
         id: shadow
@@ -147,7 +135,7 @@ Item {
               bottomRight: borderRadius
             }
             anchors {
-              leftMargin: paddingX
+              leftMargin: paddingX 
               rightMargin: paddingX
               bottomMargin: paddingY
             }
