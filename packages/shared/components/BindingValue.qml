@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import org.muelle.extra 1.0
 import '../../shared/functional.ts' as F
 

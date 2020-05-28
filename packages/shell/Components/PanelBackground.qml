@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import org.muelle.extra 1.0 as Muelle
 import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore

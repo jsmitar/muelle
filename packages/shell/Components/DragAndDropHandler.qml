@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 
 import '../Store/actions.ts' as Action
 import '../../shared/functional.ts' as F

@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import '../functional.ts' as F
 
 QObject {

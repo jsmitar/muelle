@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQml 2.12
 import QtQuick.Controls.Universal 2.12
 import org.muelle.types 1.0

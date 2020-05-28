@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import org.kde.taskmanager 0.1
 import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
 

@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Window 2.3
 import '../../shared/components'
 import '../Store/actions.ts' as Action

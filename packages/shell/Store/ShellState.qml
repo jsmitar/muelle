@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1
 import '../../shared/components'

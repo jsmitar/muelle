@@ -1,7 +1,6 @@
 import QtQuick 2.14
 import '../../shared/functional.ts' as F
 import org.kde.plasma.core 2.0 as PlasmaCore
-import QtQuick.Controls 2.15
 
 Rectangle {
   id: bg

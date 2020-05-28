@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import 'flux.ts' as Flux
 import '../components'
 import '../saga/simpleSagaMonitor.ts' as S
