@@ -1,4 +1,4 @@
-import { effectType, TaskStatus } from './symbols';
+import { effectType, TaskStatus } from 'qrc:/shared/saga/private/symbols';
 
 export interface Saga extends Generator<Effect, any, any> {}
 

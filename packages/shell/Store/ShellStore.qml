@@ -2,14 +2,14 @@ import QtQuick 2.14
 import org.kde.taskmanager 0.1
 import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
 
-import '../Components'
-import '../../shared/components'
-import '../../shared/functional.ts' as F
-import '../../shared/flux'
+import 'qrc:/shell/helpers/memoComponent.ts' as MC
+import 'qrc:/shell/Components'
+import 'qrc:/shared/components'
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shared/flux'
 import 'mutations.ts' as M
 import 'sagaRoot.ts' as Saga
 import 'actions.ts' as Action
-import '../helpers/memoComponent.ts' as MC
 
 FluxStore {
   id: store

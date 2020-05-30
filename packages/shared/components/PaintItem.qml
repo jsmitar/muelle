@@ -1,6 +1,6 @@
 import QtQuick 2.14
 import QtGraphicalEffects 1.0
-import '../../shared/functional.ts' as F
+import 'qrc:/shared/functional.ts' as F
 
 QObject {
   id: paintItem

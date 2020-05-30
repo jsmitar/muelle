@@ -1,9 +1,9 @@
 import QtQuick 2.14
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
-import '../../shared/components'
-import '../../shared/functional.ts' as F
-import '../Store/actions.ts' as Action
+import 'qrc:/shared/components'
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shell/Store/actions.ts' as Action
 
 QObject {
   id: manager

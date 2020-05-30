@@ -2,8 +2,8 @@ import QtQuick 2.14
 import QtQml 2.3
 import QtQuick.Controls 2.4
 import QtQuick.Window 2.11
-import '../../shared/components'
-import '../../shared/functional.ts' as F
+import 'qrc:/shared/components'
+import 'qrc:/shared/functional.ts' as F
 
 Window {
   id: win

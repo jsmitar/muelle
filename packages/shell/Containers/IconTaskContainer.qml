@@ -3,11 +3,11 @@ import QtQml.Models 2.12
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1 as TaskManager
 
-import '../../shared/components'
-import '../../shared/functional.ts' as F
-import '../helpers/taskHelper.ts' as TaskHelper
-import '../helpers/constants.ts' as Consts
-import '../Components'
+import 'qrc:/shared/components'
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shell/helpers/taskHelper.ts' as TaskHelper
+import 'qrc:/shell/helpers/constants.ts' as Consts
+import 'qrc:/shell/Components'
 
 /*!
   \code model:

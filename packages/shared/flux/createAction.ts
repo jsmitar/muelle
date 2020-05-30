@@ -1,4 +1,4 @@
-import { Action } from './flux';
+import { Action } from 'qrc:/shared/flux/flux';
 
 export type PrepareAction<P, M> = (
   payload?: P,

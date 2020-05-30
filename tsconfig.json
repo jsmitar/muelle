@@ -26,10 +26,11 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "experimentalDecorators": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
+      "qrc:/*": ["packages/*"],
       "qt": ["packages/types/qt"],
       "@qml/*": ["packages/types"],
       "plasma/*": ["packages/types/plasma"],

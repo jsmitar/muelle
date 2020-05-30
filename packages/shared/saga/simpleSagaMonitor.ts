@@ -1,6 +1,10 @@
-import { noop, tostr } from '../functional';
-import { effectType, SELECT, TaskStatus } from './private/symbols';
-import { SagaMonitor, SagaMonitorHooks } from './sagaMonitor';
+import { noop, tostr } from 'qrc:/shared/functional';
+import {
+  effectType,
+  SELECT,
+  TaskStatus,
+} from 'qrc:/shared/saga/private/symbols';
+import { SagaMonitor, SagaMonitorHooks } from 'qrc:/shared/saga/sagaMonitor';
 
 const sagaMonitorHooks: SagaMonitorHooks = {
   rootSagaStarted(task) {

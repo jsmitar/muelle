@@ -7,6 +7,7 @@ const { generateQrc, createCommand, clear } = require('./gulputils');
 const fs = require('fs');
 const { spawn, exec } = require('child_process');
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 const development = process.env.NODE_ENV === 'development';
 
 console.log('NODE_ENV:', process.env.NODE_ENV);

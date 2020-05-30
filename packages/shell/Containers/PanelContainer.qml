@@ -3,11 +3,10 @@ import QtQuick.Layouts 1.3
 import QtQml.Models 2.3
 import org.muelle.types 1.0
 
-import '../Store/actions.ts' as Action
-import '../../shared/components'
-import '../Components'
-import '../../shared/functional.ts' as F
-import '../../shared/sequence.ts' as Seq
+import 'qrc:/shell/Store/actions.ts' as Action
+import 'qrc:/shared/components'
+import 'qrc:/shell/Components'
+import 'qrc:/shared/functional.ts' as F
 
 Loader {
   id: panelContainer

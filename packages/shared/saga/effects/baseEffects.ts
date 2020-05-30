@@ -1,6 +1,6 @@
-import { AnyActionCreator } from '../../flux/createAction';
-import { ActionAny } from '../../flux/flux';
-import { isString } from '../../functional';
+import { AnyActionCreator } from 'qrc:/shared/flux/createAction';
+import { ActionAny } from 'qrc:/shared/flux/flux';
+import { isString } from 'qrc:/shared/functional';
 import {
   ALL,
   CALL,
@@ -15,7 +15,7 @@ import {
   RACE,
   SELECT,
   TAKE,
-} from '../private/symbols';
+} from 'qrc:/shared/saga/private/symbols';
 import {
   AllEffect,
   CallEffect,
@@ -31,7 +31,7 @@ import {
   SelectEffect,
   TakeEffect,
   Task,
-} from '../private/types';
+} from 'qrc:/shared/saga/private/types';
 
 export function call<Fn extends SagaFn>(
   saga: Fn,

@@ -1,7 +1,7 @@
 import QtQuick 2.14
 import 'flux.ts' as Flux
-import '../components'
-import '../saga/simpleSagaMonitor.ts' as S
+import 'qrc:/shared/components'
+import 'qrc:/shared/saga/simpleSagaMonitor.ts' as S
 
 QObject {
   property QtObject _state

@@ -1,6 +1,6 @@
 import QtQuick 2.14
 import QtQml 2.12
-import '../../shared/functional.ts' as F
+import 'qrc:/shared/functional.ts' as F
 
 QObject {
   id: spy

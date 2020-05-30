@@ -1,4 +1,4 @@
-import genId from '../genId';
+import genId from 'qrc:/shared/genId';
 
 const id = genId();
 

@@ -1,2 +1,2 @@
-export * from './effects/baseEffects';
-export * from './effects/extraEffects';
+export * from 'qrc:/shared/saga/effects/baseEffects';
+export * from 'qrc:/shared/saga/effects/extraEffects';

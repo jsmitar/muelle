@@ -1,6 +1,6 @@
 import QtQuick 2.14
 import org.muelle.types 1.0
-import '../../../shared/components'
+import 'qrc:/shared/components'
 
 QObject {
   objectName: '@State/Panel'

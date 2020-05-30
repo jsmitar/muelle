@@ -1,10 +1,10 @@
+import { debounce } from 'qrc:/shared/functional';
+import EventEmitter from 'qrc:/shared/saga/eventEmitter';
+import { SagaFn, Task } from 'qrc:/shared/saga/private/types';
+import { runSaga } from 'qrc:/shared/saga/saga';
+import { SagaMonitor } from 'qrc:/shared/saga/sagaMonitor';
 import Qt from 'qt';
 import { A } from 'ts-toolbelt';
-import { debounce } from '../functional';
-import EventEmitter from '../saga/eventEmitter';
-import { SagaFn, Task } from '../saga/private/types';
-import { runSaga } from '../saga/saga';
-import { SagaMonitor } from '../saga/sagaMonitor';
 
 export type State<T = any> = Qt.QtObject<T>;
 export type Mutations<S = any> = Record<

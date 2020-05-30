@@ -1,6 +1,6 @@
 import QtQuick 2.14
 import org.muelle.extra 1.0 as Muelle
-import '../../../shared/components'
+import 'qrc:/shared/components'
 
 QObject {
   objectName: '@State/Background'

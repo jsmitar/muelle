@@ -1,10 +1,16 @@
+import { AnyActionCreator } from 'qrc:/shared/flux/createAction';
+import { ActionAny } from 'qrc:/shared/flux/flux';
+import {
+  call,
+  cancel,
+  delayed,
+  fork,
+  take,
+} from 'qrc:/shared/saga/effects/baseEffects';
+import { TaskStatus } from 'qrc:/shared/saga/private/symbols';
+import { Saga, SagaFn, Task } from 'qrc:/shared/saga/private/types';
 import Qt from 'qt';
 import { L } from 'ts-toolbelt';
-import { AnyActionCreator } from '../../flux/createAction';
-import { ActionAny } from '../../flux/flux';
-import { TaskStatus } from '../private/symbols';
-import { Saga, SagaFn, Task } from '../private/types';
-import { call, cancel, delayed, fork, take } from './baseEffects';
 
 export function delay(ms: number) {
   return delayed(resolve => {

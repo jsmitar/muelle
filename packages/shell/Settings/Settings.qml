@@ -2,9 +2,9 @@ import QtQuick 2.14
 import QtQml 2.12
 import QtQuick.Controls.Universal 2.12
 import org.muelle.types 1.0
-import '../../shared/components'
-import '../../shared/functional.ts' as F
-import '../Store/actions.ts' as Action
+import 'qrc:/shared/components'
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shell/Store/actions.ts' as Action
 
 SettingsForm {
   id: settings

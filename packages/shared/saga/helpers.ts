@@ -1,7 +1,7 @@
-import { tostr } from '../functional';
-import { effectType } from './private/symbols';
-import { Effect, Task } from './private/types';
-import { TaskController } from './saga';
+import { tostr } from 'qrc:/shared/functional';
+import { effectType } from 'qrc:/shared/saga/private/symbols';
+import { Effect, Task } from 'qrc:/shared/saga/private/types';
+import { TaskController } from 'qrc:/shared/saga/saga';
 
 export function isTask(value: any): value is Task {
   return value instanceof TaskController;

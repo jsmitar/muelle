@@ -9,11 +9,11 @@ import org.kde.taskmanager 0.1
 import org.kde.plasma.core 2.0
 
 import 'Components'
-import 'Containers'
+import 'qrc:/shell/Containers'
 import 'Settings'
 import 'Store/actions.ts' as Action
-import '../shared/functional.ts' as F
-import '../shared/components'
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shared/components'
 import 'helpers/memoComponent.ts' as MC
 import 'Store'
 

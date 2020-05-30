@@ -1,7 +1,7 @@
 import QtQuick 2.14
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1
-import '../../shared/components'
+import 'qrc:/shared/components'
 import 'state'
 
 QObject {
@@ -40,7 +40,7 @@ QObject {
 
   readonly property Animation animation: Animation {
     parentObject: state
-    duration: 500
+    duration: 700
   }
 
   readonly property Context context: Context {}

@@ -4,10 +4,10 @@ import QtQml.Models 2.3
 import org.muelle.types 1.0
 import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1 as TaskManager
-import '../../shared/functional.ts' as F
-import '../Components'
-import '../../shared/components'
-import '../Store/actions.ts' as Action
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shell/Components'
+import 'qrc:/shared/components'
+import 'qrc:/shell/Store/actions.ts' as Action
 
 
 Item {

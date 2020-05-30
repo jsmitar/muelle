@@ -1,7 +1,7 @@
 import QtQuick 2.14
 import QtQuick.Layouts 1.3
 import org.muelle.types 1.0
-import '../../shared/components'
+import 'qrc:/shared/components'
 
 Item {
   id: flex

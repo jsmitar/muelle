@@ -1,7 +1,7 @@
 import QtQuick 2.14
 import QtQuick.Window 2.3
-import '../../shared/components'
-import '../Store/actions.ts' as Action
+import 'qrc:/shared/components'
+import 'qrc:/shell/Store/actions.ts' as Action
 
 Window {
   id: win

@@ -1,10 +1,10 @@
+import * as F from 'qrc:/shared/functional';
+
 export function from<T>(iterable?: T[]) {
   return new Seq<T>(Array.from(iterable || []));
 }
 
 export default { from };
-
-import * as F from './functional';
 
 class Seq<T> {
   iterable: T[];

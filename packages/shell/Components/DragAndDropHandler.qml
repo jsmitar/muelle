@@ -1,7 +1,7 @@
 import QtQuick 2.14
 
-import '../Store/actions.ts' as Action
-import '../../shared/functional.ts' as F
+import 'qrc:/shell/Store/actions.ts' as Action
+import 'qrc:/shared/functional.ts' as F
 
 DropArea {
   id: dragAndDrop

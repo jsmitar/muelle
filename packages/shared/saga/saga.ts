@@ -1,9 +1,11 @@
-import Qt from 'qt';
-import { ActionAny } from '../flux/flux';
-import { isEmpty, noop, zip } from '../functional';
-import genId from '../genId';
-import EventEmitter, { Connection, Listener } from './eventEmitter';
-import { isEffect } from './helpers';
+import { ActionAny } from 'qrc:/shared/flux/flux';
+import { isEmpty, noop, zip } from 'qrc:/shared/functional';
+import genId from 'qrc:/shared/genId';
+import EventEmitter, {
+  Connection,
+  Listener,
+} from 'qrc:/shared/saga/eventEmitter';
+import { isEffect } from 'qrc:/shared/saga/helpers';
 import {
   ALL,
   CALL,
@@ -20,7 +22,7 @@ import {
   SELECT,
   TAKE,
   TaskStatus,
-} from './private/symbols';
+} from 'qrc:/shared/saga/private/symbols';
 import {
   AllEffect,
   CallEffect,
@@ -38,8 +40,9 @@ import {
   SelectEffect,
   TakeEffect,
   Task,
-} from './private/types';
-import { SagaMonitorHooks } from './sagaMonitor';
+} from 'qrc:/shared/saga/private/types';
+import { SagaMonitorHooks } from 'qrc:/shared/saga/sagaMonitor';
+import Qt from 'qt';
 
 const id = genId();
 

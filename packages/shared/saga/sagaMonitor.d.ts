@@ -1,4 +1,4 @@
-import { Effect, Task } from './private/types';
+import { Effect, Task } from 'qrc:/shared/saga/private/types';
 
 export interface SagaMonitor extends SagaMonitorHooks {
   enable: boolean;

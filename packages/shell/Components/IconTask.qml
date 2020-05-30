@@ -2,10 +2,10 @@ import QtQuick 2.14
 import QtQuick.Layouts 1.1
 import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import '../helpers/constants.ts' as Const
-import '../../shared/functional.ts' as F
-import '../Containers'
-import '../../shared/components'
+import 'qrc:/shell/helpers/constants.ts' as Const
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shell/Containers'
+import 'qrc:/shared/components'
 import QtGraphicalEffects 1.12
 
 Item {
