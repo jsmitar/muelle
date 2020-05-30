@@ -14,6 +14,7 @@ QObject {
 
   readonly property alias backgroundRect: background.rect
   readonly property alias backgroundPoint: background.point
+  readonly property alias backgroundInset: background.inset
 
   property alias panelOffset: panel.offset
 
@@ -36,7 +37,7 @@ QObject {
 
   /*
    * the approach for the calculation is calc all sizes(width x height) as a 
-   * horizontal panel.
+   * horizontal panel or bottom panel.
    * the strategy is the same for the point(topLeft x,y) calc, the values for 
    * Edge::Top, Edge::Left panel
    * The last step is turn the values sizes,point for create the geometries
@@ -50,41 +51,44 @@ QObject {
       _isHorizontal ? Screen.width : Screen.height
 
     readonly property int height:
-      Math.max(background.height + background.shadow, panel.height)
+      Math.max(
+        background.boxHeight, 
+        panel.height
+      ) 
 
     readonly property size size: state.panel.isHorizontal
       ? Qt.size(width, height)
       : Qt.size(height, width)
-
   }
 
   readonly property QObject background: QObject {
     id: background
     objectName: 'background'
 
-    readonly property int shadow: store.state.background.shadowBlur
+    readonly property int shadow: state.background.shadowBlur
 
-    readonly property int x: 
-      Math.max(
-        panel.next.x - store.state.background.paddingX - shadow, 
-        -store.state.background.paddingX - shadow
-      )
+    readonly property int paddingX: state.icon.size * state.background.paddingX
+
+    readonly property int paddingTop: state.icon.size * state.background.paddingTop
+
+    readonly property int paddingBottom: state.icon.size * state.background.paddingBottom
+
+    readonly property int inset: state.background.inset + paddingBottom
+
+    readonly property int x: panel.next.x - paddingX
 
     readonly property int y: _isTopOrLeftEdge
-      ? 0
-      : view.height - height
+      ? inset
+      : view.height - height - state.background.inset
 
-    readonly property int width: 
-      panel.next.width + 
-      store.state.background.paddingX * 2 +
-      shadow * 2
+    readonly property int width:
+      paddingX * 2 + panel.next.width
 
-    readonly property int maxHeight: 
-      state.icon.size + 
-      store.state.background.paddingY * 2 +
-      shadow
+    readonly property int height: 
+      paddingTop + state.icon.size + paddingBottom
 
-    readonly property int height: Math.min(state.background.lift, maxHeight)
+    readonly property int boxHeight:
+      paddingTop + state.icon.size + inset + shadow
 
     readonly property point point: _isHorizontal 
       ? Qt.point(x, y)
@@ -106,14 +110,15 @@ QObject {
     readonly property int x: xCenter + offset * xCenter
 
     readonly property int y: _isTopOrLeftEdge
-      ? 0 : Math.max(0, view.height - height)
+      ? 0
+      : Math.max(0, view.height - height)
 
     readonly property int width:
       state.icon.size * state.panel.taskCount1 +
       state.icon.separator * state.panel.separatorCount +
       state.icon.spacing * Math.max(0, state.panel.taskCount1 + state.panel.separatorCount - 1)
 
-    readonly property int height: state.icon.size
+    readonly property int height: state.icon.size + background.inset
 
     readonly property size size: _isHorizontal
       ? Qt.size(width, height)
@@ -132,14 +137,15 @@ QObject {
       readonly property int x: xCenter + panel.offset * xCenter
 
       readonly property int y: _isTopOrLeftEdge
-        ? 0 : Math.max(0, view.height - height)
+        ? 0 
+        : Math.max(0, view.height - height)
 
       readonly property int width:
         state.icon.size * state.panel.nextTaskCount1 +
         state.icon.separator * state.panel.separatorCount +
         state.icon.spacing * Math.max(0, state.panel.nextTaskCount1 + state.panel.separatorCount - 1)
 
-      readonly property int height: state.icon.size
+      readonly property int height: state.icon.size + background.inset
 
       readonly property size size: _isHorizontal
         ? Qt.size(width, height)
@@ -171,7 +177,7 @@ QObject {
       id: visible
 
       readonly property int gap: mask.growing 
-        ? store.state.icon.size * 2 + background.shadow * 2
+        ? store.state.icon.size * 2 + background.shadow * 2 + background.paddingX * 2
         : background.shadow * 2
 
       readonly property rect rectHorizontal: mask.growing

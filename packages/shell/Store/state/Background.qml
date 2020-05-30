@@ -1,23 +1,30 @@
 import QtQuick 2.14
+import org.muelle.extra 1.0 as Muelle
 import '../../../shared/components'
 
 QObject {
   objectName: '@State/Background'
 
-  property int paddingX: 0
+  // padding in percent [0, 1]
+  property real paddingX: 0
 
-  property int paddingY: 0
+  // padding in percent [-1, 1]
+  property real paddingTop: 0
 
-  property int lift: 0
+  // padding in percent [0, 1]
+  property real paddingBottom: 0
 
-  property int borderRadius: 0
+  // inset in px
+  property int inset: 10
 
-  property bool shadow: true
+  property bool shadow: shadowBlur > 0
 
   property real shadowBlur: 0
+
+  readonly property Muelle.RadiusGroup radius: Muelle.RadiusGroup {}
 
   // type Style = 'solid' | 'svg' | 'none'
   property string style: 'svg'
 
-  readonly property bool visible: lift > 0 
+  readonly property bool visible: paddingTop > -1 
 }

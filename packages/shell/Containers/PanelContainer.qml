@@ -54,8 +54,8 @@ Loader {
         layoutDirection: Qt.LeftToRight
 
         Layout.fillHeight: true
-        Layout.topMargin: store.state.background.paddingY
-        Layout.bottomMargin: store.state.background.paddingY
+        Layout.topMargin: store.state.geometry.backgroundInset
+        Layout.bottomMargin: store.state.geometry.backgroundInset
 
         Component.onCompleted: {
           panelContainer.positioner = row
@@ -100,8 +100,8 @@ Loader {
         spacing: store.state.icon.spacing
 
         Layout.fillWidth: true
-        Layout.rightMargin: store.state.background.paddingY
-        Layout.leftMargin: store.state.background.paddingY
+        Layout.leftMargin: store.state.geometry.backgroundInset
+        Layout.rightMargin: store.state.geometry.backgroundInset
 
         Component.onCompleted: {
           panelContainer.positioner = column

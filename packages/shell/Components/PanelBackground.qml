@@ -3,14 +3,16 @@ import org.muelle.extra 1.0 as Muelle
 import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 import QtGraphicalEffects 1.12
-import '../../shared/functional.ts' as F
-import '../../shared/components'
-import '../Components'
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shared/components'
+import 'qrc:/shell/Components'
 
 Item {
   id: background
   readonly property rect rect: store.state.geometry.backgroundRect
   readonly property string style: store.state.background.style
+  readonly property int shadowBlur: store.state.background.shadowBlur
+  readonly property Muelle.RadiusGroup border: store.state.background.radius
 
   x: rect.x
   y: rect.y
@@ -88,29 +90,28 @@ Item {
     Item {
       id: content
 
-      readonly property int shadowBlur: store.state.background.shadowBlur
-      readonly property int borderRadius: store.state.background.borderRadius
-      readonly property int paddingX: store.state.background.paddingX + shadowBlur
-      readonly property int paddingY: store.state.background.paddingY + shadowBlur
-
-      RectangularGlow {
-        id: shadow
-
-        anchors.fill: solid
-
-        cached: false
-        color: theme.backgroundColor
-        spread: 0.2
-        glowRadius: shadowBlur
-        cornerRadius: Math.min(width, height) / 2.0 + glowRadius
-      }
-
       Muelle.Rectangle {
         id: solid
 
         anchors.fill: parent
         
         color: theme.backgroundColor
+        opacity: 0.8
+
+        layer.enabled: true
+        layer.effect: Glow {
+          id: shadow
+
+          anchors.fill: solid
+          source: solid
+
+          color: solid.color
+          cached: false
+          spread: 0.2
+          samples: 2 * radius + 1
+          radius: shadowBlur / 2
+          transparentBorder: true
+        }
 
         StateLayoutEdge {
           reset: PropertyChanges {
@@ -121,59 +122,41 @@ Item {
               bottomLeft: 0
               bottomRight: 0
             }
-            anchors {
-              topMargin: 0
-              rightMargin: 0
-              bottomMargin: 0
-              leftMargin: 0
-            }
           }
           top: PropertyChanges {
             target: solid
             radius {
-              bottomLeft: borderRadius
-              bottomRight: borderRadius
-            }
-            anchors {
-              leftMargin: paddingX 
-              rightMargin: paddingX
-              bottomMargin: paddingY
+              topLeft: border.bottomLeft
+              topRight: border.bottomRight
+              bottomLeft: border.topLeft
+              bottomRight: border.topRight
             }
           }
           right: PropertyChanges {
             target: solid
             radius {
-              topLeft: borderRadius
-              bottomLeft: borderRadius
-            }
-            anchors {
-              topMargin: paddingY
-              bottomMargin: paddingY
-              leftMargin: paddingX
+              topLeft: border.topLeft
+              topRight: border.bottomLeft
+              bottomLeft: border.topRight
+              bottomRight: border.bottomRight
             }
           }
           bottom: PropertyChanges {
             target: solid
             radius {
-              topLeft: borderRadius
-              topRight: borderRadius
-            }
-            anchors {
-              leftMargin: paddingX
-              rightMargin: paddingX
-              topMargin: paddingY
+              topLeft: border.topLeft
+              topRight: border.topRight
+              bottomLeft: border.bottomLeft
+              bottomRight: border.bottomRight
             }
           }
           left: PropertyChanges {
             target: solid
             radius {
-              topRight: borderRadius
-              bottomRight: borderRadius
-            }
-            anchors {
-              topMargin: paddingY
-              bottomMargin: paddingY
-              rightMargin: paddingX
+              topLeft: border.bottomLeft
+              topRight: border.topLeft
+              bottomLeft: border.bottomRight
+              bottomRight: border.topRight
             }
           }
         }

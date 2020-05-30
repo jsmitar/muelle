@@ -91,8 +91,6 @@ private:
 
 inline void qmlRegisterRectangle() {
   qmlRegisterType<Muelle::Rectangle>("org.muelle.extra", 1, 0, "Rectangle");
-  qmlRegisterUncreatableType<Muelle::RadiusGroup>(
-      "org.muelle.extra", 1, 0, "RadiusGroup",
-      "RadiusGroup is an uncreatable type");
+  qmlRegisterType<Muelle::RadiusGroup>("org.muelle.extra", 1, 0, "RadiusGroup");
 }
 #endif

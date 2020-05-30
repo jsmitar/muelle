@@ -531,3 +531,18 @@ export function qassign(object: Qt.QtObject<any>, props: Record<any, any>) {
   }
   return object;
 }
+
+export function get<T extends any, U extends keyof T>(
+  object: T,
+  prop: U
+): T[U] | undefined;
+export function get<T extends any, U extends keyof T, D>(
+  object: T,
+  prop: U,
+  def: D
+): T[U] | D;
+
+export function get(object: any, prop: any, def?: any) {
+  if (prop in object) return object[prop];
+  return def;
+}

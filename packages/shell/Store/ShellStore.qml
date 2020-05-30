@@ -42,5 +42,4 @@ FluxStore {
   }
 
   readonly property PropertyBuffer propertyBuffer: PropertyBuffer {}
-
 }
