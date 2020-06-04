@@ -14,23 +14,23 @@ QObject {
 
   readonly property Icon icon: Icon {
     parentObject: state
-    iconSize: 48
+    iconSize: 52
     padding: 2
     spacing: 4
   }
 
   readonly property Background background: Background {
     parentObject: state
-    shadowBlur: 10
-    paddingX: 1
-    paddingTop: -0.5
-    paddingBottom: 0
-    inset: 0
+    shadowBlur: 20
+    paddingX: 0.5
+    paddingTop: 0.05
+    paddingBottom: 0.05
+    inset: 4
     style: 'solid'
-    radius.topLeft: 0
-    radius.topRight: 0
-    radius.bottomLeft: 0
-    radius.bottomRight: 0
+    radius.topLeft: 0.2
+    radius.topRight: 0.2
+    radius.bottomLeft: 0.2
+    radius.bottomRight: 0.2
   }
   
   readonly property Geometry geometry: Geometry {

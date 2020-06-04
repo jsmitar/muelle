@@ -12,7 +12,7 @@ Item {
   readonly property rect rect: store.state.geometry.backgroundRect
   readonly property string style: store.state.background.style
   readonly property int shadowBlur: store.state.background.shadowBlur
-  readonly property Muelle.RadiusGroup border: store.state.background.radius
+  readonly property Muelle.Radius bgradius: store.state.background.radius
 
   x: rect.x
   y: rect.y
@@ -20,6 +20,11 @@ Item {
   height: rect.height
 
   property bool enableAnim: !store.state.panel.updatingOrientation
+
+  PaintItem {
+    target: background
+    enabled: false
+  }
 
   Behavior on x {
     enabled: $layout.isHorizontal && enableAnim 
@@ -98,6 +103,25 @@ Item {
         color: theme.backgroundColor
         opacity: 0.8
 
+        property var edgeToDegrees: ({
+          [Types.Top]: 0,
+          [Types.Right]: 270,
+          [Types.Bottom]: 180,
+          [Types.Left]: 90,
+        })
+
+        border {
+          width: 0
+          gradient {
+            stops: ['#9FA4C4', '#B3CDD1']
+            degrees: edgeToDegrees[store.state.panel.edge]
+          }
+        }
+        gradient {
+          stops: ['#33303e 1', '#232234 0']
+          degrees: F.addDeg(edgeToDegrees[store.state.panel.edge], 0)
+        }
+
         layer.enabled: true
         layer.effect: Glow {
           id: shadow
@@ -126,37 +150,37 @@ Item {
           top: PropertyChanges {
             target: solid
             radius {
-              topLeft: border.bottomLeft
-              topRight: border.bottomRight
-              bottomLeft: border.topLeft
-              bottomRight: border.topRight
+              topLeft: bgradius.bottomLeft
+              topRight: bgradius.bottomRight
+              bottomLeft: bgradius.topLeft
+              bottomRight: bgradius.topRight
             }
           }
           right: PropertyChanges {
             target: solid
             radius {
-              topLeft: border.topLeft
-              topRight: border.bottomLeft
-              bottomLeft: border.topRight
-              bottomRight: border.bottomRight
+              topLeft: bgradius.topLeft
+              topRight: bgradius.bottomLeft
+              bottomLeft: bgradius.topRight
+              bottomRight: bgradius.bottomRight
             }
           }
           bottom: PropertyChanges {
             target: solid
             radius {
-              topLeft: border.topLeft
-              topRight: border.topRight
-              bottomLeft: border.bottomLeft
-              bottomRight: border.bottomRight
+              topLeft: bgradius.topLeft
+              topRight: bgradius.topRight
+              bottomLeft: bgradius.bottomLeft
+              bottomRight: bgradius.bottomRight
             }
           }
           left: PropertyChanges {
             target: solid
             radius {
-              topLeft: border.bottomLeft
-              topRight: border.topLeft
-              bottomLeft: border.bottomRight
-              bottomRight: border.topRight
+              topLeft: bgradius.bottomLeft
+              topRight: bgradius.topLeft
+              bottomLeft: bgradius.bottomRight
+              bottomRight: bgradius.topRight
             }
           }
         }

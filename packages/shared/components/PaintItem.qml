@@ -21,7 +21,7 @@ QObject {
         border.width: 1
         antialiasing: true
         border.color: "#90000000"
-        radius: 2
+        radius: 4
         color: F.randColor(0.4)
         width: target.width
         height: target.height

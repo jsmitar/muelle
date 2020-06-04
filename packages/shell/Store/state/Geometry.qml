@@ -78,7 +78,7 @@ QObject {
     readonly property int x: panel.next.x - paddingX
 
     readonly property int y: _isTopOrLeftEdge
-      ? inset
+      ? state.background.inset
       : view.height - height - state.background.inset
 
     readonly property int width:

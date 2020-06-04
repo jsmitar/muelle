@@ -19,6 +19,10 @@ export function clamp(min: number, value: number, max: number) {
   return value > max ? max : value < min ? min : value;
 }
 
+export function addDeg(value: number, add: number) {
+  return (value + add) % 360;
+}
+
 export function identity<T>(item: T) {
   return item;
 }

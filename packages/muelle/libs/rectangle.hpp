@@ -1,80 +1,175 @@
 #ifndef RECTANGLE_HPP
 #define RECTANGLE_HPP
 
+#include "../helpers.hpp"
+
+#include <tuple>
+
+#include <QBrush>
 #include <QColor>
+#include <QGradient>
+#include <QJSEngine>
+#include <QJSValue>
+#include <QLinearGradient>
 #include <QObject>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPair>
+#include <QPen>
 #include <QQmlEngine>
+#include <QQmlListProperty>
 #include <QQuickPaintedItem>
+#include <QVariant>
+#include <QVector>
+#include <memory>
 
 namespace Muelle {
 
-class RadiusGroup : public QObject {
+class Gradient : public QObject {
   Q_OBJECT
-  Q_PROPERTY(int topLeft READ topLeft WRITE setTopLeft NOTIFY changed);
-  Q_PROPERTY(int topRight READ topRight WRITE setTopRight NOTIFY changed);
-  Q_PROPERTY(int bottomLeft READ bottomLeft WRITE setBottomLeft NOTIFY changed);
-  Q_PROPERTY(
-      int bottomRight READ bottomRight WRITE setBottomRight NOTIFY changed);
-
+  Q_PROPERTY(QVariant stops READ stops WRITE setStops NOTIFY changed)
+  Q_PROPERTY(int degrees READ degrees WRITE setDegrees NOTIFY changed)
 public:
-  RadiusGroup(QObject *parent = nullptr) noexcept : QObject(parent) {}
-  ~RadiusGroup() noexcept {};
+  Gradient(QObject *parent = nullptr) noexcept;
+  ~Gradient() override{};
+  /**
+   * degrees: follow clockwise starting at 12:00 as 0deg and 6:00 as
+   * 180deg
+   * */
+  void setDegrees(int degrees);
+  int degrees() const noexcept;
 
-  inline void setTopLeft(int radius) noexcept {
-    mTopLeft = radius;
-    emit changed();
-  }
+  void setStops(QVariant value) noexcept;
+  QVariant stops() const noexcept;
 
-  inline int topLeft() const noexcept { return mTopLeft; }
+  QLinearGradient *toQGradient(qreal width, qreal height) noexcept;
 
-  inline void setTopRight(int radius) noexcept {
-    mTopRight = radius;
-    emit changed();
-  }
-
-  inline int topRight() const noexcept { return mTopRight; }
-
-  inline void setBottomLeft(int radius) {
-    mBottomLeft = radius;
-    emit changed();
-  }
-
-  inline int bottomLeft() const noexcept { return mBottomLeft; }
-
-  inline void setBottomRight(int radius) noexcept {
-    mBottomRight = radius;
-    emit changed();
-  }
-
-  inline int bottomRight() const noexcept { return mBottomRight; }
+  inline bool valid() const noexcept { return !!m_gradient; };
 
 signals:
   void changed();
 
 private:
-  int mTopLeft{0};
-  int mTopRight{0};
-  int mBottomLeft{0};
-  int mBottomRight{0};
+  int m_degrees{0};
+  QJSValue m_stops;
+  std::unique_ptr<QLinearGradient> m_gradient;
+};
+
+class Border : public QObject {
+  Q_OBJECT
+  Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
+  Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+  Q_PROPERTY(Muelle::Gradient *gradient READ gradient)
+
+public:
+  Border(QObject *parent = nullptr) noexcept
+      : QObject(parent), m_gradient(new Gradient(this)) {}
+  ~Border() noexcept override{};
+
+  inline void setWidth(int width) noexcept {
+    if (m_width != width) {
+      m_width = max(0, width);
+      emit widthChanged();
+    }
+  }
+
+  inline int width() const noexcept { return m_width; }
+
+  inline QColor color() const noexcept { return m_color; }
+
+  inline void setColor(const QColor &color) noexcept {
+    if (m_color != color) {
+      m_color = color;
+      emit colorChanged();
+    }
+  };
+
+  inline Gradient *gradient() const noexcept { return m_gradient; }
+
+signals:
+  void widthChanged();
+  void colorChanged();
+
+private:
+  int m_width{0};
+  QColor m_color;
+  Gradient *m_gradient;
+};
+
+class Radius : public QObject {
+  Q_OBJECT
+  Q_PROPERTY(qreal topLeft READ topLeft WRITE setTopLeft NOTIFY changed)
+  Q_PROPERTY(qreal topRight READ topRight WRITE setTopRight NOTIFY changed)
+  Q_PROPERTY(
+      qreal bottomLeft READ bottomLeft WRITE setBottomLeft NOTIFY changed)
+  Q_PROPERTY(
+      qreal bottomRight READ bottomRight WRITE setBottomRight NOTIFY changed)
+
+public:
+  Radius(QObject *parent = nullptr) noexcept : QObject(parent) {}
+  ~Radius() noexcept override{};
+
+  inline void setTopLeft(qreal radius) noexcept {
+    mTopLeft = clamp(0, radius, 1);
+    emit changed();
+  }
+
+  inline qreal topLeft() const noexcept { return mTopLeft; }
+
+  inline void setTopRight(qreal radius) noexcept {
+    mTopRight = clamp(0, radius, 1);
+    emit changed();
+  }
+
+  inline qreal topRight() const noexcept { return mTopRight; }
+
+  inline void setBottomLeft(qreal radius) {
+    mBottomLeft = clamp(0, radius, 1);
+    emit changed();
+  }
+
+  inline qreal bottomLeft() const noexcept { return mBottomLeft; }
+
+  inline void setBottomRight(qreal radius) noexcept {
+    mBottomRight = clamp(0, radius, 1);
+    emit changed();
+  }
+
+  inline qreal bottomRight() const noexcept { return mBottomRight; }
+
+signals:
+  void changed();
+
+private:
+  qreal mTopLeft{0};
+  qreal mTopRight{0};
+  qreal mBottomLeft{0};
+  qreal mBottomRight{0};
 };
 
 class Rectangle : public QQuickPaintedItem {
   Q_OBJECT
-  Q_PROPERTY(Muelle::RadiusGroup *radius MEMBER mRadius)
+  Q_PROPERTY(Muelle::Radius *radius MEMBER m_radius)
+  Q_PROPERTY(Muelle::Border *border MEMBER m_border)
   Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+  Q_PROPERTY(Muelle::Gradient *gradient READ gradient)
 
 public:
   Rectangle(QQuickItem *parent = 0) noexcept;
   ~Rectangle() noexcept;
 
-  RadiusGroup *radius() noexcept;
+  Radius *radius() noexcept;
+
+  Border *border() noexcept;
 
   QColor color() const noexcept;
   void setColor(const QColor &color) noexcept;
 
+  inline Gradient *gradient() const noexcept { return m_gradient; }
+
   void updatePolish() override;
+
+  QPainterPath createPath(qreal border);
 
   void paint(QPainter *painter) override;
 
@@ -82,15 +177,21 @@ signals:
   void colorChanged();
 
 private:
-  RadiusGroup *mRadius;
-  QColor mColor;
-  QPainterPath mPath;
+  Radius *m_radius;
+  Border *m_border;
+  Gradient *m_gradient;
+  QColor m_color;
+  QPainterPath m_box;
 };
 
 } // namespace Muelle
 
 inline void qmlRegisterRectangle() {
   qmlRegisterType<Muelle::Rectangle>("org.muelle.extra", 1, 0, "Rectangle");
-  qmlRegisterType<Muelle::RadiusGroup>("org.muelle.extra", 1, 0, "RadiusGroup");
+  qmlRegisterType<Muelle::Border>("org.muelle.extra", 1, 0, "Border");
+  qmlRegisterType<Muelle::Radius>("org.muelle.extra", 1, 0, "Radius");
+  qmlRegisterType<Muelle::Gradient>("org.muelle.extra", 1, 0, "Gradient");
+  qmlRegisterUncreatableMetaObject(QGradient::staticMetaObject, "io.qt", 1, 0,
+                                   "QGradient", "Access to enums only");
 }
-#endif
+#endif // RECTANGLE_HPP

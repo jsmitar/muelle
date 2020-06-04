@@ -63,6 +63,27 @@ static inline std::string demangle(const char *name) { return name; }
 
 #endif
 
+template <typename V> constexpr auto min(const V &v) { return v; }
+
+template <typename L, typename R, typename... Tail>
+constexpr auto min(const L &l, const R &r, const Tail &... tail) {
+  return min(l < r ? l : r, tail...);
+}
+
+template <typename V> constexpr auto max(const V &v) { return v; }
+
+template <typename L, typename R, typename... Tail>
+constexpr auto max(const L &l, const R &r, const Tail &... tail) {
+  return max(l > r ? l : r, tail...);
+}
+
+template <typename B, typename V, typename T>
+constexpr V clamp(const B &b, const V &v, const T &t) {
+  if (b > t)
+    return b;
+  return max(b, min(v, t));
+}
+
 class Lambda {
 public:
   Lambda() = default;
@@ -119,14 +140,6 @@ Q_DECLARE_METATYPE(Lambda);
 
 namespace Muelle {
 
-struct BorderRadius {
-  int size = 0;
-  bool topLeft = false;
-  bool topRight = false;
-  bool bottomLeft = false;
-  bool bottomRight = false;
-};
-
 class Extensions : public QObject {
   Q_OBJECT
 public:
@@ -181,69 +194,6 @@ public:
   Q_INVOKABLE void clearInterval(const QVariant &handler) const {
     clearTimeout(handler);
   }
-
-  static QRegion setRadius(const QRect &rect, BorderRadius radius) {
-    if (rect.width() < 5 || rect.height() < 5)
-      return {rect};
-
-    QBitmap bitmap(rect.size());
-    bitmap.clear();
-
-    QPainter p(&bitmap);
-    p.setBackgroundMode(Qt::BGMode::TransparentMode);
-    p.setPen(Qt::PenStyle::NoPen);
-
-    p.fillRect(bitmap.rect(), Qt::transparent);
-    p.setBrush(Qt::black);
-
-    auto w = rect.width();
-    auto h = rect.height();
-
-    auto r = std::min(radius.size, std::min(w, h)) * 2;
-
-    QPainterPath path;
-
-    // topLeft
-    if (radius.topLeft) {
-      path.arcTo(0, 0, r, r, 90, 90);
-    } else {
-      path.lineTo(0, 0);
-    }
-
-    // bottomLeft
-    if (radius.bottomLeft) {
-      path.arcTo(0, h - r, r, r, 180, 90);
-    } else {
-      path.lineTo(0, h);
-    }
-
-    // bottomRight
-    if (radius.bottomRight) {
-      path.arcTo(w - r, h - r, r, r, 270, 90);
-    } else {
-      path.lineTo(w, h);
-    }
-
-    // topRight
-    if (radius.topRight) {
-      path.arcTo(w - r, 0, r, r, 0, 90);
-    } else {
-      path.lineTo(w, 0);
-    }
-
-    path.lineTo(r / 2, 0);
-
-    path.closeSubpath();
-    p.drawPath(path);
-
-    QRegion region(bitmap);
-    region.translate(rect.topLeft());
-
-    qDebug() << "[RECT]" << rect << " [REGION]: rect count"
-             << region.rectCount();
-
-    return region;
-  };
 };
 
 static void registerExtensions(QQmlEngine &engine) {
