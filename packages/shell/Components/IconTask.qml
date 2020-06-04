@@ -24,16 +24,6 @@ Item {
   width: size
   height: size
 
-  DropShadow {
-    source: innerIcon
-    anchors.fill: innerIcon
-    horizontalOffset: 0
-    verticalOffset: 0
-    radius: 4
-    samples: 1 + radius * 2
-    color: "#80000000" 
-  }
-
   SequentialAnimation {
     running: !hasLauncher
     
@@ -66,6 +56,20 @@ Item {
       usesPlasmaTheme: false
       active: hover
       animated: false
+      antialiasing: true
+      smooth: true
+
+      layer.enabled: true
+      layer.effect: DropShadow {
+        transparentBorder: true
+        source: iconItem
+        // anchors.fill: innerIcon
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: 2
+        samples: 1 + radius * 2
+        color: "#80000000" 
+      }
     }
 
     resources: [
@@ -172,7 +176,5 @@ Item {
     width: 4
     height: 4
     radius: 2
-
-    
   } 
 }

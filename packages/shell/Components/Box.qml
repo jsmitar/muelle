@@ -37,10 +37,6 @@ Item {
       const child = visibleChildren[0]
       if (child)
         child.anchors.fill = Qt.binding(() => paddingBox)
-
-      if (visibleChildren.length > 1) {
-        throw new Error(`Box: cannot have more than one children: ${box}`)
-      }
     }
   }
 }
