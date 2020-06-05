@@ -15,7 +15,7 @@ QObject {
   readonly property Icon icon: Icon {
     parentObject: state
     iconSize: 52
-    padding: 2
+    padding: 4
     spacing: 4
   }
 

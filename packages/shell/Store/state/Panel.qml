@@ -9,7 +9,7 @@ QObject {
   property bool visible: false
   readonly property bool hidden: !visible
 
-  property string slide: 'None'
+  property string slide: 'none'
 
   property bool updatingOffset: false
   property bool updatingEdge: nextEdge !== edge

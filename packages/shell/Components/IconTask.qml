@@ -1,12 +1,15 @@
 import QtQuick 2.14
 import QtQuick.Layouts 1.1
-import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.muelle.extra 1.0 as Muelle
+import org.muelle.types 1.0
+import QtGraphicalEffects 1.12
+
 import 'qrc:/shell/helpers/constants.ts' as Const
 import 'qrc:/shared/functional.ts' as F
 import 'qrc:/shell/Containers'
+import 'qrc:/shell/Components'
 import 'qrc:/shared/components'
-import QtGraphicalEffects 1.12
 
 Item {
   id: icon
@@ -76,6 +79,15 @@ Item {
       PaintItem { target: icon; enabled: false; showSize: false },
       PaintItem { target: iconItem; enabled: false; showSize: false }
     ]
+  }
+
+  TaskToolTip {
+    id: tooltip
+    text: m.AppName
+    visualParent: icon
+    visible: isStartup || store.state.panel.slide !== 'none' 
+      ? false 
+      : icon.hover
   }
 
   StartupAnimation {

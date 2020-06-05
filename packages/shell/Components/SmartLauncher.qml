@@ -1,9 +1,7 @@
 import QtQuick 2.14
-import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
 import 'qrc:/shared/functional.ts' as F
-import 'qrc:/shared/components'
 
-QObject {
+QtObject {
   id: smartLauncher
 
   property url launcherUrl: ''
@@ -18,14 +16,9 @@ QObject {
   onObjectNameChanged: {
     if (objectName) {
       launcher = memoComponent.createObject(
-        smartLauncherComponent, `${objectName}:SmartLauncher`
+        c.smartLauncher, `${objectName}:SmartLauncher`
       )
       launcher.launcherUrl = Qt.binding(() => launcherUrl)
     }
-  }
-
-  Component {
-    id: smartLauncherComponent
-    TaskManagerApplet.SmartLauncherItem { }
   }
 }

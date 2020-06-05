@@ -188,6 +188,10 @@ bool View::compositing() const { return KWindowSystem::compositingActive(); }
 
 Configuration *View::configuration() const { return mConfigMap; }
 
+void View::setOpacity(qreal level) { QQuickWindow::setOpacity(level); }
+
+const Layout &View::layout() const { return mLayout; }
+
 // void View::enableGlow() {
 //  auto c = QX11Info::connection();
 //  const auto effectName = QByteArrayLiteral("_KDE_NET_WM_SCREEN_EDGE_SHOW");
@@ -218,9 +222,4 @@ Configuration *View::configuration() const { return mConfigMap; }
 //  xcb_change_property(c, XCB_PROP_MODE_REPLACE, static_cast<uint>(winId()),
 //                      atom->atom, XCB_ATOM_CARDINAL, 32, 1, &value);
 //}
-
-void View::setOpacity(qreal level) { QQuickWindow::setOpacity(level); }
-
-const Layout &View::layout() const { return mLayout; }
-
 } // namespace Muelle

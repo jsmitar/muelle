@@ -2,6 +2,7 @@ import QtQuick 2.14
 import QtQml.Models 2.12
 import org.muelle.types 1.0
 import org.kde.taskmanager 0.1 as TaskManager
+import org.kde.plasma.core 2.0 as PlasmaCore
 
 import 'qrc:/shared/components'
 import 'qrc:/shared/functional.ts' as F

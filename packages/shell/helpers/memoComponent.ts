@@ -22,7 +22,7 @@ class MemoComponent {
     objectName: string,
     props: Record<any, any> = {}
   ) {
-    if (objectName in this.objectCache) {
+    if (this.objectCache[objectName]) {
       const cache = this.objectCache[objectName];
       this.cancelDestroy(cache);
 
@@ -32,11 +32,17 @@ class MemoComponent {
     }
 
     const object = component.createObject(this.parent);
-
     if (!object) return null;
-    qassign(object, { ...props, objectName });
 
+    object.objectName = objectName;
     this.objectCache[objectName] = { object };
+
+    object.destruction.connect(() => {
+      console.log('DESTRUCTION', objectName);
+      this.objectCache[objectName] = undefined as any;
+    });
+
+    qassign(object, { ...props, objectName });
 
     return object;
   }

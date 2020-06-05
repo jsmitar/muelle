@@ -8,14 +8,16 @@ import org.muelle.extra 1.0
 import org.kde.taskmanager 0.1
 import org.kde.plasma.core 2.0
 
-import 'Components'
-import 'qrc:/shell/Containers'
-import 'Settings'
-import 'Store/actions.ts' as Action
-import 'qrc:/shared/functional.ts' as F
 import 'qrc:/shared/components'
-import 'helpers/memoComponent.ts' as MC
-import 'Store'
+
+import 'qrc:/shell/Settings'
+import 'qrc:/shell/Containers'
+import 'qrc:/shell/Components'
+import 'qrc:/shell/Store'
+
+import 'qrc:/shell/Store/actions.ts' as Action
+import 'qrc:/shared/functional.ts' as F
+import 'qrc:/shell/helpers/memoComponent.ts' as MC
 
 Item {
   id: root
@@ -25,6 +27,7 @@ Item {
   height: store.state.geometry.viewSize.height
 
   readonly property var memoComponent: MC.createMemoComponent($view.release, root)
+  readonly property Components c: Components {}
 
   Component.onCompleted: {
     // START: Set Global Properties
