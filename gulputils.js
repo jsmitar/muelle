@@ -2,12 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 
-function listFiles(pathname = `${__dirname}/packages`, files = []) {
+function noop() {}
+
+function list_files(pathname = `${__dirname}/packages`, files = []) {
   return fs
     .readdirSync(pathname, { withFileTypes: true })
     .reduce((files, file) => {
       if (file.isDirectory()) {
-        files.concat(listFiles(`${pathname}/${file.name}`, files));
+        files.concat(list_files(`${pathname}/${file.name}`, files));
       } else {
         files.push(`${pathname}/${file.name}`);
       }
@@ -24,9 +26,9 @@ ${files.map(file => `    <file>${file}</file>`).join('\n')}
 </RCC>`;
 }
 
-function generateQrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
+function generate_qrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
   return qrc`${paths
-    .flatMap(pathname => listFiles(`${__dirname}/${pathname}`))
+    .flatMap(pathname => list_files(`${__dirname}/${pathname}`))
     .filter(file => {
       const { ext, name } = path.parse(file);
       return (patttern.test(ext) && /\w/.test(name)) || /qmldir/.test(name);
@@ -34,7 +36,7 @@ function generateQrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
     .map(to => path.relative(from, to))}`;
 }
 
-function createCommand(command) {
+function create_command(command) {
   return {
     [command](cb) {
       exec(
@@ -51,9 +53,26 @@ function createCommand(command) {
   }[command];
 }
 
-const clear = createCommand(`clear`);
+const clear = create_command(`clear`);
 
-exports.generateQrc = generateQrc;
-exports.listFiles = listFiles;
-exports.createCommand = createCommand;
+function time(label) {
+  return function timer(cb) {
+    console.time(`           ${label}`);
+    cb();
+  };
+}
+
+function time_end(label) {
+  return function timer(cb) {
+    console.timeEnd(`           ${label}`);
+    cb();
+  };
+}
+
+exports.generate_qrc = generate_qrc;
+exports.list_files = list_files;
+exports.create_command = create_command;
 exports.clear = clear;
+exports.noop = noop;
+exports.time = time;
+exports.time_end = time_end;

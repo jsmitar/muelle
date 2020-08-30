@@ -11,7 +11,7 @@
     "lib": ["ES2019"],
     "rootDir": "packages/",
     "outDir": "packages/dist/",
-    "importHelpers": true,
+    "importHelpers": false,
     "declaration": true,
     "sourceMap": false,
     "strict": true,
@@ -42,6 +42,9 @@
     "downlevelIteration": true,
     "esModuleInterop": false,
     "incremental": true,
-    "listFiles": true
+    "listFiles": true,
+    "noEmitOnError": false,
+    "tsBuildInfoFile": "./tsBuildInfo",
+    "pretty": true
   }
 }

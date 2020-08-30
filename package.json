@@ -12,18 +12,19 @@
     "test:qml": "build/test_qml -input packages/tests/qml"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "@types/node": "^13.11.1",
+    "@types/gulp": "^4.0.6",
+    "@types/jest": "^26.0.10",
+    "@types/node": "^14.6.1",
     "gulp": "^4.0.2",
     "gulp-just-replace": "^1.0.2",
     "gulp-remove-code": "^3.0.4",
     "gulp-rename": "^2.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "jest": "^25.3.0",
-    "ts-jest": "^25.3.1",
-    "ts-toolbelt": "^6.4.2",
-    "tslib": "^1.11.1",
-    "typescript": "^3.8.3"
+    "jest": "^26.4.2",
+    "ts-jest": "^26.3.0",
+    "ts-toolbelt": "^8.0.3",
+    "tslib": "^2.0.1",
+    "typescript": "^4.0.2"
   },
   "prettier": {
     "printWidth": 80,

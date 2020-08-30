@@ -2,15 +2,20 @@ const { series, parallel, watch, dest, src } = require('gulp');
 const ts = require('gulp-typescript');
 const rename = require('gulp-rename');
 const replace = require('gulp-just-replace');
-const { generateQrc, createCommand, clear } = require('./gulputils');
+const {
+  generate_qrc,
+  create_command,
+  clear,
+  noop,
+  time_end,
+  time,
+} = require('./gulputils');
 
 const fs = require('fs');
-const { spawn, exec } = require('child_process');
+const { spawn } = require('child_process');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 const development = process.env.NODE_ENV === 'development';
-
-console.log('NODE_ENV:', process.env.NODE_ENV);
 
 const dirs = {
   tsconfig: 'tsconfig.json',
@@ -58,14 +63,18 @@ const dirs = {
   },
 };
 
-const cleanDist = cb =>
-  createCommand(
+const clean_dist = cb =>
+  create_command(
     `if [ -f '${dirs.dist}' ]; then find ${dirs.dist} -type f -not -name 'qml.rcc' -delete; fi`
   )(cb);
 
-const mkdirBuild = createCommand(`mkdir -p ${dirs.build}`);
+const mkdir_build = create_command(`mkdir -p ${dirs.build}`);
 
-const runCMake = createCommand(
+const kill_muelle = create_command(
+  'killall -s KILL muelle &> /dev/null; exit 0'
+);
+
+const run_CMake = create_command(
   [
     'cmake',
     '-Wno-dev',
@@ -76,53 +85,40 @@ const runCMake = createCommand(
   ].join(' ')
 );
 
-const runNinja = createCommand(`ninja -C ${dirs.build}`);
+const run_Ninja = create_command(`ninja -C ${dirs.build}`);
 
-const runNinjaInstall = createCommand(`ninja install -C ${dirs.build}`);
+const run_Ninja_install = create_command(`ninja install -C ${dirs.build}`);
 
-const runMuelle = (() => {
-  let muelle;
+const run_muelle = (() => {
   const log = fs.createWriteStream('out.log');
 
-  return function muelleApp(restart, cb) {
-    if (restart && muelle) {
-      muelle.on('close', () => ((muelle = null), muelleApp(false, cb)));
-      muelle.kill();
-      exec('killall muelle', { shell: true });
-      return;
-    }
-
-    if (muelle == null) {
-      log.write(`${'\u001b[1;35m'}
+  return function muelle(cb) {
+    log.write(`${'\u001b[1;35m'}
 ╓───────────────────────────────────╖
 ║          STARTING MUELLE          ║
 ╙───────────────────────────────────╜
 ${'\u001b[0m'}`);
-      muelle = spawn(`${dirs.bin}`, dirs.binArgs, {
-        detached: true,
-        cwd: __dirname,
-        env: dirs.env,
-      });
-      muelle.unref();
-      muelle
-        .on('exit', () => {
-          muelle = null;
-        })
-        .on('close', (_, signal) => log.write(`\n[END] Signal: ${signal}\n\n`));
-
-      muelle.stdout.pipe(log, { end: false });
-      muelle.stderr.pipe(log, { end: false });
-    }
-    if (cb) cb();
+    const muelle = spawn(`${dirs.bin}`, dirs.binArgs, {
+      detached: true,
+      cwd: __dirname,
+      env: dirs.env,
+    });
+    muelle.unref();
+    muelle.stdout.pipe(log, { end: false });
+    muelle.stderr.pipe(log, { end: false });
+    muelle.on('close', (_, signal) =>
+      log.write(`\n[END] Signal: ${signal}\n\n`)
+    );
+    cb();
   };
 })();
 
 const tsProject = ts.createProject(dirs.tsconfig);
 
-function buildQml(cb) {
+function build_qml(cb) {
   return series(
     parallel(
-      function transpileTs() {
+      function transpile_ts() {
         return tsProject
           .src()
           .pipe(tsProject())
@@ -157,12 +153,11 @@ function buildQml(cb) {
           )
           .pipe(dest(dirs.dist));
       },
-      function copyShellQmlResources() {
-        return src([
-          'packages/**/*.qml',
-          'packages/**/*.js',
-          '!packages/dist/**/*.*',
-        ])
+      function copy_shell_qml_resources() {
+        return src(
+          ['packages/**/*.qml', 'packages/**/*.js', '!packages/dist/**/*.*'],
+          { buffer: true }
+        )
           .pipe(
             replace([
               {
@@ -174,32 +169,29 @@ function buildQml(cb) {
           .pipe(dest(dirs.dist));
       }
     ),
-    function createShellQrc(cb) {
+    parallel(
+      function create_shell_qrc(cb) {
+        [dirs.resources.shell].forEach(resource => {
+          const qrc = generate_qrc(resource.qrc.from, resource.qrc.input);
+          fs.writeFileSync(resource.qrc.output, qrc, { flag: 'w' }, noop);
+        });
+        cb();
+      },
+      function create_shell_qtcreator_qrc(cb) {
+        [dirs.resources.shell].forEach(resource => {
+          const qrc = generate_qrc(
+            resource.qrcQtCreator.from,
+            resource.qrcQtCreator.input,
+            /.qml|.js|.ts/
+          );
+          fs.writeFile(resource.qrcQtCreator.output, qrc, { flag: 'w' }, noop);
+        });
+        cb();
+      }
+    ),
+    function create_shell_rcc(cb) {
       [dirs.resources.shell].forEach(resource => {
-        const qrc = generateQrc(resource.qrc.from, resource.qrc.input);
-        fs.writeFileSync(resource.qrc.output, qrc, { flag: 'w' }, () => {});
-      });
-      cb();
-    },
-    function createShellQrcQtCreator(cb) {
-      [dirs.resources.shell].forEach(resource => {
-        const qrc = generateQrc(
-          resource.qrcQtCreator.from,
-          resource.qrcQtCreator.input,
-          /.qml|.js|.ts/
-        );
-        fs.writeFile(
-          resource.qrcQtCreator.output,
-          qrc,
-          { flag: 'w' },
-          () => {}
-        );
-      });
-      cb();
-    },
-    function createShellRcc(cb) {
-      [dirs.resources.shell].forEach(resource => {
-        createCommand(
+        create_command(
           `rcc-qt5 --no-compress --binary -o ${resource.qrc.rcc} ${resource.qrc.output}`
         )(cb);
       });
@@ -208,30 +200,58 @@ function buildQml(cb) {
 }
 
 function _watch() {
-  return series(mkdirBuild, cleanDist, () =>
-    watch(
-      [...dirs.resources.muelle.watch, ...dirs.resources.watchQmlPackages],
-      { ignoreInitial: false, delay: 500, useFsEvents: true },
-      series(
-        clear,
-        parallel(series(runCMake, runNinja), series(buildQml)),
-        function START(cb) {
-          runMuelle(true, cb);
-        }
-      )
+  /**
+   * @type {import('gulp').WatchOptions}
+   */
+  const options = {
+    ignoreInitial: false,
+    delay: 500,
+    useFsEvents: true,
+    queue: false,
+  };
+  return series(
+    mkdir_build,
+    clean_dist,
+    parallel(
+      function cmake_project_watcher() {
+        watch(
+          dirs.resources.muelle.watch,
+          options,
+          series(
+            clear,
+            time('cmake_project_watcher'),
+            parallel(kill_muelle, series(run_CMake, run_Ninja)),
+            run_muelle,
+            time_end('cmake_project_watcher')
+          )
+        );
+      },
+      function qml_project_watcher() {
+        watch(
+          dirs.resources.watchQmlPackages,
+          options,
+          series(
+            clear,
+            time('qml_project_watcher'),
+            parallel(kill_muelle, build_qml),
+            run_muelle,
+            time_end('qml_project_watcher')
+          )
+        );
+      }
     )
   );
 }
 
 function _build() {
   return parallel(
-    series(mkdirBuild, runCMake, runNinja),
-    series(cleanDist, buildQml)
+    series(mkdir_build, run_CMake, run_Ninja),
+    series(clean_dist, build_qml)
   );
 }
 
 function _install() {
-  return series(runNinjaInstall);
+  return series(run_Ninja_install);
 }
 
 exports.watch = _watch();
