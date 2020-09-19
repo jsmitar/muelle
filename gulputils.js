@@ -36,43 +36,105 @@ function generate_qrc(from, paths = [], patttern = /.qml|.js|.mjs/) {
     .map(to => path.relative(from, to))}`;
 }
 
-function create_command(command) {
-  return {
-    [command](cb) {
-      exec(
-        command,
-        { cwd: __dirname, stdio: 'inherit', shell: true },
-        (error, stdout) => {
-          if (stdout) {
-            console.log(`${stdout}`);
-          }
-          error ? cb(error) : cb();
+function create_command(command, name) {
+  return named_function(name || command, (cb = noop) => {
+    exec(
+      command,
+      { cwd: __dirname, stdio: 'inherit', shell: true },
+      (error, stdout) => {
+        process.stdout.write(stdout);
+        if (error) {
+          setImmediate(() => cb(error));
+        } else {
+          cb();
         }
-      );
-    },
-  }[command];
+      }
+    ).on('message', message => {
+      process.stdout.write(message);
+    });
+  });
+}
+const clear = create_command('clear');
+
+/**
+ *
+ * @type {<Fn = (...args: any[]) => any>(fn: Fn) => Fn}
+ */
+function clear_before(fn) {
+  return named_function(fn.name, cb => {
+    clear(error => (error ? cb(error) : fn(cb)));
+  });
 }
 
-const clear = create_command(`clear`);
-
 function time(label) {
-  return function timer(cb) {
+  return function time(cb) {
     console.time(`           ${label}`);
-    cb();
+    setImmediate(cb);
   };
 }
 
 function time_end(label) {
-  return function timer(cb) {
+  return function time_end(cb) {
     console.timeEnd(`           ${label}`);
-    cb();
+    setImmediate(cb);
   };
+}
+
+function pass(cb) {
+  cb();
+}
+
+/**
+ * @type {(predicate: () => boolean)
+ *  => (then: import('undertaker').Task, otherwise?: import('undertaker').Task)
+ *  => import('undertaker').TaskFunction }
+ */
+const if_ = predicate => (then, otherwise = pass) => {
+  const name =
+    otherwise === pass
+      ? `${then.displayName || then.name} if ${predicate.name}`
+      : `${then.displayName || then.name} if ${predicate.name} else ${
+          otherwise.displayName || otherwise.name
+        }`;
+
+  return named_function(
+    name,
+    cb => void (predicate() ? then(cb) : otherwise(cb))
+  );
+};
+
+/**
+ * @type {(predicate: () => boolean) => () => boolean
+ */
+const not_ = predicate => {
+  return named_function(`not ${predicate.name}`, () => !predicate());
+};
+
+/**
+ * @type {<Fn = (...args: any[]) => any>(name: string, fn: Fn) => Fn
+ */
+function named_function(name, fn) {
+  return {
+    [name](...args) {
+      return fn(...args);
+    },
+  }[name];
+}
+
+/**
+ * @type {<T = { displayName: string }>(name: string, obj: T) => T}
+ */
+function set_displayName(name, obj) {
+  return (obj.displayName = name), obj;
 }
 
 exports.generate_qrc = generate_qrc;
 exports.list_files = list_files;
 exports.create_command = create_command;
-exports.clear = clear;
+exports.clear_before = clear_before;
 exports.noop = noop;
 exports.time = time;
 exports.time_end = time_end;
+exports.if_ = if_;
+exports.not_ = not_;
+exports.set_displayName = set_displayName;
