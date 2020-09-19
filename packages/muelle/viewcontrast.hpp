@@ -73,9 +73,8 @@ public:
   void setUsePlasmaTheme(bool value) noexcept;
   bool usePlasmaTheme() const noexcept;
 
-public:
   void updateContrastValues() noexcept;
-  void update() noexcept;
+  Q_INVOKABLE void update() noexcept;
 
 signals:
   void viewChanged();

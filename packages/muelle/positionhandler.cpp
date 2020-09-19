@@ -37,7 +37,7 @@ void PositionHandler::update(int duration) {
       mView->setPosition(newPosition);
     } else {
       const auto newPosition = computePosition(
-          screen->geometry(), mView->panelGeometry(), mView->layout());
+          screen->geometry(), {{0, 0}, mView->size()}, mView->layout());
       if (duration > 0) {
         animation->setDuration(duration);
         animation->setStartValue(mView->position());

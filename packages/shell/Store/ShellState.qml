@@ -15,22 +15,23 @@ QObject {
   readonly property Icon icon: Icon {
     parentObject: state
     iconSize: 52
-    padding: 4
+    padding: 8
     spacing: 4
   }
 
   readonly property Background background: Background {
     parentObject: state
-    shadowBlur: 20
-    paddingX: 0.5
-    paddingTop: 0.05
-    paddingBottom: 0.05
-    inset: 4
+    shadowBlur: 0
+    paddingX: 1
+    paddingTop: -0.8
+    paddingBottom: 0
+    inset: -1
     style: 'solid'
-    radius.topLeft: 0.2
-    radius.topRight: 0.2
-    radius.bottomLeft: 0.2
-    radius.bottomRight: 0.2
+    radius.topLeft: 40
+    radius.topRight: 40
+    radius.bottomLeft: 0
+    radius.bottomRight: 0
+    full: true
   }
   
   readonly property Geometry geometry: Geometry {
@@ -61,7 +62,7 @@ QObject {
     property bool ready: false
 
     Component.onCompleted: {
-      launcherList = JSON.parse($configuration.launcherList || '[]')
+      launcherList = JSON.parse($configuration.launcherList.replace('__muelle_separator__', __muelle_separator__) || '[]')
       Qt.callLater(countChanged)
       ready = true
     }

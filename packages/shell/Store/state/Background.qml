@@ -21,10 +21,12 @@ QObject {
 
   property real shadowBlur: 0
 
-  readonly property Muelle.Radius radius: Muelle.Radius {}
-
   // type Style = 'solid' | 'svg' | 'none'
   property string style: 'svg'
 
   readonly property bool visible: paddingTop > -1 
+
+  property bool full: false
+
+  readonly property Muelle.Radius radius: Muelle.Radius {}
 }

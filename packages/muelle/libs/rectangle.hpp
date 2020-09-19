@@ -19,8 +19,10 @@
 #include <QQmlEngine>
 #include <QQmlListProperty>
 #include <QQuickPaintedItem>
+#include <QRegion>
 #include <QVariant>
 #include <QVector>
+
 #include <memory>
 
 namespace Muelle {
@@ -44,7 +46,7 @@ public:
 
   QLinearGradient *toQGradient(qreal width, qreal height) noexcept;
 
-  inline bool valid() const noexcept { return !!m_gradient; };
+  inline bool valid() const noexcept { return !m_stops.isUndefined(); };
 
 signals:
   void changed();
@@ -110,29 +112,37 @@ public:
   ~Radius() noexcept override{};
 
   inline void setTopLeft(qreal radius) noexcept {
-    mTopLeft = clamp(0, radius, 1);
-    emit changed();
+    if (mTopLeft != radius) {
+      mTopLeft = max(0, radius);
+      emit changed();
+    }
   }
 
   inline qreal topLeft() const noexcept { return mTopLeft; }
 
   inline void setTopRight(qreal radius) noexcept {
-    mTopRight = clamp(0, radius, 1);
-    emit changed();
+    if (mTopRight != radius) {
+      mTopRight = max(0, radius);
+      emit changed();
+    }
   }
 
   inline qreal topRight() const noexcept { return mTopRight; }
 
   inline void setBottomLeft(qreal radius) {
-    mBottomLeft = clamp(0, radius, 1);
-    emit changed();
+    if (mBottomLeft != radius) {
+      mBottomLeft = max(0, radius);
+      emit changed();
+    }
   }
 
   inline qreal bottomLeft() const noexcept { return mBottomLeft; }
 
   inline void setBottomRight(qreal radius) noexcept {
-    mBottomRight = clamp(0, radius, 1);
-    emit changed();
+    if (mBottomRight != radius) {
+      mBottomRight = max(0, radius);
+      emit changed();
+    }
   }
 
   inline qreal bottomRight() const noexcept { return mBottomRight; }
@@ -153,6 +163,9 @@ class Rectangle : public QQuickPaintedItem {
   Q_PROPERTY(Muelle::Border *border MEMBER m_border)
   Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
   Q_PROPERTY(Muelle::Gradient *gradient READ gradient)
+  Q_PROPERTY(QRegion mask READ mask NOTIFY maskChanged)
+  Q_PROPERTY(bool maskEnabled READ maskEnabled WRITE setMaskEnabled NOTIFY
+                 maskEnabledChanged)
 
 public:
   Rectangle(QQuickItem *parent = 0) noexcept;
@@ -167,14 +180,25 @@ public:
 
   inline Gradient *gradient() const noexcept { return m_gradient; }
 
-  void updatePolish() override;
+  bool maskEnabled() const;
+  void setMaskEnabled(bool enabled);
+
+  QRegion mask() const;
 
   QPainterPath createPath(qreal border);
+
+  void updateMask();
+
+  void update();
+  void updatePolish() override;
 
   void paint(QPainter *painter) override;
 
 signals:
   void colorChanged();
+  void maskChanged();
+  void maskEnabledChanged();
+  void didPaint();
 
 private:
   Radius *m_radius;
@@ -182,6 +206,8 @@ private:
   Gradient *m_gradient;
   QColor m_color;
   QPainterPath m_box;
+  QRegion m_region;
+  bool m_maskEnabled{false};
 };
 
 } // namespace Muelle

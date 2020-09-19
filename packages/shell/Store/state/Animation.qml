@@ -12,10 +12,4 @@ QObject {
   property int velocity: (120 * 1000) / duration
 
   property bool addEnabled: true
-
-  readonly property int edgeDistance: Math.max(
-    parentObject.geometry.background.height + 
-    parentObject.geometry.background.shadow,
-    parentObject.geometry.panel.height
-  ) 
 }

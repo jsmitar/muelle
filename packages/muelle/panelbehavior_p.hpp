@@ -36,10 +36,7 @@
 #include <KWindowSystem>
 #include <NETWM>
 #include <QDebug>
-
-#ifndef QConnect
-#define QConnect QObject::connect
-#endif
+#include <netwm_def.h>
 
 // KWindowSystem short alias
 typedef KWindowSystem KWindow;
@@ -55,6 +52,11 @@ constexpr auto KWindowActiveChanged{&KWindow::activeWindowChanged};
 constexpr auto KWindowDesktopChanged{&KWindow::currentDesktopChanged};
 constexpr auto KWindowShowingDesktopChanged{&KWindow::showingDesktopChanged};
 
+constexpr NET::Properties NETProps = NET::ActiveWindow | NET::CloseWindow |
+                                     NET::WMWindowType | NET::WMState |
+                                     NET::WMDesktop | NET::WMFrameExtents |
+                                     NET::WMGeometry | NET::DesktopGeometry;
+
 struct Lock {
   bool value;
 };
@@ -67,12 +69,13 @@ namespace Private {
 class PanelBehavior : public QObject {
   Q_OBJECT
 public:
-  PanelBehavior(Muelle::PanelBehavior *q) : qPtr(q) {
+  PanelBehavior(Muelle::PanelBehavior *q)
+      : q_ptr(q), connection(QX11Info::connection()) {
     dodgeDebounce.setSingleShot(true);
     dodgeDebounce.setInterval(100);
     dodgeDebounce.callOnTimeout([&] {
       dodgeValue = nextDodgeValue;
-      emit qPtr->dodgeChanged();
+      emit q_ptr->dodgeChanged();
     });
   }
 
@@ -88,7 +91,7 @@ public:
 
     clearStruts();
 
-    const auto behavior = qPtr->mBehavior;
+    const auto behavior = q_ptr->m_behavior;
     dodgeDebounce.stop();
 
     switch (behavior) {
@@ -110,51 +113,53 @@ public:
   }
 
   void enableAutoHide() {
-    connections += QConnect(kwindow(), KWindowShowingDesktopChanged,
-                            [this] { dodge(!kwindow()->showingDesktop()); });
+    connections += connect(kwindow(), KWindowShowingDesktopChanged,
+                           [this] { dodge(!kwindow()->showingDesktop()); });
     nextDodgeValue = true;
     dodgeDebounce.start(0);
   }
 
   void enableDodgeAll() {
-    connections += QConnect(kwindow(), KWindowAdded, this,
-                            &Private::PanelBehavior::dodgeWindow);
+    connections += connect(kwindow(), KWindowAdded, this,
+                           &Private::PanelBehavior::dodgeWindow);
 
-    connections += QConnect(kwindow(), KWindowRemoved, this,
-                            &Private::PanelBehavior::dodgeWindow);
+    connections += connect(kwindow(), KWindowRemoved, this,
+                           &Private::PanelBehavior::dodgeWindow);
 
-    connections += QConnect(kwindow(), KWindowChanged, this,
-                            &Private::PanelBehavior::dodgeWindowProps);
+    connections += connect(kwindow(), KWindowChanged, this,
+                           &Private::PanelBehavior::dodgeWindowProps);
 
-    connections += QConnect(kwindow(), KWindowDesktopChanged, this,
-                            &Private::PanelBehavior::scanAllWindows);
+    connections += connect(kwindow(), KWindowDesktopChanged, this,
+                           &Private::PanelBehavior::scanAllWindows);
 
-    connections += QConnect(kwindow(), KWindowShowingDesktopChanged, this,
-                            &Private::PanelBehavior::scanAllWindows);
+    connections += connect(kwindow(), KWindowShowingDesktopChanged, this,
+                           &Private::PanelBehavior::scanAllWindows);
 
-    connections += QConnect(qPtr, &Muelle::PanelBehavior::regionChanged, this,
-                            &Private::PanelBehavior::updateDodge);
+    connections +=
+        connect(q_ptr->m_view, &Muelle::View::absolutePanelGeometryChanged,
+                this, &Private::PanelBehavior::updateDodge);
     scanAllWindows();
   }
 
   void enableDodgeActive() {
-    connections += QConnect(kwindow(), KWindowAdded, this,
-                            &Private::PanelBehavior::dodgeActiveWindow);
+    connections += connect(kwindow(), KWindowAdded, this,
+                           &Private::PanelBehavior::dodgeActiveWindow);
 
-    connections += QConnect(kwindow(), KWindowRemoved, this,
-                            &Private::PanelBehavior::dodgeActiveWindow);
+    connections += connect(kwindow(), KWindowRemoved, this,
+                           &Private::PanelBehavior::dodgeActiveWindow);
 
-    connections += QConnect(kwindow(), KWindowChanged, this,
-                            &Private::PanelBehavior::dodgeWindowProps);
+    connections += connect(kwindow(), KWindowChanged, this,
+                           &Private::PanelBehavior::dodgeWindowProps);
 
-    connections += QConnect(kwindow(), KWindowActiveChanged, this,
-                            &Private::PanelBehavior::dodgeActiveWindow);
+    connections += connect(kwindow(), KWindowActiveChanged, this,
+                           &Private::PanelBehavior::dodgeActiveWindow);
 
-    connections += QConnect(kwindow(), KWindowShowingDesktopChanged, this,
-                            &Private::PanelBehavior::dodgeActiveWindow);
+    connections += connect(kwindow(), KWindowShowingDesktopChanged, this,
+                           &Private::PanelBehavior::dodgeActiveWindow);
 
-    connections += QConnect(qPtr, &Muelle::PanelBehavior::regionChanged, this,
-                            &Private::PanelBehavior::updateDodge);
+    connections +=
+        connect(q_ptr->m_view, &Muelle::View::absolutePanelGeometryChanged,
+                this, &Private::PanelBehavior::updateDodge);
 
     dodgeActiveWindow();
   }
@@ -170,14 +175,14 @@ public:
   }
 
   void dodgeWindowProps(WId wid, NET::Properties props) {
-    if ((props & propsFilter()) != 0) {
-      qPtr->mBehavior == Types::Behavior::DodgeActive ? dodgeActiveWindow()
-                                                      : dodgeWindow(wid);
+    if ((props & NETProps) != 0) {
+      q_ptr->m_behavior == Types::Behavior::DodgeActive ? dodgeActiveWindow()
+                                                        : dodgeWindow(wid);
     }
   }
 
   void dodgeWindow(WId wid) {
-    if (intersects({wid, propsFilter()})) {
+    if (intersects({wid, NETProps})) {
       dodge(true);
     } else {
       scanAllWindows();
@@ -192,7 +197,7 @@ public:
     auto active = kwindow()->activeWindow();
 
     foreach (auto wid, kwindow()->windows()) {
-      const KWindowInfo info{wid, propsFilter()};
+      const KWindowInfo info{wid, NETProps};
 
       if (wid == active || info.hasState(NET::FullScreen)) {
         if (intersects(info, -1))
@@ -203,18 +208,39 @@ public:
   }
 
   bool intersects(const KWindowInfo &info, int desktop = -1) const {
-    if (!info.valid() || info.win() == qPtr->view->winId())
+    if (!info.valid() || info.win() == q_ptr->m_view->winId())
       return false;
 
-    const bool validType = info.windowType(NET::NormalMask | NET::DialogMask |
-                                           NET::ComboBoxMask) >= 0;
+    const auto winTypes = info.windowType(
+        NET::NormalMask | NET::DialogMask | NET::ComboBoxMask | NET::DockMask |
+        NET::NotificationMask | NET::CriticalNotificationMask);
+
+    const auto validType = (winTypes & (NET::DockMask | NET::NotificationMask |
+                                        NET::CriticalNotificationMask)) == 0;
+
+    if (!validType)
+      return false;
+
+    auto frameGeometry{info.frameGeometry()};
+
+    NETWinInfo net{connection,
+                   static_cast<xcb_window_t>(info.win()),
+                   {},
+                   {},
+                   NET::WM2GTKFrameExtents};
+    const auto extents{net.gtkFrameExtents()};
+
+    if (extents.top || extents.right || extents.bottom || extents.left) {
+      frameGeometry = frameGeometry.marginsAdded(
+          {-extents.left, -extents.top, -extents.right, -extents.bottom});
+    }
 
     const bool isOnCurrentDesktop =
         info.onAllDesktops() ||
         (desktop != -1 ? info.desktop() == desktop : info.isOnCurrentDesktop());
 
-    return isOnCurrentDesktop && !info.isMinimized() && validType &&
-           region.translated(position).intersects(info.frameGeometry());
+    return isOnCurrentDesktop && !info.isMinimized() &&
+           q_ptr->m_view->absolutePanelGeometry().intersects(frameGeometry);
   }
 
   void scanAllWindows(int desktop = -1) {
@@ -224,22 +250,18 @@ public:
     desktop == -1 ? kwindow()->currentDesktop() : desktop;
 
     foreach (auto wid, kwindow()->windows()) {
-      if (intersects({wid, propsFilter()}, desktop)) {
+      if (intersects({wid, NETProps}, desktop)) {
         return dodge(true);
       }
     }
     dodge(false);
   }
 
-  constexpr NET::Properties propsFilter() {
-    return NET::ActiveWindow | NET::CloseWindow | NET::WMWindowType |
-           NET::WMState | NET::WMDesktop | NET::WMGeometry |
-           NET::WMFrameExtents | NET::DesktopGeometry;
-  }
+  constexpr NET::Properties2 props2Filter() { return {}; }
 
   void updateDodge() {
     using Behavior = Types::Behavior;
-    if (auto behavior = qPtr->mBehavior; behavior == Behavior::DodgeAll) {
+    if (auto behavior = q_ptr->m_behavior; behavior == Behavior::DodgeAll) {
       scanAllWindows();
     } else if (behavior == Behavior::DodgeActive) {
       dodgeActiveWindow();
@@ -247,16 +269,16 @@ public:
   }
 
   void updateStruts() {
-    if (qPtr->mBehavior != Types::Behavior::AlwaysVisible)
+    if (q_ptr->m_behavior != Types::Behavior::AlwaysVisible)
       return;
 
-    if (auto screen_ = qPtr->view->screen(); screen_) {
-      const auto panel = region.boundingRect();
-      const auto wid = qPtr->view->winId();
+    if (auto screen_ = q_ptr->m_view->screen(); screen_) {
+      const auto panel = q_ptr->m_view->absolutePanelGeometry().boundingRect();
+      const auto wid = q_ptr->m_view->winId();
       const auto screen = screen_->geometry();
       using Edge = Types::Edge;
 
-      switch (qPtr->view->layout().edge()) {
+      switch (q_ptr->m_view->layout().edge()) {
       case Edge::Top:
         kwindow()->setExtendedStrut(wid, 0, 0, 0, 0, 0, 0, panel.height(), 0,
                                     screen.width(), 0, 0, 0);
@@ -278,19 +300,17 @@ public:
   }
 
   void clearStruts() {
-    kwindow()->setExtendedStrut(qPtr->view->winId(), 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0);
+    kwindow()->setExtendedStrut(q_ptr->m_view->winId(), 0, 0, 0, 0, 0, 0, 0, 0,
+                                0, 0, 0, 0);
   }
 
 public:
-  Muelle::PanelBehavior *qPtr{nullptr};
-  QPoint position;
-  QRegion region;
+  Muelle::PanelBehavior *q_ptr{nullptr};
   QTimer dodgeDebounce;
   QVector<QMetaObject::Connection> connections;
+  xcb_connection_t *connection;
   bool nextDodgeValue{false};
   bool dodgeValue{false};
-  uint8_t pad[6];
 };
 } // namespace Private
 } // namespace Muelle

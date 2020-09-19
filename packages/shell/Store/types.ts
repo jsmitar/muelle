@@ -1,4 +1,5 @@
 import { Types } from '@qml/org.muelle.types-1.0';
+import { ReadonlyDeep } from 'Object/Readonly';
 import { TasksModel } from 'plasma/org.kde.plasma.private.taskmanager-0.1';
 import Qt, { QtObject } from 'qt';
 import { O } from 'ts-toolbelt';
@@ -53,20 +54,81 @@ export interface Icon extends Qt.QtObject {
 }
 
 export interface Geometry extends Qt.QtObject {
-  readonly viewSize: Qt.size;
+  readonly view: Qt.QtObject<
+    Readonly<{
+      width: number;
+      height: number;
+      size: number;
+    }>
+  >;
+  readonly background: QtObject<
+    ReadonlyDeep<{
+      shadow: number;
+      paddingX: number;
+      paddingTop: number;
+      inset: number;
+      extents: number;
+      isAtStart: boolean;
+      isAtEnd: boolean;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      boxHeight: number;
+      point: Qt.point;
+      size: Qt.size;
+      rect: Qt.rect;
+      next: QtObject<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        point: Qt.point;
+        size: Qt.size;
+        rect: Qt.rect;
+      }>;
+    }>
+  >;
+  panel: QtObject<
+    ReadonlyDeep<{
+      offset: number;
+      xCenter: number;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      point: Qt.point;
+      size: Qt.size;
+      rect: Qt.rect;
+      next: QtObject<{
+        xCenter: number;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        point: Qt.point;
+        size: Qt.size;
+        rect: Qt.rect;
+      }>;
+    }>
+  >;
 
-  readonly panelSize: Qt.size;
-  readonly panelRect: Qt.rect;
-
-  readonly panelNextRect: Qt.rect;
-  readonly panelNextPoint: Qt.point;
-
-  readonly panelAbsoluteRect: Qt.rect;
-  readonly panelNextAbsoluteRect: Qt.rect;
-
-  readonly maskRect: Qt.rect;
-  maskGrowing: boolean;
-  maskEnabled: boolean;
+  mask: QtObject<
+    {
+      growing: boolean;
+      enabled: boolean;
+      fill: boolean;
+    } & ReadonlyDeep<{
+      region: Qt.region;
+      visible: QtObject<{
+        region: Qt.region;
+        regionFill: Qt.region;
+      }>;
+      hidden: QtObject<{
+        region: Qt.region;
+      }>;
+    }>
+  >;
 }
 
 export interface Animation extends Qt.QtObject {
@@ -104,7 +166,7 @@ export namespace Dock {
   }
 
   export interface layout extends Qt.QtObject {
-    edege: Types.Edge;
+    edge: Types.Edge;
     readonly orientation: Types.Orientation;
     alignment: Types.Alignment;
     readonly layout: number;

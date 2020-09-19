@@ -7,7 +7,7 @@ QObject {
   property Item target
 
   property int value: -distance 
-  property int distance: store.state.animation.edgeDistance
+  property int distance: store.state.geometry.view.height
   property int delay: 0
 
   signal slideInFinished
@@ -19,7 +19,7 @@ QObject {
     enabled: slide.enabled
     target: store.state.panel
 
-    onSlideChanged: {
+    function onSlideChanged() {
       const slide = target.slide
       if (slide === 'slide-in-running') {
         if (delay)

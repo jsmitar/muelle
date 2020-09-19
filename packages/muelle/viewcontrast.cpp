@@ -36,11 +36,13 @@ QPoint ViewContrast::position() const noexcept { return mPosition; }
 void ViewContrast::setEnabled(bool enabled) noexcept {
   mEnabled = enabled;
 
-  if (mEnabled) {
-    connect(this, &ViewContrast::maskChanged, this, &ViewContrast::update);
-  } else {
-    disconnect(this, &ViewContrast::maskChanged, this, &ViewContrast::update);
-  }
+  // if (mEnabled) {
+  //   connect(this, &ViewContrast::maskChanged, this, &ViewContrast::update,
+  //           Qt::QueuedConnection);
+  // } else {
+  //   disconnect(this, &ViewContrast::maskChanged, this,
+  //   &ViewContrast::update);
+  // }
   emit enabledChanged();
   update();
 }

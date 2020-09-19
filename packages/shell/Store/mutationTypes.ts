@@ -14,6 +14,7 @@ export const SHOW_SETTINGS = 'SHOW_SETTINGS';
 export const HIDE_SETTINGS = 'HIDE_SETTINGS';
 export const START_ANIMATION = 'START_ANIMATION';
 export const MASK_GROWING = 'MASK_GROWING';
+export const GROWING = 'GROWING';
 export const FULL_MASK = 'FULL_MASK';
 export const NEXT_TASK_COUNT1 = 'NEXT_TASK_COUNT1';
 export const SEPARATOR_COUNT = 'SEPARATOR_COUNT';

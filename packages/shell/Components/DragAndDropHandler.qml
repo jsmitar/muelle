@@ -13,7 +13,7 @@ DropArea {
 
   property string removedLauncher: ''
 
-  readonly property rect rect: store.state.geometry.panelNextRect
+  readonly property rect rect: store.state.geometry.panel.next.rect
 
   anchors {
     fill: target
@@ -81,7 +81,7 @@ DropArea {
   Connections {
     target: $view
 
-    onExited: removeLauncher()
+    function onExited() { removeLauncher() }
   }
 
   onExited: removeLauncher()

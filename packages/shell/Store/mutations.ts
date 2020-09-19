@@ -74,10 +74,10 @@ export const mutations: Mutations<ShellState> = {
     state.panel.taskCount1 = state.panel.nextTaskCount1;
   },
   [MASK_GROWING](state, growing) {
-    state.geometry.maskGrowing = growing;
+    state.geometry.mask.growing = growing;
   },
   [ENABLE_MASK](state, enable) {
-    state.geometry.maskEnabled = enable;
+    state.geometry.mask.enabled = enable;
   },
   [SHOW_SETTINGS](state, visible) {
     state.settings.visible = visible;

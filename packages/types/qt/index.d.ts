@@ -32,6 +32,7 @@ declare namespace Qt {
   const clearInterval: (timer: Timer) => void;
   const __muelle_separator__: '__separator__.desktop';
   const Muelle: { Types: A.Compute<typeof Types> };
+  const regionToRects: (region: Qt.region) => Qt.rect[];
   //END: No standard
 
   //START: Qt QML Type
@@ -86,6 +87,8 @@ declare namespace Qt {
     hslSaturation: number;
     hslLightness: number;
   };
+
+  type region = {};
   //END: Basic Qt Data Types
 
   interface Signal<

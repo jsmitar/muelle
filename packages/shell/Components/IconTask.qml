@@ -67,9 +67,9 @@ Item {
         transparentBorder: true
         source: iconItem
         // anchors.fill: innerIcon
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 2
+        horizontalOffset: 2
+        verticalOffset: 2
+        radius: 0
         samples: 1 + radius * 2
         color: "#80000000" 
       }
@@ -81,11 +81,11 @@ Item {
     ]
   }
 
-  TaskToolTip {
+  TaskGroup {
     id: tooltip
-    text: m.AppName
+    m: icon.m
     visualParent: icon
-    visible: isStartup || store.state.panel.slide !== 'none' 
+    hover: isStartup || store.state.panel.slide !== 'none' 
       ? false 
       : icon.hover
   }

@@ -20,57 +20,35 @@
 
 namespace Muelle {
 PanelBehavior::PanelBehavior(QObject *parent) noexcept
-    : QObject(parent), dPtr(new Private::PanelBehavior(this)) {}
+    : QObject(parent), d_ptr(new Private::PanelBehavior(this)) {}
 
-PanelBehavior::~PanelBehavior() { delete dPtr; }
+PanelBehavior::~PanelBehavior() { delete d_ptr; }
 
 void PanelBehavior::classBegin() {}
 
 void PanelBehavior::componentComplete() {
-  connect(this, &PanelBehavior::behaviorChanged, dPtr,
+  connect(this, &PanelBehavior::behaviorChanged, d_ptr,
           &Private::PanelBehavior::updateBehavior);
-  dPtr->updateBehavior();
+  d_ptr->updateBehavior();
 }
 
-Types::Behavior PanelBehavior::behavior() const noexcept { return mBehavior; }
+void PanelBehavior::setView(View *view) { m_view = view; }
+
+View *PanelBehavior::view() const { return m_view; }
+
+bool PanelBehavior::dodge() const noexcept { return d_ptr->dodgeValue; }
+
+Types::Behavior PanelBehavior::behavior() const noexcept { return m_behavior; }
 
 void PanelBehavior::setBehavior(Types::Behavior behavior) noexcept {
-  if (mBehavior != behavior) {
-    mBehavior = behavior;
+  if (m_behavior != behavior) {
+    m_behavior = behavior;
     emit behaviorChanged();
   }
 }
 
-void PanelBehavior::setPosition(const QPoint &position) noexcept {
-  dPtr->position = position;
-  emit positionChanged();
-}
+void PanelBehavior::updateStruts() noexcept { d_ptr->updateStruts(); }
 
-QPoint PanelBehavior::position() const noexcept { return dPtr->position; }
-
-void PanelBehavior::setRegion(const QVariant &rects) noexcept {
-  const QJSValue array = rects.value<QJSValue>();
-
-  if (!array.isArray()) {
-    qWarning() << "value is not array";
-    return;
-  }
-  QRegion region;
-
-  for (int i = 0; i < array.property(QStringLiteral("length")).toInt(); ++i) {
-    region += array.property(i).toVariant().toRect();
-  }
-  dPtr->region = region;
-
-  emit regionChanged();
-}
-
-QVariant PanelBehavior::region() const noexcept { return dPtr->region; }
-
-bool PanelBehavior::dodge() const noexcept { return dPtr->dodgeValue; }
-
-void PanelBehavior::updateStruts() noexcept { dPtr->updateStruts(); }
-
-void PanelBehavior::scanWindows() noexcept { dPtr->scanAllWindows(); }
+void PanelBehavior::scanWindows() noexcept { d_ptr->scanAllWindows(); }
 
 } // namespace Muelle

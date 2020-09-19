@@ -144,6 +144,7 @@ MouseArea {
   Loader {
     id: taskItem
 
+    anchors.margins: store.state.geometry.background.paddingBottom
     sourceComponent: isSeparator ? separatorTask : iconTask
   }
 
@@ -243,6 +244,7 @@ MouseArea {
       anchors.top: task.top
       anchors.horizontalCenter: task.horizontalCenter
     }
+    
     right: AnchorChanges {
       target: taskItem
       anchors.right: task.right

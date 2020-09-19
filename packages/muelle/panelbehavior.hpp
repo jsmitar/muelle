@@ -36,13 +36,10 @@ class PanelBehavior;
 class PanelBehavior : public QObject, public QQmlParserStatus {
   Q_OBJECT
   Q_INTERFACES(QQmlParserStatus)
+  Q_PROPERTY(Muelle::View *view READ view WRITE setView)
   Q_PROPERTY(Muelle::Types::Behavior behavior READ behavior WRITE setBehavior
                  NOTIFY behaviorChanged)
   Q_PROPERTY(bool dodge READ dodge NOTIFY dodgeChanged)
-  Q_PROPERTY(Muelle::View *view MEMBER view)
-  Q_PROPERTY(
-      QPoint position READ position WRITE setPosition NOTIFY positionChanged)
-  Q_PROPERTY(QVariant region READ region WRITE setRegion NOTIFY regionChanged)
 
 public:
   explicit PanelBehavior(QObject *parent = nullptr) noexcept;
@@ -51,14 +48,11 @@ public:
   void classBegin() override;
   void componentComplete() override;
 
+  void setView(View *view);
+  View *view() const;
+
   Types::Behavior behavior() const noexcept;
   void setBehavior(Types::Behavior behavior) noexcept;
-
-  void setPosition(const QPoint &point) noexcept;
-  QPoint position() const noexcept;
-
-  void setRegion(const QVariant &rects) noexcept;
-  QVariant region() const noexcept;
 
   bool dodge() const noexcept;
 
@@ -68,13 +62,11 @@ public:
 signals:
   void behaviorChanged();
   void dodgeChanged();
-  void regionChanged();
-  void positionChanged();
 
 private:
-  Private::PanelBehavior *dPtr;
-  Types::Behavior mBehavior{Types::Behavior::None};
-  View *view;
+  Private::PanelBehavior *d_ptr;
+  Types::Behavior m_behavior{Types::Behavior::None};
+  View *m_view;
 
   friend class Private::PanelBehavior;
 };

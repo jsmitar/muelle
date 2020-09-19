@@ -35,7 +35,7 @@ SettingsForm {
       if (!store.state.panel.updatingOffset) {
         store.state.panel.updatingOffset = true
       }
-      store.state.geometry.panelOffset = offset
+      store.state.geometry.panel.offset = offset
       updatingOffset(false)
     }
     otherwise: then

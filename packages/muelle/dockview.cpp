@@ -17,27 +17,18 @@
 
 #include "dockview.hpp"
 
-#include <memory>
-#include <xcb/xcb.h>
-#include <xcb/xinput.h>
-
-#include <KWindowEffects>
-#include <KWindowSystem>
-#include <QX11Info>
-
 namespace Muelle {
 View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
     : mPositionHandler(this), mEngine(engine),
       mContext(new QQmlContext(mEngine, this)), mConfig(&config, ""),
       mConfigMap(new Configuration(this, config)) {
 
+  initX11();
+
   setColor(Qt::transparent);
-  setFlag(Qt::WindowStaysOnTopHint);
-  setFlag(Qt::WindowDoesNotAcceptFocus);
-  setFlag(Qt::WindowCloseButtonHint);
-  setFlag(Qt::FramelessWindowHint);
-  setFlag(Qt::X11BypassWindowManagerHint);
-  setFlag(Qt::NoDropShadowWindowHint);
+  setFlags(Qt::WindowDoesNotAcceptFocus | Qt::WindowStaysOnTopHint |
+           Qt::WindowCloseButtonHint | Qt::FramelessWindowHint |
+           Qt::NoDropShadowWindowHint);
 
   setTextRenderType(QQuickWindow::NativeTextRendering);
   setPersistentSceneGraph(true);
@@ -52,12 +43,15 @@ View::View(EnhancedQmlEngine *engine, KConfigGroup &config)
 
   connect(this, &QQuickWindow::widthChanged, this, &View::sizeChanged);
   connect(this, &QQuickWindow::heightChanged, this, &View::sizeChanged);
-  connect(this, &View::panelPositionChanged, this, &View::panelGeometryChanged);
-  connect(this, &View::panelSizeChanged, this, &View::panelGeometryChanged);
+  connect(this, &View::positionChanged, this, &View::panelGeometryChanged);
+  connect(this, &View::sizeChanged, this, &View::panelGeometryChanged);
+  connect(this, &View::panelGeometryChanged, this,
+          &View::absolutePanelGeometryChanged);
+
   connect(KWindowSystem::self(), &KWindowSystem::compositingChanged, this,
           &View::compositingChanged);
-
   connect(this, &QQuickWindow::screenChanged, this, &View::screenChanged);
+  connect(&mLayout, &Layout::edgeChanged, this, &View::updateFrameExtents);
 
   new WindowEventFilter(this);
 }
@@ -94,8 +88,8 @@ void View::continueLoad(QQmlComponent *component) {
     root->setParent(contentItem());
     root->setParentItem(contentItem());
 
-    show();
     setOpacity(0.01);
+    show();
   } else if (component->isError()) {
     qWarning() << component->errors();
   }
@@ -125,9 +119,27 @@ void View::unload() {
   timer->start(100);
 }
 
-bool View::containsMouse() const {
-  return absolutePanelGeometry().contains(QCursor::pos());
+void View::initX11() {
+  x11.connection = QX11Info::connection();
+  x11.wid = winId();
+
+  const auto prop = QByteArrayLiteral("_GTK_FRAME_EXTENTS");
+
+  auto atomCookie = xcb_intern_atom_unchecked(
+      x11.connection, false, static_cast<uint16_t>(prop.length()),
+      prop.constData());
+
+  const std::unique_ptr<xcb_intern_atom_reply_t> atom{
+      xcb_intern_atom_reply(x11.connection, atomCookie, nullptr)};
+
+  x11.gtk_frame_extents_atom = atom->atom;
 }
+
+void View::setScreen(QScreen *screen) { QQuickWindow::setScreen(screen); }
+
+bool View::compositing() const { return KWindowSystem::compositingActive(); }
+
+QPoint View::mousePosition() const { return QCursor::pos(); }
 
 void View::setContainsMouse(bool value) {
   if (value != mContainsMouse) {
@@ -136,90 +148,117 @@ void View::setContainsMouse(bool value) {
   }
 }
 
-QRect View::mask() const { return QQuickWindow::mask().boundingRect(); }
+bool View::containsMouse() const { return mContainsMouse; }
 
-QRect View::geometry() const { return {position(), size()}; }
-
-QRect View::panelGeometry() const { return mPanelGeometry; }
-
-QSize View::panelSize() const { return mPanelGeometry.size(); }
-
-void View::setPanelSize(const QSize &value) {
-  mPanelGeometry.setSize(value);
-  emit panelSizeChanged();
-  mPositionHandler.update(200);
+void View::setMask(const QRegion &region) {
+  if (!compositing()) {
+    QQuickWindow::setMask(region);
+    emit maskChanged();
+  }
 }
 
-QRect View::absolutePanelGeometry() const {
-  return {position() + mPanelGeometry.topLeft(), mPanelGeometry.size()};
+QRegion View::mask() const { return QQuickWindow::mask().boundingRect(); }
+
+void View::setInputMask(const QRegion &region) {
+  mInputMask = region;
+
+  if (!region.isEmpty()) {
+    std::vector<xcb_rectangle_t> xcb_region(region.rectCount());
+    std::transform(region.cbegin(), region.cend(), xcb_region.begin(),
+                   [](const auto &rect) -> xcb_rectangle_t {
+                     return {.x = qMax<int16_t>(-1, rect.x()),
+                             .y = qMax<int16_t>(-1, rect.y()),
+                             .width = qMin<uint16_t>(USHRT_MAX, rect.width()),
+                             .height =
+                                 qMin<uint16_t>(USHRT_MAX, rect.height())};
+                   });
+
+    xcb_shape_rectangles(x11.connection, XCB_SHAPE_SO_SET, XCB_SHAPE_SK_INPUT,
+                         XCB_CLIP_ORDERING_UNSORTED, x11.wid, 0, 0,
+                         xcb_region.size(), xcb_region.data());
+
+  } else {
+    xcb_shape_mask(x11.connection, XCB_SHAPE_SO_INTERSECT, XCB_SHAPE_SK_INPUT,
+                   x11.wid, 0, 0, XCB_PIXMAP_NONE);
+  }
+
+  updateFrameExtents();
+
+  emit inputMaskChanged();
 }
 
-QPoint View::panelPosition() const { return mPanelGeometry.topLeft(); }
+QRegion View::inputMask() const { return mInputMask; }
 
-void View::setPanelPosition(const QPoint &value) {
-  mPanelGeometry.moveTo(value);
-  emit panelPositionChanged();
-  mPositionHandler.update(200);
+void View::setFrameExtents(int value) {
+  if (value != qMax(0, mFrameExtents)) {
+    mFrameExtents = value;
+    updateFrameExtents();
+    emit frameExtentsChanged();
+  }
 }
 
-void View::setMask(const QRect &rect) {
-  QQuickWindow::setMask(rect);
-  emit maskChanged();
+int View::frameExtents() const { return mFrameExtents; }
+
+void View::updateFrameExtents() {
+  // order: left, right, top, bottom
+  uint32_t data[4]{0, 0, 0, 0};
+
+  using Edge = Types::Edge;
+  switch (mLayout.edge()) {
+  case Edge::Top:
+    data[3] = mFrameExtents; // bottom frame
+    break;
+  case Edge::Right:
+    data[0] = mFrameExtents; // left frame
+    break;
+  case Edge::Bottom:
+    data[2] = mFrameExtents; // top frame
+    break;
+  case Edge::Left:
+    data[1] = mFrameExtents; // right frame
+    break;
+  }
+
+  xcb_change_property(x11.connection, XCB_PROP_MODE_REPLACE,
+                      static_cast<uint>(winId()), x11.gtk_frame_extents_atom,
+                      XCB_ATOM_CARDINAL, 32, 4,
+                      static_cast<const void *>(data));
 }
 
 void View::setPosition(const QPoint &value) {
   QQuickWindow::setPosition(value);
   emit positionChanged();
-  emit panelGeometryChanged();
 }
 
 void View::setSize(const QSize &size) {
   setWidth(size.width());
   setHeight(size.height());
-
   contentItem()->setSize(size);
+
   mPositionHandler.update(0);
   emit sizeChanged();
 }
 
-QPoint View::mousePosition() const { return QCursor::pos(); }
+QRect View::geometry() const { return {position(), size()}; }
 
-bool View::compositing() const { return KWindowSystem::compositingActive(); }
+void View::setPanelGeometry(const QRegion &region) {
+  const QRect bound{{}, size()};
+
+  if (auto panelGeometry = region & bound; mPanelGeometry != panelGeometry) {
+    mPanelGeometry = panelGeometry;
+    emit panelGeometryChanged();
+  }
+}
+
+QRegion View::panelGeometry() const { return mPanelGeometry; }
+
+QRegion View::absolutePanelGeometry() const {
+  return mPanelGeometry.translated(position());
+}
 
 Configuration *View::configuration() const { return mConfigMap; }
 
-void View::setOpacity(qreal level) { QQuickWindow::setOpacity(level); }
-
 const Layout &View::layout() const { return mLayout; }
 
-// void View::enableGlow() {
-//  auto c = QX11Info::connection();
-//  const auto effectName = QByteArrayLiteral("_KDE_NET_WM_SCREEN_EDGE_SHOW");
-//  auto atomCookie = xcb_intern_atom_unchecked(
-//      c, false, static_cast<uint16_t>(effectName.length()),
-//      effectName.constData());
-
-//  const std::unique_ptr<xcb_intern_atom_reply_t> atom{
-//      xcb_intern_atom_reply(c, atomCookie, nullptr)};
-
-//  uint32_t value = 0;
-//  using Edge = Types::Edge;
-//  switch (mLayout.edge()) {
-//  case Edge::Top:
-//    value = 0;
-//    break;
-//  case Edge::Right:
-//    value = 1;
-//    break;
-//  case Edge::Bottom:
-//    value = 2;
-//    break;
-//  case Edge::Left:
-//    value = 3;
-//    break;
-//  }
-
-//  xcb_change_property(c, XCB_PROP_MODE_REPLACE, static_cast<uint>(winId()),
-//                      atom->atom, XCB_ATOM_CARDINAL, 32, 1, &value);
-//}
+void View::setOpacity(qreal level) { QQuickWindow::setOpacity(level); }
 } // namespace Muelle

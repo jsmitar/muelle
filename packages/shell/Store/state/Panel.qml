@@ -34,6 +34,9 @@ QObject {
   property int taskCount1: 0
   property int separatorCount: 0
 
+  property bool growing: nextTaskCount1 > taskCount1
+  property bool shrinking: nextTaskCount1 < taskCount1
+
   Spy {
     properties: spy`taskCount1`
   }

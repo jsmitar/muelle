@@ -27,6 +27,10 @@ export function identity<T>(item: T) {
   return item;
 }
 
+export function not<Fn extends (...args: any[]) => boolean>(predicate: Fn) {
+  return (...args: Parameters<Fn>) => !predicate(...args);
+}
+
 export function noop() {}
 
 export function isEmpty(obj: Object) {
@@ -39,9 +43,10 @@ export function isEmpty(obj: Object) {
 
 export function each<T>(
   array: Iterable<T>,
-  fn: (value: T, index: number, array: T[]) => void
+  fn: (value: T, index: number, array: T[]) => Iterable<T>
 ) {
-  return Array.prototype.forEach.call(array, fn);
+  Array.prototype.forEach.call(array, fn);
+  return array;
 }
 
 export function find<T>(
@@ -49,6 +54,21 @@ export function find<T>(
   predicate: (value: T, index: number, array: T[]) => void
 ) {
   return Array.prototype.find.call<T[], any, T | undefined>(array, predicate);
+}
+
+export function some<T>(
+  array: T[],
+  predicate: (value: T, index: number, array: T[]) => boolean
+) {
+  return Array.prototype.some.call<T[], any, boolean>(array, predicate);
+}
+
+export function log<T, Fn extends (arg: T) => any>(
+  arg: T,
+  fn: Fn = identity as Fn
+) {
+  console.log(tostr(fn(arg), 1, 2));
+  return arg;
 }
 
 export function map<T, U>(
@@ -169,6 +189,10 @@ export function no() {
   return false;
 }
 
+export function isQtObject(value: any): value is Object {
+  return isObject(value) && 'objectName' in value;
+}
+
 export function isString(value: any): value is string {
   return typeof value === 'string' || value instanceof String;
 }
@@ -177,7 +201,7 @@ function isNumber(value: any): value is number {
   return typeof value === 'number' || value instanceof Number;
 }
 
-function isCallable(value: any): value is (...args: any) => any {
+export function isCallable(value: any): value is (...args: any) => any {
   return typeof value === 'function';
 }
 
@@ -199,6 +223,10 @@ function isRect(value: any): value is Qt.rect {
 
 function isArray(value: any): value is any[] {
   return Array.isArray(value);
+}
+
+function isRegion(value: any): value is Qt.region {
+  return `${value}`.startsWith('QVariant(QRegion');
 }
 
 function quote(str: any) {
@@ -330,6 +358,9 @@ export function tostr(value: any, depth = 5, indent = 2) {
       indent
     );
   }
+  if (isRegion(value)) {
+    return atostr(Qt.regionToRects(value), depth, indent);
+  }
   if (isObject(value)) {
     return otostr(value, depth, indent);
   }
@@ -351,15 +382,29 @@ export function singleConnect(signal: Qt.Signal, slot: Qt.Slot) {
   }
 }
 
-export function on(signal: Qt.Signal, slot: Qt.Slot) {
+/**
+ * args args (n-1) are signals
+ * slot: last argument is considered a slot
+ */
+export function on(...args: any[]) {
+  if (args.length < 2) throw new Error('insufficient args');
+
   try {
-    signal.connect(slot);
-    return () => signal.disconnect(slot);
+    const signals = args.slice(0, -1);
+    const slot = args[args.length - 1];
+
+    if (slot) {
+      const clear = () => signals.forEach(signal => signal.disconnect(slot));
+
+      return (
+        signals.forEach(signal => signal.connect(slot)),
+        { clear: (signal: Qt.Signal) => signal.connect(clear) }
+      );
+    }
   } catch (e) {
     console.warn(e);
   }
-
-  return noop;
+  return { clear: noop };
 }
 
 /**
@@ -547,6 +592,6 @@ export function get<T extends any, U extends keyof T, D>(
 ): T[U] | D;
 
 export function get(object: any, prop: any, def?: any) {
-  if (prop in object) return object[prop];
+  if (object && prop in object) return object[prop] ?? def;
   return def;
 }

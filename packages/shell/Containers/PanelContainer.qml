@@ -28,6 +28,10 @@ Loader {
     id: dragAndDrop
     target: panelContainer
   }
+  PaintItem {
+    target: positioner
+    enabled: false
+  }
 
   Drag.active: false
   Drag.hotSpot.x: dragging ? dragging.width / 2 : 0
@@ -45,20 +49,21 @@ Loader {
         fill: true
         smoothFill: true
 
-        Layout.preferredWidth: store.state.geometry.panelNextPoint.x
+        Layout.preferredWidth: store.state.geometry.panel.next.point.x
       }
       Row {
         id: row
         spacing: store.state.icon.spacing
         layoutDirection: Qt.LeftToRight
 
-        Layout.fillHeight: true
-        Layout.topMargin: store.state.geometry.backgroundInset
-        Layout.bottomMargin: store.state.geometry.backgroundInset
+        Layout.alignment: Qt.AlignTop
+        Layout.topMargin: store.state.geometry.panel.point.y
+        Layout.preferredHeight: store.state.geometry.panel.size.height 
 
         Component.onCompleted: {
           panelContainer.positioner = row
         }
+
 
         move: Transition {
           enabled: store.state.animation.addEnabled
@@ -92,15 +97,15 @@ Loader {
         fill: true
         smoothFill: true
 
-        Layout.preferredHeight: store.state.geometry.panelNextPoint.y
+        Layout.preferredHeight: store.state.geometry.panel.next.point.y
       }
       Column {
         id: column
         spacing: store.state.icon.spacing
 
-        Layout.fillWidth: true
-        Layout.leftMargin: store.state.geometry.backgroundInset
-        Layout.rightMargin: store.state.geometry.backgroundInset
+        Layout.alignment: Qt.AlignLeft
+        Layout.leftMargin: store.state.geometry.panel.point.x
+        Layout.preferredWidth: store.state.geometry.panel.size.width
 
         Component.onCompleted: {
           panelContainer.positioner = column

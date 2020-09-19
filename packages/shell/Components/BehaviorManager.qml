@@ -31,12 +31,6 @@ QObject {
     id: behavior
     view: $view
     behavior: store.state.panel.behavior
-
-    position: $view.position
-    region: [
-      store.state.geometry.panelRect,
-      store.state.geometry.backgroundRect
-    ]
   }
 
   ConnectionGroup {
@@ -45,8 +39,12 @@ QObject {
 
     Connections {
       target: $view
-      onEntered: store.dispatch(Action.slideIn())
-      onExited: store.dispatch(Action.slideOut())
+      function onEntered() { 
+        store.dispatch(Action.slideIn()) 
+      }
+      function onExited() { 
+        store.dispatch(Action.slideOut()) 
+      }
     }
   }
 
@@ -82,27 +80,27 @@ QObject {
 
     Connections {
       target: $view
-      onEntered: dodgeWindow.dodge()
-      onExited: dodgeWindow.dodge()
+      function onEntered() { dodgeWindow.dodge() }
+      function onExited() { dodgeWindow.dodge() }
     }
     Connections {
       target: behavior
-      onDodgeChanged: dodgeWindow.dodge()
+      function onDodgeChanged() { dodgeWindow.dodge() }
     }
     Connections {
       target: manager
-      onForceUpdate: dodgeWindow.scanWindows()
+      function onForceUpdate() { dodgeWindow.scanWindows() }
     }
     Connections {
       target: store.state.panel
 
-      onUpdatingScreenChanged: {
+      function onUpdatingScreenChanged() {
         if (!target.updatingScreen) dodgeWindow.scanWindows()
       }
-      onUpdatingOffsetChanged: {
+      function onUpdatingOffsetChanged() {
         if (!target.updatingOffset) dodgeWindow.scanWindows()
       }
-      onUpdatingEdgeChanged: {
+      function onUpdatingEdgeChanged() {
         if (!target.updatingEdge) dodgeWindow.scanWindows()
       }
     }
@@ -123,8 +121,8 @@ QObject {
     }
 
     Connections {
-      target: store.state.geometry
-      onPanelSizeChanged: alwaysVisible.updateStruts()
+      target: store.state.geometry.panel
+      function onSizeChanged() { alwaysVisible.updateStruts() }
     }
   }
 }

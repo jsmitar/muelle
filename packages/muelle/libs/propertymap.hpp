@@ -21,13 +21,19 @@
 #include <QJSValue>
 #include <QObject>
 #include <QQmlEngine>
+#include <QQmlListProperty>
 #include <QQmlParserStatus>
 #include <QQmlPropertyMap>
+#include <QVector>
 #include <qglobal.h>
 
 class PropertyMap : public QQmlPropertyMap, public QQmlParserStatus {
   Q_OBJECT
   Q_INTERFACES(QQmlParserStatus)
+  Q_PROPERTY(QQmlListProperty<QObject> children READ children NOTIFY
+                 childrenChanged DESIGNABLE false)
+
+  Q_CLASSINFO("DefaultProperty", "children")
 
 public:
   explicit PropertyMap(QObject *parent = nullptr);
@@ -36,8 +42,23 @@ public:
   PropertyMap(DerivedType *derived, QObject *parent)
       : QQmlPropertyMap(derived, parent) {}
 
+private:
+  QQmlListProperty<QObject> children();
+  static void appendChild(QQmlListProperty<QObject> *, QObject *);
+  static int childrenCount(QQmlListProperty<QObject> *);
+  static QObject *child(QQmlListProperty<QObject> *, int);
+  static void clearChildren(QQmlListProperty<QObject> *);
+  static void replaceChild(QQmlListProperty<QObject> *, int, QObject *);
+  static void removeLastChild(QQmlListProperty<QObject> *);
+
   virtual void classBegin() {}
   virtual void componentComplete() {}
+
+signals:
+  void childrenChanged();
+
+private:
+  QVector<QObject *> m_children;
 };
 
 inline void qmlRegisterPropertyMap() {

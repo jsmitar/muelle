@@ -9,39 +9,29 @@ import org.kde.taskmanager 0.1
 import org.kde.plasma.core 2.0
 
 import 'qrc:/shared/components'
+import 'qrc:/shared/functional.ts' as F
 
 import 'qrc:/shell/Settings'
 import 'qrc:/shell/Containers'
 import 'qrc:/shell/Components'
 import 'qrc:/shell/Store'
-
 import 'qrc:/shell/Store/actions.ts' as Action
-import 'qrc:/shared/functional.ts' as F
 import 'qrc:/shell/helpers/memoComponent.ts' as MC
+import 'qrc:/shell/helpers'
 
 Item {
   id: root
   objectName: 'root'
 
-  width: store.state.geometry.viewSize.width
-  height: store.state.geometry.viewSize.height
+  width: store.state.geometry.view.size.width
+  height: store.state.geometry.view.size.height
 
   readonly property var memoComponent: MC.createMemoComponent($view.release, root)
   readonly property Components c: Components {}
 
-  Component.onCompleted: {
-    // START: Set Global Properties
-    if (!Qt._set_global_) {
-      Qt.Muelle = { Types }
-      Qt.setTimeout = setTimeout
-      Qt.setInterval = setInterval
-      Qt.clearTimeout = clearTimeout
-      Qt.clearInterval = clearInterval
-      Qt.__muelle_separator__ = __muelle_separator__
-      Qt._set_global_ = true
-    }
-    // END: Set Global Properties
+  readonly property TaskGroupComponent c_TaskGroup: TaskGroupComponent {}
 
+  Component.onCompleted: {
     console.info('Shell created')
   }
 
@@ -55,6 +45,7 @@ Item {
     enabled: false
     showSize: true
   }
+
 
   readonly property SettingsWindow settings: SettingsWindow {}
 
@@ -74,40 +65,40 @@ Item {
     Binding {
       target: $view
       property: 'size'
-      value: store.state.geometry.viewSize
+      value: store.state.geometry.view.size
       delayed: true
     }
     Binding {
       target: $view
-      property: 'mask'
-      value: store.state.geometry.maskRect
+      property: 'inputMask'
+      value: store.state.geometry.mask.region
       delayed: true
     }
     Binding {
       target: $view
-      property: 'panelPosition'
-      value: store.state.geometry.panelNextPoint
+      property: 'panelGeometry'
+      value: store.state.geometry.mask.visible.region
       delayed: true
     }
     Binding {
       target: $view
-      property: 'panelSize'
-      value: store.state.geometry.panelNextSize
-      delayed: true
+      property: 'frameExtents'
+      value: store.state.geometry.background.extents
     }
     Connections {
       enabled: store.state.tasksModel.ready
       target: store.state.tasksModel
 
-      onLauncherListChanged: {
+      function onLauncherListChanged() {
         $configuration.launcherList = JSON.stringify(target.launcherList)
+              .replace(__muelle_separator__, '__muelle_separator__')
         $configuration.save()
       }
     }
     Connections {
       target: $view.screen
 
-      onGeometryChanged: {
+      function onGeometryChanged() {
         setTimeout(() => {
           $positioner.update(0)
         }, 1000)
@@ -116,7 +107,7 @@ Item {
     Connections {
       target: store.state.tasksModel
 
-      onCountChanged: {
+      function onCountChanged() {
         store.dispatch(Action.updateTaskCount1({ 
           tasks: target.count, 
           launcherList: target.launcherList
@@ -163,5 +154,21 @@ Item {
 
   BehaviorManager {}
 
+  GeometryDebug {
+    visible: true
+  }
 
+  // Item {
+  //   id: mask
+  //   property rect rect: store.state.geometry.mask.
+  //   x: rect.x
+  //   y: rect.y
+  //   width: rect.width
+  //   height: rect.height
+
+  //   PaintItem {
+  //     target: mask; enabled: false
+  //   }
+  //   z: -1
+  // }
 }

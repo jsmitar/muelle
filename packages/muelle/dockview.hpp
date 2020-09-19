@@ -23,11 +23,20 @@
 #include "layout.hpp"
 #include "libs/enhancedqmlengine.hpp"
 #include "positionhandler.hpp"
+#include "viewshadows.hpp"
 #include "windoweventfilter.hpp"
 
-#include <memory>
+#include <KWindowEffects>
+#include <KWindowSystem>
+#include <QX11Info>
+#include <xcb/shape.h>
+#include <xcb/xcb.h>
+#include <xcb/xinput.h>
 
-#include "viewshadows.hpp"
+#include <algorithm>
+#include <memory>
+#include <vector>
+
 #include <KConfig>
 #include <KConfigGroup>
 #include <QDebug>
@@ -39,31 +48,44 @@
 #include <QQmlEngine>
 #include <QQmlIncubator>
 #include <QQuickItem>
+#include <QQuickView>
 #include <QQuickWindow>
 #include <QRect>
+#include <QRegion>
 #include <QScreen>
 #include <QSharedPointer>
 #include <QSize>
+#include <QSurfaceFormat>
+#include <QWindow>
 
 namespace Muelle {
 class View : public QQuickWindow {
   Q_OBJECT
-  Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
-  Q_PROPERTY(QRect mask READ mask WRITE setMask NOTIFY maskChanged)
-  Q_PROPERTY(QRect geometry READ geometry NOTIFY maskChanged)
-  Q_PROPERTY(QRect panelGeometry READ panelGeometry NOTIFY panelGeometryChanged)
-  Q_PROPERTY(QRect absolutePanelGeometry READ absolutePanelGeometry NOTIFY
-                 panelGeometryChanged)
 
-  Q_PROPERTY(QSize panelSize READ panelSize WRITE setPanelSize)
-  Q_PROPERTY(QPoint panelPosition READ panelPosition WRITE setPanelPosition)
-  Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged)
+  Q_PROPERTY(QScreen *screen READ screen WRITE setScreen NOTIFY screenChanged)
+
+  Q_PROPERTY(bool compositing READ compositing NOTIFY compositingChanged)
+
+  Q_PROPERTY(QPoint mousePosition READ mousePosition)
+  Q_PROPERTY(bool containsMouse READ containsMouse NOTIFY containsMouseChanged)
+
+  Q_PROPERTY(QRegion mask READ mask WRITE setMask NOTIFY maskChanged)
+  Q_PROPERTY(QRegion inputMask READ inputMask WRITE setInputMask NOTIFY
+                 inputMaskChanged)
+  Q_PROPERTY(int frameExtents READ frameExtents WRITE setFrameExtents NOTIFY
+                 frameExtentsChanged)
+
   Q_PROPERTY(
       QPoint position READ position WRITE setPosition NOTIFY positionChanged)
-  Q_PROPERTY(QPoint mousePosition READ mousePosition)
-  Q_PROPERTY(bool compositing READ compositing NOTIFY compositingChanged)
+  Q_PROPERTY(QSize size READ size WRITE setSize NOTIFY sizeChanged)
+  Q_PROPERTY(QRect geometry READ geometry NOTIFY geometryChanged)
+
+  Q_PROPERTY(QRegion panelGeometry READ panelGeometry WRITE setPanelGeometry
+                 NOTIFY panelGeometryChanged)
+  Q_PROPERTY(QRegion absolutePanelGeometry READ absolutePanelGeometry NOTIFY
+                 absolutePanelGeometryChanged)
+
   Q_PROPERTY(Muelle::Configuration *configuration READ configuration CONSTANT)
-  Q_PROPERTY(QScreen *screen READ screen WRITE setScreen NOTIFY screenChanged)
 
 public:
   View(EnhancedQmlEngine *engine, KConfigGroup &config);
@@ -73,52 +95,59 @@ public:
   void continueLoad(QQmlComponent *component);
   void unload();
 
+  void initX11();
+
+  void setScreen(QScreen *screen);
+
   bool compositing() const;
-  void setMask(const QRect &region);
-  Q_INVOKABLE void setOpacity(qreal level);
-
-  const Layout &layout() const;
-
-  QRect mask() const;
-
-  QRect geometry() const;
-  void setPosition(const QPoint &value);
-  void setSize(const QSize &size);
-
-  QRect absolutePanelGeometry() const;
-
-  QPoint panelPosition() const;
-  void setPanelPosition(const QPoint &value);
-  QRect panelGeometry() const;
-
-  QSize panelSize() const;
-  void setPanelSize(const QSize &value);
 
   QPoint mousePosition() const;
-  bool containsMouse() const;
   void setContainsMouse(bool containsMouse);
+  bool containsMouse() const;
+
+  void setMask(const QRegion &region);
+  QRegion mask() const;
+  void setInputMask(const QRegion &region);
+  QRegion inputMask() const;
+  void setFrameExtents(int value);
+  int frameExtents() const;
+  void updateFrameExtents();
+
+  void setPosition(const QPoint &point);
+  void setSize(const QSize &size);
+  QRect geometry() const;
+
+  void setPanelGeometry(const QRegion &rect);
+  QRegion panelGeometry() const;
+  QRegion absolutePanelGeometry() const;
 
   Configuration *configuration() const;
+  const Layout &layout() const;
+
+  Q_INVOKABLE void setOpacity(qreal level);
 
 signals:
+  void loaded();
+  void release();
+
+  void screenChanged();
+
   void compositingChanged();
-  void maskChanged();
-
-  void positionChanged();
-  void sizeChanged();
-
-  void panelSizeChanged();
-  void panelPositionChanged();
-  void panelGeometryChanged();
 
   void containsMouseChanged();
   void entered();
   void exited();
 
-  void screenChanged();
+  void maskChanged();
+  void inputMaskChanged();
+  void frameExtentsChanged();
 
-  void loaded();
-  void release();
+  void positionChanged();
+  void sizeChanged();
+  void geometryChanged();
+
+  void panelGeometryChanged();
+  void absolutePanelGeometryChanged();
 
 private:
   bool mContainsMouse{false};
@@ -128,7 +157,16 @@ private:
   EnhancedQmlEngine *mEngine;
   QQmlContext *mContext;
 
-  QRect mPanelGeometry;
+  QRegion mPanelGeometry;
+  QRegion mInputMask;
+  int mFrameExtents;
+
+  struct {
+    xcb_atom_t gtk_frame_extents_atom;
+    xcb_connection_t *connection;
+    xcb_window_t wid;
+  } x11;
+
   KConfigGroup mConfig;
   Configuration *mConfigMap;
 };

@@ -1,5 +1,6 @@
+import { durationSelect } from 'qrc:/shell/Store/selectors/durationSelect';
 import { Action } from '../../../shared/flux/flux';
-import { call, cancelled, commit } from '../../../shared/saga/effects';
+import { commit, delay } from '../../../shared/saga/effects';
 import { Saga } from '../../../shared/saga/private/types';
 import {
   MASK_GROWING,
@@ -8,7 +9,6 @@ import {
   UPDATE_TASK_COUNT_1,
 } from '../mutationTypes';
 import { taskCount1Select } from '../selectors/taskCount1Select';
-import { growMask } from './growMask';
 import { separatorCountSelect } from './separatorCount';
 
 export function* updateTaskCount1(
@@ -22,17 +22,21 @@ export function* updateTaskCount1(
       yield commit(SEPARATOR_COUNT, separators);
     }
 
-    if (tasks > (yield taskCount1Select)) {
+    const currentTasks: number = yield taskCount1Select;
+    const duration: number = yield durationSelect;
+
+    if (tasks > currentTasks) {
+      // panel width growing
+      yield commit(MASK_GROWING, true);
       yield commit(UPDATE_TASK_COUNT_1);
-      yield call(growMask);
+      yield delay(duration);
     } else {
-      yield call(growMask);
+      // panel width shrinking
+      yield commit(MASK_GROWING, true);
+      yield delay(duration);
       yield commit(UPDATE_TASK_COUNT_1);
     }
   } finally {
-    if (yield cancelled()) {
-      yield commit(UPDATE_TASK_COUNT_1);
-      yield commit(MASK_GROWING, false);
-    }
+    yield commit(MASK_GROWING, false);
   }
 }

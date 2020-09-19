@@ -1,4 +1,5 @@
 import QtQuick 2.14
+import QtQuick.Window 2.14
 import org.muelle.extra 1.0 as Muelle
 import org.muelle.types 1.0
 import org.kde.plasma.core 2.0 as PlasmaCore
@@ -9,71 +10,30 @@ import 'qrc:/shell/Components'
 
 Item {
   id: background
-  readonly property rect rect: store.state.geometry.backgroundRect
+  readonly property var geometry: store.state.geometry
+
+  readonly property rect rect: geometry.background.next.rect
   readonly property string style: store.state.background.style
-  readonly property int shadowBlur: store.state.background.shadowBlur
+  readonly property bool maskGrowing: geometry.mask.growing
+  readonly property int shadowBlur: background.shadowBlur
   readonly property Muelle.Radius bgradius: store.state.background.radius
+  readonly property bool isAtStart: geometry.background.isAtStart
+  readonly property bool isAtEnd: geometry.background.isAtEnd
 
   x: rect.x
   y: rect.y
   width: rect.width
   height: rect.height
 
-  property bool enableAnim: !store.state.panel.updatingOrientation
+  property bool animEnabled: !store.state.panel.updatingOrientation
 
-  PaintItem {
-    target: background
-    enabled: false
-  }
+  NumberBehavior on x { enabled: $layout.isHorizontal && animEnabled }
+  NumberBehavior on y { enabled: $layout.isVertical && animEnabled }
+  NumberBehavior on width { enabled: $layout.isHorizontal && animEnabled }
+  NumberBehavior on height { enabled: $layout.isVertical && animEnabled }
 
-  Behavior on x {
-    enabled: $layout.isHorizontal && enableAnim 
-    NumberAnimation {
-      easing.type: Easing.OutQuad
-      duration: store.state.animation.duration / 2
-    }
-  }
-
-  Behavior on y {
-    enabled: $layout.isVertical && enableAnim 
-    NumberAnimation {
-      easing.type: Easing.OutQuad
-      duration: store.state.animation.duration / 2
-    }
-  }
-
-  Behavior on width {
-    enabled: $layout.isHorizontal && enableAnim 
-    NumberAnimation {
-      easing.type: Easing.OutQuad
-      duration: store.state.animation.duration / 2
-    }
-  }
-
-  Behavior on height {
-    enabled: $layout.isVertical && enableAnim 
-    NumberAnimation {
-      easing.type: Easing.OutQuad
-      duration: store.state.animation.duration / 2
-    }
-  }
-
-  EdgeSlideAnimation {
-    target: frame
-  }
-
-  Item {
-    id: contrast_sync
-    visible: false
-
-    anchors.centerIn: background
-    width: background.width
-    height: background.height
-
-    EdgeSlideAnimation {
-      target: contrast_sync
-      delay: 0
-    }
+  Spy {
+    properties: [ ]
   }
 
   Loader {
@@ -84,9 +44,19 @@ Item {
       style === 'svg'   ? svgComp   :
       undefined
 
-    anchors.centerIn: background
-    width: background.width
-    height: background.height
+    anchors.centerIn: parent
+    width: parent.width
+    height: parent.height
+
+    EdgeSlideAnimation {
+      id: slide
+      target: frame
+    }
+
+    PaintItem {
+      target: frame
+      enabled: false
+    }
   }
 
   Component {
@@ -95,13 +65,29 @@ Item {
     Item {
       id: content
 
+      Muelle.ViewContrast {
+        id: contrast
+        view: $view
+
+        contrastEnabled: false
+        blurEnabled: false
+
+        enabled:
+          store.state.panel.visible && 
+          !store.state.panel.updatingOrientation
+
+        usePlasmaTheme: true
+      }
+
       Muelle.Rectangle {
         id: solid
 
-        anchors.fill: parent
+        width: background.width
+        height: background.height
+        visible: true
         
-        color: theme.backgroundColor
-        opacity: 0.8
+        color: '#202B2B2A'
+        maskEnabled: true
 
         property var edgeToDegrees: ({
           [Types.Top]: 0,
@@ -112,28 +98,35 @@ Item {
 
         border {
           width: 0
+          color: '#BB2B2B2A'
           gradient {
-            stops: ['#9FA4C4', '#B3CDD1']
+            stops: ['#222D32 0', '#222D32 0.5']
             degrees: edgeToDegrees[store.state.panel.edge]
           }
         }
         gradient {
-          stops: ['#33303e 1', '#232234 0']
-          degrees: F.addDeg(edgeToDegrees[store.state.panel.edge], 0)
+          stops: ['#EE2C2E31 0']
+          degrees: edgeToDegrees[store.state.panel.edge]
         }
 
+        NumberBehavior on radius.topLeft {}
+        NumberBehavior on radius.topRight {}
+        NumberBehavior on radius.bottomLeft {}
+        NumberBehavior on radius.bottomRight {}
+
         layer.enabled: true
-        layer.effect: Glow {
+        layer.effect: DropShadow {
           id: shadow
-
-          anchors.fill: solid
+          visible: true
           source: solid
+          width: solid.width
+          height: solid.height
 
-          color: solid.color
+          color: '#000000'
           cached: false
-          spread: 0.2
-          samples: 2 * radius + 1
-          radius: shadowBlur / 2
+          spread: 0.1
+          radius: shadowBlur
+          samples: 1 + radius * 2
           transparentBorder: true
         }
 
@@ -150,37 +143,37 @@ Item {
           top: PropertyChanges {
             target: solid
             radius {
-              topLeft: bgradius.bottomLeft
-              topRight: bgradius.bottomRight
-              bottomLeft: bgradius.topLeft
-              bottomRight: bgradius.topRight
+              topLeft: isAtStart ? 0 : bgradius.bottomLeft
+              topRight: isAtEnd ? 0 : bgradius.bottomRight
+              bottomLeft: isAtStart ? 0 : bgradius.topLeft
+              bottomRight: isAtEnd ? 0 : bgradius.topRight
             }
           }
           right: PropertyChanges {
             target: solid
             radius {
-              topLeft: bgradius.topLeft
-              topRight: bgradius.bottomLeft
-              bottomLeft: bgradius.topRight
-              bottomRight: bgradius.bottomRight
+              topLeft: isAtStart ? 0 : bgradius.topLeft
+              topRight: isAtStart ? 0 : bgradius.bottomLeft
+              bottomLeft: isAtEnd ? 0 : bgradius.topRight
+              bottomRight: isAtEnd ? 0 : bgradius.bottomRight
             }
           }
           bottom: PropertyChanges {
             target: solid
             radius {
-              topLeft: bgradius.topLeft
-              topRight: bgradius.topRight
-              bottomLeft: bgradius.bottomLeft
-              bottomRight: bgradius.bottomRight
+              topLeft: isAtStart ? 0 : bgradius.topLeft
+              topRight: isAtEnd ? 0 : bgradius.topRight
+              bottomLeft: isAtStart ? 0 : bgradius.bottomLeft
+              bottomRight: isAtEnd ? 0 : bgradius.bottomRight
             }
           }
           left: PropertyChanges {
             target: solid
             radius {
-              topLeft: bgradius.bottomLeft
-              topRight: bgradius.topLeft
-              bottomLeft: bgradius.bottomRight
-              bottomRight: bgradius.topRight
+              topLeft: isAtStart ? 0 : bgradius.bottomLeft
+              topRight: isAtStart ? 0 : bgradius.topLeft
+              bottomLeft: isAtEnd ? 0 : bgradius.bottomRight
+              bottomRight: isAtEnd ? 0 : bgradius.topRight
             }
           }
         }

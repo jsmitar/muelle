@@ -32,6 +32,7 @@
 #include <QPen>
 #include <QPixmap>
 #include <QPolygonF>
+#include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QRegion>
@@ -39,6 +40,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QVariant>
+
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -171,7 +174,7 @@ public:
     if (singleShot)
       timer->callOnTimeout(disconnect);
 
-    timer->start(delay + delay * 0.05);
+    timer->start(delay);
 
     return QVariant::fromValue(disconnect);
   }
@@ -194,6 +197,27 @@ public:
   Q_INVOKABLE void clearInterval(const QVariant &handler) const {
     clearTimeout(handler);
   }
+
+  Q_INVOKABLE QRegion regionTranslated(const QRegion &region, int x,
+                                       int y) const {
+    return region.translated(x, y);
+  }
+
+  Q_INVOKABLE QRegion region(const QRect &rect0 = {}, const QRect &rect1 = {}) {
+    return QRegion{rect0} + rect1;
+  }
+
+  Q_INVOKABLE QVariant regionToRects(const QRegion &region) {
+    QJSEngine engine;
+    QJSValue rects{engine.newArray(region.rectCount())};
+
+    for (auto i = 0; i < region.rectCount(); ++i) {
+      QRect rect{*(region.cbegin() + i)};
+      rects.setProperty(i, engine.toScriptValue(rect));
+    }
+
+    return rects.toVariant();
+  }
 };
 
 static void registerExtensions(QQmlEngine &engine) {
@@ -201,8 +225,23 @@ static void registerExtensions(QQmlEngine &engine) {
   engine.rootContext()->setContextObject(&ext);
   engine.rootContext()->setContextProperty(
       QStringLiteral("__muelle_separator__"), MUELLE_SEPARATOR);
-}
 
+  QQmlComponent component(&engine);
+  component.setData("import QtQuick 2.14;"
+                    "import org.muelle.types 1.0;"
+                    "QtObject { Component.onCompleted: {"
+                    "  Qt.Muelle = { Types }"
+                    "  Qt.setTimeout = setTimeout;"
+                    "  Qt.setInterval = setInterval;"
+                    "  Qt.clearTimeout = clearTimeout;"
+                    "  Qt.clearInterval = clearInterval;"
+                    "  Qt.region = region;"
+                    "  Qt.regionToRects = regionToRects;"
+                    "  Qt.__muelle_separator__ = __muelle_separator__;"
+                    "}}",
+                    {});
+  component.create()->setParent(engine.rootContext());
+}
 } // namespace Muelle
 
 #endif // HELPERS_HPP

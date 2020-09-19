@@ -18,3 +18,42 @@
 #include "propertymap.hpp"
 
 PropertyMap::PropertyMap(QObject *parent) : QQmlPropertyMap(parent) {}
+
+QQmlListProperty<QObject> PropertyMap::children() {
+  return {nullptr,
+          &m_children,
+          &PropertyMap::appendChild,
+          &PropertyMap::childrenCount,
+          &PropertyMap::child,
+          &PropertyMap::clearChildren,
+          &PropertyMap::replaceChild,
+          &PropertyMap::removeLastChild};
+}
+
+void PropertyMap::appendChild(QQmlListProperty<QObject> *prop,
+                              QObject *object) {
+
+  auto m_children = *reinterpret_cast<QVector<QObject *> *>(prop->data);
+  m_children.append(object);
+}
+int PropertyMap::childrenCount(QQmlListProperty<QObject> *prop) {
+  auto m_children = *reinterpret_cast<QVector<QObject *> *>(prop->data);
+  return m_children.count();
+}
+QObject *PropertyMap::child(QQmlListProperty<QObject> *prop, int index) {
+  auto m_children = *reinterpret_cast<QVector<QObject *> *>(prop->data);
+  return m_children[index];
+}
+void PropertyMap::clearChildren(QQmlListProperty<QObject> *prop) {
+  auto m_children = *reinterpret_cast<QVector<QObject *> *>(prop->data);
+  m_children.clear();
+}
+void PropertyMap::replaceChild(QQmlListProperty<QObject> *prop, int index,
+                               QObject *object) {
+  auto m_children = *reinterpret_cast<QVector<QObject *> *>(prop->data);
+  m_children[index] = object;
+}
+void PropertyMap::removeLastChild(QQmlListProperty<QObject> *prop) {
+  auto m_children = *reinterpret_cast<QVector<QObject *> *>(prop->data);
+  m_children.removeLast();
+}

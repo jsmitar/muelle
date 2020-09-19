@@ -22,8 +22,8 @@ QLinearGradient *Gradient::toQGradient(qreal width, qreal height) noexcept {
   return m_gradient.get();
 }
 
-void Gradient::setDegrees(int deegrees) {
-  auto value = clamp(0, deegrees, 360);
+void Gradient::setDegrees(int degrees) {
+  auto value = clamp(0, degrees, 360);
   if (value != m_degrees) {
     m_degrees = value;
     emit changed();
@@ -77,15 +77,22 @@ Rectangle::Rectangle(QQuickItem *parent) noexcept
     : QQuickPaintedItem(parent), m_radius(new Radius(this)),
       m_border(new Border(this)), m_gradient(new Gradient(this)) {
 
-  auto update = [this] { this->update(); };
+  setAntialiasing(true);
 
-  connect(m_radius, &Radius::changed, this, &Rectangle::updatePolish);
-  connect(m_border, &Border::widthChanged, this, &Rectangle::updatePolish);
-  connect(m_border, &Border::colorChanged, update);
-  connect(m_border->gradient(), &Gradient::changed, update);
-  connect(m_gradient, &Gradient::changed, update);
-  connect(this, &Rectangle::widthChanged, this, &Rectangle::updatePolish);
-  connect(this, &Rectangle::heightChanged, this, &Rectangle::updatePolish);
+  connect(m_border, &Border::colorChanged, this,
+          qOverload<>(&Rectangle::update), Qt::DirectConnection);
+  connect(m_border->gradient(), &Gradient::changed, this,
+          qOverload<>(&Rectangle::update), Qt::DirectConnection);
+  connect(m_gradient, &Gradient::changed, this, qOverload<>(&Rectangle::update),
+          Qt::DirectConnection);
+  connect(m_radius, &Radius::changed, this, &Rectangle::updatePolish,
+          Qt::DirectConnection);
+  connect(m_border, &Border::widthChanged, this, &Rectangle::updatePolish,
+          Qt::DirectConnection);
+  connect(this, &Rectangle::widthChanged, this, &Rectangle::updatePolish,
+          Qt::DirectConnection);
+  connect(this, &Rectangle::heightChanged, this, &Rectangle::updatePolish,
+          Qt::DirectConnection);
 }
 
 Rectangle::~Rectangle() noexcept {};
@@ -100,6 +107,17 @@ void Rectangle::setColor(const QColor &color) noexcept {
 
 QColor Rectangle::color() const noexcept { return m_color; };
 
+bool Rectangle::maskEnabled() const { return m_maskEnabled; }
+
+void Rectangle::setMaskEnabled(bool enabled) {
+  if (m_maskEnabled != enabled) {
+    m_maskEnabled = enabled;
+    emit maskEnabledChanged();
+  }
+}
+
+QRegion Rectangle::mask() const { return m_region; }
+
 QPainterPath Rectangle::createPath(qreal border) {
   const qreal w = width();
   const qreal h = height();
@@ -109,10 +127,10 @@ QPainterPath Rectangle::createPath(qreal border) {
   const qreal b = h - border / 2;
 
   const qreal maxr = min(r, b) * 2 - border * 2;
-  qreal tl = max(0, m_radius->topLeft() * maxr - border);
-  qreal tr = max(0, m_radius->topRight() * maxr - border);
-  qreal bl = max(0, m_radius->bottomLeft() * maxr - border);
-  qreal br = max(0, m_radius->bottomRight() * maxr - border);
+  qreal tl = min(maxr, m_radius->topLeft());
+  qreal tr = min(maxr, m_radius->topRight());
+  qreal bl = min(maxr, m_radius->bottomLeft());
+  qreal br = min(maxr, m_radius->bottomRight());
 
   if (w < h) {
     if (auto v = tl + tr; v > maxr) {
@@ -178,13 +196,38 @@ QPainterPath Rectangle::createPath(qreal border) {
   return path;
 }
 
+void Rectangle::updateMask() {
+  QBitmap bitmap(width(), height());
+  bitmap.clear();
+  QPainter p(&bitmap);
+
+  if (!p.isActive())
+    return;
+
+  p.setBackgroundMode(Qt::BGMode::TransparentMode);
+  p.setPen(Qt::PenStyle::NoPen);
+  p.fillRect(bitmap.rect(), Qt::transparent);
+
+  p.setBrush(Qt::black);
+  p.drawPath(m_box);
+
+  m_region = QRegion(bitmap);
+
+  emit maskChanged();
+}
+
+void Rectangle::update() { QQuickPaintedItem::update(); }
+
 void Rectangle::updatePolish() {
   m_box = createPath(m_border->width());
   update();
+  if (m_maskEnabled) {
+    updateMask();
+  }
 }
 
 void Rectangle::paint(QPainter *paint) {
-  paint->setRenderHint(QPainter::Antialiasing);
+  paint->setBackgroundMode(Qt::BGMode::TransparentMode);
 
   const auto &border = *m_border;
 
@@ -207,6 +250,8 @@ void Rectangle::paint(QPainter *paint) {
   }
 
   paint->drawPath(m_box);
+
+  emit didPaint();
 }
 
 //! END: Rectangle

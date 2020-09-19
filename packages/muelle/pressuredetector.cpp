@@ -213,7 +213,7 @@ PressureDetector::barrier() const {
             static_cast<uint16_t>(x2), static_cast<uint16_t>(y2)};
   };
 
-  auto r = view->absolutePanelGeometry();
+  auto r = view->geometry();
   switch (mEdge) {
   case Edge::Top:
     return {XCB_XFIXES_BARRIER_DIRECTIONS_POSITIVE_Y,
