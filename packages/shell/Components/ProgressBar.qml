@@ -1,6 +1,7 @@
 import QtQuick 2.14
 import 'qrc:/shared/functional.ts' as F
 import org.kde.plasma.core 2.0 as PlasmaCore
+import QtGraphicalEffects 1.14
 
 Rectangle {
   id: bg
@@ -8,13 +9,24 @@ Rectangle {
   property bool active: false
   property real value: 0
 
-  readonly property bool indeterminate: value < 0.01
+  readonly property bool indeterminate: value <= 0
 
   property real _from: 0
   property real _to: 0
 
+  layer.enabled: true
+  layer.effect: OpacityMask {
+    anchors.fill: bg
+    maskSource: Rectangle {
+      width: bg.width
+      height: bg.height
+      radius: height
+      visible: false
+    }
+  }
+
   visible: active
-  color: F.alpha(theme.backgroundColor, 0.4)
+  color: '#40828282'
 
   Binding {
     when: !bg.indeterminate
@@ -74,29 +86,10 @@ Rectangle {
 
   Rectangle {
     id: progress
-    color: theme.highlightColor
-    
-    StateLayoutOrientation {
-      horizontal: [
-        PropertyChanges {
-          target: progress
-          x: bg.width * bg._from
-          width: bg.width * Math.abs(bg._from - bg._to)
-          height: bg.height
-        }
-      ]
-      vertical: [
-        PropertyChanges {
-          target: progress
-          y: bg.height * bg._from
-          width: bg.width
-          height: bg.height * Math.abs(bg._to - bg._from)
-        },
-        AnchorChanges {
-          target: progress
-          anchors.bottom: bg.indeterminate ? undefined : bg.bottom
-        }
-      ]
-    }
+    color: '#2D9CDB'
+    radius: indeterminate ? height : 0
+    x: -height + bg.width * bg._from
+    width: height + (bg.width + 2) * Math.abs(bg._from - bg._to)
+    height: bg.height
   }
 }

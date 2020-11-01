@@ -134,7 +134,7 @@ Item {
 
   // ViewShadows {
   //   view: $view
-  //   geometry: store.state.geometry.backgroundRect
+  //   geometry: store.state.geometry.background.rect
   //   enabled: store.state.panel.visible && false
   //   edges: 
   //     (Types.Top | Types.Right | Types.Bottom | Types.Left) 

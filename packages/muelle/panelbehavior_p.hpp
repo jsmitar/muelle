@@ -234,6 +234,7 @@ public:
       frameGeometry = frameGeometry.marginsAdded(
           {-extents.left, -extents.top, -extents.right, -extents.bottom});
     }
+    frameGeometry = frameGeometry.marginsAdded({-1, -1, -1, -1});
 
     const bool isOnCurrentDesktop =
         info.onAllDesktops() ||

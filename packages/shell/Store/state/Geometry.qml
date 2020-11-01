@@ -30,7 +30,7 @@ QObject {
    * |            |          |--|---------------|
    * |            | panel    |  | icon.size +   |
    * | background |          |  | spacing       |
-   * |            | mask     |--|---------------|
+   * |            | inputMask|--|---------------|
    * |            |          |  | paddingBottom |
    * |            |----------|--|---------------|
    * |            |          |  | inset         |
@@ -68,10 +68,10 @@ QObject {
 
     readonly property int paddingBottom: state.icon.size * state.background.paddingBottom
 
-    readonly property int inset: state.background.inset
+    readonly property int inset: Math.max(0, state.background.inset)
 
     readonly property int extents: 
-      Math.max(0, view.height - Math.max(panel.height, height))
+      Math.max(0, view.height - Math.max(panel.height, height) - inset)
 
     readonly property bool isAtStart: x <= 0
 
@@ -83,7 +83,7 @@ QObject {
       ? state.background.inset
       : view.height - height - inset
 
-    readonly property int width: state.background.full 
+    readonly property int width: state.background.fill
       ? view.width 
       : Math.min(view.width, paddingX * 2 + panel.width)
 
@@ -111,7 +111,7 @@ QObject {
 
       readonly property int y: background.y
 
-      readonly property int width: state.background.full 
+      readonly property int width: state.background.fill
         ? view.width
         : Math.min(view.width, background.paddingX * 2 + panel.next.width)
 
@@ -144,7 +144,7 @@ QObject {
     readonly property int x: F.clamp(background.paddingX, x_, view.width - width - background.paddingX) 
 
     readonly property int y: isTopOrLeft 
-      ? Math.max(0, background.inset)
+      ? background.paddingBottom + background.inset
       : view.height - height - background.paddingBottom - background.inset
 
     readonly property int width:

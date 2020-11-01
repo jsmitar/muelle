@@ -64,9 +64,7 @@ Loader {
           panelContainer.positioner = row
         }
 
-
         move: Transition {
-          enabled: store.state.animation.addEnabled
           NumberAnimation {
             property: 'x';
             easing.type: Easing.OutQuad
@@ -112,7 +110,6 @@ Loader {
         }
 
         move: Transition {
-          enabled: store.state.animation.addEnabled
           NumberAnimation {
             property: 'y';
             easing.type: Easing.OutQuad

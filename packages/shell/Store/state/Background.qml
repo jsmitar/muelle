@@ -26,7 +26,7 @@ QObject {
 
   readonly property bool visible: paddingTop > -1 
 
-  property bool full: false
+  property bool fill: false
 
   readonly property Muelle.Radius radius: Muelle.Radius {}
 }

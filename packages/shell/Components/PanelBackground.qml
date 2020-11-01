@@ -15,7 +15,7 @@ Item {
   readonly property rect rect: geometry.background.next.rect
   readonly property string style: store.state.background.style
   readonly property bool maskGrowing: geometry.mask.growing
-  readonly property int shadowBlur: background.shadowBlur
+  readonly property int shadowBlur: store.state.background.shadowBlur
   readonly property Muelle.Radius bgradius: store.state.background.radius
   readonly property bool isAtStart: geometry.background.isAtStart
   readonly property bool isAtEnd: geometry.background.isAtEnd
@@ -97,15 +97,14 @@ Item {
         })
 
         border {
-          width: 0
-          color: '#BB2B2B2A'
+          width: 1
           gradient {
-            stops: ['#222D32 0', '#222D32 0.5']
+            stops: ['#ff555555 0', '#ff333333 0.5']
             degrees: edgeToDegrees[store.state.panel.edge]
           }
         }
         gradient {
-          stops: ['#EE2C2E31 0']
+          stops: ['#EE263842 0']
           degrees: edgeToDegrees[store.state.panel.edge]
         }
 
@@ -117,14 +116,13 @@ Item {
         layer.enabled: true
         layer.effect: DropShadow {
           id: shadow
-          visible: true
           source: solid
           width: solid.width
           height: solid.height
 
-          color: '#000000'
+          color: '#50000000'
           cached: false
-          spread: 0.1
+          spread: 0.3
           radius: shadowBlur
           samples: 1 + radius * 2
           transparentBorder: true

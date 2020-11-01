@@ -13,20 +13,20 @@ Component {
   PlasmaCore.Dialog {
     id: taskGroup
 
-    outputOnly: true
+    outputOnly: false
     backgroundHints: PlasmaCore.Dialog.NoBackground
     type: PlasmaCore.Dialog.PopupMenu
     flags: Qt.WindowStaysOnTopHint | Qt.ToolTip
-    location: PlasmaCore.Types.Floating
+    location: edgeToLocation[$layout.edge]
     hideOnWindowDeactivate: true
+    readonly property int shadowBlur: store.state.background.shadowBlur
 
     Component.onCompleted: {
       let timer = 0
 
       F.on(hover_Changed, labelChanged, _ => {
         Qt.clearTimeout(timer)
-        visible = false
-        timer = Qt.setTimeout(_ => (visible = hover_), 50)
+        timer = Qt.setTimeout(_ => void (visible = hover_), 10)
       })
        .clear(destruction)
     }
@@ -39,14 +39,10 @@ Component {
     property string label: F.get(m, 'display', '') || F.get(m, 'AppName', '')
     property var winIdList: F.get(m, 'WinIdList', [])
     property bool isMinimized: F.get(m, 'IsMinimized', true)
-    property bool hover_: label && (
-      hover || 
-      $view.containsMouse ||
-      box.mouse.containsMouse
-    )
+    property bool hover_: hover || $view.containsMouse || mainItem.containsMouse
 
     property var _: Spy {
-      properties: [spy`${taskGroup}.hover_`]
+      properties: spy`${taskGroup}hover_${mainItem}x:y:width:height`
     }
     
     readonly property var edgeToLocation: ({
@@ -56,11 +52,31 @@ Component {
       [Types.Left]: PlasmaCore.Types.LeftEdge
     })
 
-    mainItem: Item {
+    mainItem: MouseArea {
       id: box
 
       width: content.width + 10 * 2
       height: content.height + 10 * 2
+
+      hoverEnabled: true
+      onEntered: {
+        console.log('ENTERED')
+      }
+
+      RectangularGlow {
+        id: shadow
+
+        readonly property int shadowBlur: store.state.background.shadowBlur
+
+        anchors.fill: bg
+        z: -1
+
+        color: bg.color
+        cached: false
+        spread: 0
+        glowRadius: shadowBlur / 4
+        cornerRadius: 10
+      }
 
       Muelle.Rectangle {
         id: bg
@@ -85,31 +101,16 @@ Component {
         border {
           width: 1
           gradient {
-            stops: ['#111 1', '#222 0']
+            stops: ['#ff555555 0', '#ff333333 0.5']
             degrees: edgeToDegrees[store.state.panel.edge]
           }
         }
         gradient {
-          stops: ['#222 1', '#111 0']
+          stops: ['#EE263842 0']
           degrees: F.addDeg(edgeToDegrees[store.state.panel.edge], 0)
         }
 
         layer.enabled: true
-        layer.effect: Glow {
-          id: shadow
-
-          readonly property int shadowBlur: store.state.background.shadowBlur
-
-          anchors.fill: bg
-          source: bg
-
-          color: bg.color
-          cached: false
-          spread: 0.1
-          samples: 2 * radius + 1
-          radius: shadowBlur / 2
-          transparentBorder: true
-        }
 
         ColumnLayout {
           id: content
@@ -159,15 +160,10 @@ Component {
                   maskSource: mask
                 }
 
-                Muelle.Rectangle {
+                Rectangle {
                   id: mask
-                  radius {
-                    topLeft: 10
-                    topRight: 10
-                    bottomLeft: 10
-                    bottomRight: 10
-                  }
-                  visible: true
+                  radius: 10
+                  visible: false
                   width: thumbnail.paintedWidth
                   height: thumbnail.paintedHeight
                 }
@@ -181,16 +177,6 @@ Component {
               }
             }
           }
-        }
-      }
-
-      property MouseArea mouse: MouseArea {
-        id: mouse
-        parent: box
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: {
-          console.log('ENTERED')
         }
       }
     }
