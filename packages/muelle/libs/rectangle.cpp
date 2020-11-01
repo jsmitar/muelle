@@ -79,7 +79,7 @@ Rectangle::Rectangle(QQuickItem *parent) noexcept
 
   setAntialiasing(true);
 
-  m_box.reserve(681);
+  m_box.reserve(365);
 
   connect(m_border, &Border::colorChanged, this,
           qOverload<>(&Rectangle::update), Qt::DirectConnection);
@@ -121,33 +121,30 @@ void Rectangle::setMaskEnabled(bool enabled) {
 QRegion Rectangle::mask() const { return m_region; }
 
 void Rectangle::createPath(qreal border) {
-  const qreal w = width();
-  const qreal h = height();
+  const auto w{width()};
+  const auto h{height()};
 
-  const auto corner_size = min(w, h) / 2;
+  const auto corner_size{min(w, h) / 2.0};
 
-  const auto br_radius = m_radius->bottomRight();
-  const auto bl_radius = m_radius->bottomLeft();
-  const auto tl_radius = m_radius->topLeft();
-  const auto tr_radius = m_radius->topRight();
-
-  const auto br = m_br(br_radius, corner_size)
-                      .translated({w - corner_size, h - corner_size});
-
-  const auto bl =
-      m_bl(bl_radius, corner_size).translated({corner_size, h - corner_size});
-
-  const auto tl =
-      m_tl(tl_radius, corner_size).translated({corner_size, corner_size});
-
-  const auto tr =
-      m_tr(tr_radius, corner_size).translated({w - corner_size, corner_size});
+  const auto br_superellipse{m_br(m_radius->bottomRight(), corner_size)};
+  const auto bl_superellipse{m_bl(m_radius->bottomLeft(), corner_size)};
+  const auto tl_superellipse{m_tl(m_radius->topLeft(), corner_size)};
+  const auto tr_superellipse{m_tr(m_radius->topRight(), corner_size)};
 
   m_box.clear();
-  m_box.connectPath(br);
-  m_box.connectPath(bl);
-  m_box.connectPath(tl);
-  m_box.connectPath(tr);
+  m_box.moveTo({w, h - corner_size});
+
+  const auto addSuperellipse = [&](const auto &superellipse,
+                                   const QPointF &start) {
+    for (const auto &point : superellipse)
+      m_box.lineTo(start + point);
+  };
+
+  addSuperellipse(br_superellipse, {w - corner_size, h - corner_size});
+  addSuperellipse(bl_superellipse, {corner_size, h - corner_size});
+  addSuperellipse(tl_superellipse, {corner_size, corner_size});
+  addSuperellipse(tr_superellipse, {w - corner_size, corner_size});
+
   m_box.closeSubpath();
 }
 

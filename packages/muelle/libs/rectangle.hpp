@@ -25,54 +25,31 @@
 #include <array>
 
 #include <memory>
-
-// switch (C) {
-// case Corner::BottomRight:
-//   return 0;
-// case Corner::BottomLeft:
-//   return 90;
-// case Corner::TopLeft:
-//   return 180;
-// case Corner::TopRight:
-//   return 270;
-// }
-enum Corner { TopLeft, TopRight, BottomLeft, BottomRight };
+enum Corner { BottomRight, BottomLeft, TopLeft, TopRight };
 /**
  * @brief description: https://mathworld.wolfram.com/Superellipse.html
  */
 template <Corner C> struct Superellipse {
 public:
-  Superellipse() { path.reserve(169); }
-
   /** * @param curve common values: 4:squircle, 2:ellipse, 1:diamond
    */
-  QPainterPath &operator()(qreal curve, qreal size) {
-    curve = clamp(0.5, curve, 100);
-    size = max(1, size);
 
-    if (r != curve || a != size) {
-      r = curve;
-      a = size;
+  using Path = std::array<QPointF, 91>;
 
-      constexpr auto deg_start{[]() {
-        if constexpr (C == Corner::BottomRight) {
-          return 0;
-        } else if (C == Corner::BottomLeft) {
-          return 90;
-        } else if (C == Corner::TopLeft) {
-          return 180;
-        } else if (C == Corner::TopRight) {
-          return 270;
-        }
-      }()};
+  const Path &operator()(qreal curve, qreal size) {
+    curve = clamp(0.1, curve, 100.0);
+    size = max(1.0, size);
 
-      path.clear();
-      path.moveTo(superellipse(deg_start));
+    if (m_curve != curve || m_size != size) {
+      m_curve = curve;
+      m_size = size;
 
-      for (int deg{deg_start + 1}; deg <= deg_start + 90; ++deg)
-        path.lineTo(superellipse(deg));
+      constexpr uint deg{C * 90};
+
+      for (uint step{0}; step <= 90; ++step)
+        m_path[step] = superellipse(deg + step);
     }
-    return path;
+    return m_path;
   }
 
   QPointF superellipse(qreal deg) {
@@ -81,16 +58,16 @@ public:
 
     const auto cos_t = std::cos(t);
     const auto sin_t = std::sin(t);
+    const auto curve = 2 / m_curve;
 
-    return {sign(cos_t) * a * std::pow(std::abs(cos_t), 2 / r),
-            sign(sin_t) * a * std::pow(std::abs(sin_t), 2 / r)};
+    return {sign(cos_t) * m_size * std::pow(std::abs(cos_t), curve),
+            sign(sin_t) * m_size * std::pow(std::abs(sin_t), curve)};
   }
 
 private:
-  qreal a{-1};
-  qreal r{-1};
-
-  QPainterPath path;
+  qreal m_size{-1};
+  qreal m_curve{-1};
+  Path m_path;
 };
 
 namespace Muelle {

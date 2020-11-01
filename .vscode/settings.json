@@ -102,7 +102,10 @@
     "queue": "cpp",
     "netwm": "cpp",
     "kwindowinfo": "cpp",
-    "qobject": "cpp"
+    "qobject": "cpp",
+    "concepts": "cpp",
+    "ios": "cpp",
+    "stop_token": "cpp"
   },
   "C_Cpp.default.intelliSenseMode": "gcc-x64",
   "C_Cpp.default.cppStandard": "c++17",

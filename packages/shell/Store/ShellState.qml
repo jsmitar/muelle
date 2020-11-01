@@ -23,14 +23,14 @@ QObject {
     parentObject: state
     shadowBlur: 15
     paddingX: 0.2
-    paddingTop: -0.7
+    paddingTop: 0
     paddingBottom: 0.02
     inset: 1
     style: 'solid'
-    radius.topLeft: 2
-    radius.topRight: 2
-    radius.bottomLeft: 2
-    radius.bottomRight: 2
+    radius.topLeft: 3
+    radius.topRight: 3
+    radius.bottomLeft: 3
+    radius.bottomRight: 3
     fill: false
   }
   
