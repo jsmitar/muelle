@@ -14,7 +14,7 @@ QObject {
 
   readonly property Icon icon: Icon {
     parentObject: state
-    iconSize: 48
+    iconSize: 70
     padding: 8
     spacing: 4
   }
@@ -23,14 +23,14 @@ QObject {
     parentObject: state
     shadowBlur: 15
     paddingX: 0.2
-    paddingTop: 0
+    paddingTop: -0.7
     paddingBottom: 0.02
-    inset: 8
+    inset: 1
     style: 'solid'
-    radius.topLeft: 8
-    radius.topRight: 8
-    radius.bottomLeft: 8
-    radius.bottomRight: 8
+    radius.topLeft: 2
+    radius.topRight: 2
+    radius.bottomLeft: 2
+    radius.bottomRight: 2
     fill: false
   }
   
@@ -41,7 +41,7 @@ QObject {
 
   readonly property Animation animation: Animation {
     parentObject: state
-    duration: 120
+    duration: 500
   }
 
   readonly property Context context: Context {}

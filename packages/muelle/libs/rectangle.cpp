@@ -79,6 +79,8 @@ Rectangle::Rectangle(QQuickItem *parent) noexcept
 
   setAntialiasing(true);
 
+  m_box.reserve(681);
+
   connect(m_border, &Border::colorChanged, this,
           qOverload<>(&Rectangle::update), Qt::DirectConnection);
   connect(m_border->gradient(), &Gradient::changed, this,
@@ -118,82 +120,35 @@ void Rectangle::setMaskEnabled(bool enabled) {
 
 QRegion Rectangle::mask() const { return m_region; }
 
-QPainterPath Rectangle::createPath(qreal border) {
+void Rectangle::createPath(qreal border) {
   const qreal w = width();
   const qreal h = height();
-  const qreal t = border / 2;
-  const qreal l = border / 2;
-  const qreal r = w - border / 2;
-  const qreal b = h - border / 2;
 
-  const qreal maxr = min(r, b) * 2 - border * 2;
-  qreal tl = min(maxr, m_radius->topLeft());
-  qreal tr = min(maxr, m_radius->topRight());
-  qreal bl = min(maxr, m_radius->bottomLeft());
-  qreal br = min(maxr, m_radius->bottomRight());
+  const auto corner_size = min(w, h) / 2;
 
-  if (w < h) {
-    if (auto v = tl + tr; v > maxr) {
-      auto glut = (v - maxr) / 2 + 1;
-      tl = clamp(0, tl - glut, maxr);
-      tr = clamp(0, tr - glut, maxr);
-    }
+  const auto br_radius = m_radius->bottomRight();
+  const auto bl_radius = m_radius->bottomLeft();
+  const auto tl_radius = m_radius->topLeft();
+  const auto tr_radius = m_radius->topRight();
 
-    if (auto v = bl + br; v > maxr) {
-      auto glut = (v - maxr) / 2 + 1;
-      bl = clamp(0, bl - glut, maxr);
-      br = clamp(0, br - glut, maxr);
-    }
-  } else {
-    if (auto v = tl + bl; v > maxr) {
-      auto glut = (v - maxr) / 2 + 1;
-      tl = clamp(0, tl - glut, maxr);
-      bl = clamp(0, bl - glut, maxr);
-    }
+  const auto br = m_br(br_radius, corner_size)
+                      .translated({w - corner_size, h - corner_size});
 
-    if (auto v = tr + br; v > maxr) {
-      auto glut = (v - maxr) / 2 + 1;
-      tr = clamp(0, tr - glut, maxr);
-      br = clamp(0, br - glut, maxr);
-    }
-  }
+  const auto bl =
+      m_bl(bl_radius, corner_size).translated({corner_size, h - corner_size});
 
-  QPainterPath path;
+  const auto tl =
+      m_tl(tl_radius, corner_size).translated({corner_size, corner_size});
 
-  path.moveTo(max(tl / 2, l), t);
-  // topLeft radius
-  if (tl) {
-    path.arcTo(l, t, tl, tl, 90, 90);
-  } else {
-    path.lineTo(l, t);
-  }
+  const auto tr =
+      m_tr(tr_radius, corner_size).translated({w - corner_size, corner_size});
 
-  // bottomLeft radius
-  if (bl) {
-    path.arcTo(l, b - bl, bl, bl, 180, 90);
-  } else {
-    path.lineTo(l, b);
-  }
-
-  // bottomRight radius
-  if (br) {
-    path.arcTo(r - br, b - br, br, br, 270, 90);
-  } else {
-    path.lineTo(r, b);
-  }
-
-  // topRight radius
-  if (tr) {
-    path.arcTo(r - tr, t, tr, tr, 0, 90);
-  } else {
-    path.lineTo(r, t);
-  }
-
-  // path.lineTo(r, t);
-
-  path.closeSubpath();
-
-  return path;
+  m_box.clear();
+  m_box.connectPath(br);
+  m_box.connectPath(bl);
+  m_box.connectPath(tl);
+  m_box.connectPath(tr);
+  m_box.closeSubpath();
 }
 
 void Rectangle::updateMask() {
@@ -219,7 +174,7 @@ void Rectangle::updateMask() {
 void Rectangle::update() { QQuickPaintedItem::update(); }
 
 void Rectangle::updatePolish() {
-  m_box = createPath(m_border->width());
+  createPath(m_border->width());
   update();
   if (m_maskEnabled) {
     updateMask();

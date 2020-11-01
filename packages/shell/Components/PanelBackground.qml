@@ -20,6 +20,8 @@ Item {
   readonly property bool isAtStart: geometry.background.isAtStart
   readonly property bool isAtEnd: geometry.background.isAtEnd
 
+  readonly property real noRadius: store.state.icon.size * 4
+
   x: rect.x
   y: rect.y
   width: rect.width
@@ -97,7 +99,7 @@ Item {
         })
 
         border {
-          width: 1
+          width: 0
           gradient {
             stops: ['#ff555555 0', '#ff333333 0.5']
             degrees: edgeToDegrees[store.state.panel.edge]
@@ -141,37 +143,37 @@ Item {
           top: PropertyChanges {
             target: solid
             radius {
-              topLeft: isAtStart ? 0 : bgradius.bottomLeft
-              topRight: isAtEnd ? 0 : bgradius.bottomRight
-              bottomLeft: isAtStart ? 0 : bgradius.topLeft
-              bottomRight: isAtEnd ? 0 : bgradius.topRight
+              topLeft: isAtStart ? noRadius : bgradius.bottomLeft
+              topRight: isAtEnd ? noRadius : bgradius.bottomRight
+              bottomLeft: isAtStart ? noRadius : bgradius.topLeft
+              bottomRight: isAtEnd ? noRadius : bgradius.topRight
             }
           }
           right: PropertyChanges {
             target: solid
             radius {
-              topLeft: isAtStart ? 0 : bgradius.topLeft
-              topRight: isAtStart ? 0 : bgradius.bottomLeft
-              bottomLeft: isAtEnd ? 0 : bgradius.topRight
-              bottomRight: isAtEnd ? 0 : bgradius.bottomRight
+              topLeft: isAtStart ? noRadius : bgradius.topLeft
+              topRight: isAtStart ? noRadius : bgradius.bottomLeft
+              bottomLeft: isAtEnd ? noRadius : bgradius.topRight
+              bottomRight: isAtEnd ? noRadius : bgradius.bottomRight
             }
           }
           bottom: PropertyChanges {
             target: solid
             radius {
-              topLeft: isAtStart ? 0 : bgradius.topLeft
-              topRight: isAtEnd ? 0 : bgradius.topRight
-              bottomLeft: isAtStart ? 0 : bgradius.bottomLeft
-              bottomRight: isAtEnd ? 0 : bgradius.bottomRight
+              topLeft: isAtStart ? noRadius : bgradius.topLeft
+              topRight: isAtEnd ? noRadius : bgradius.topRight
+              bottomLeft: isAtStart ? noRadius : bgradius.bottomLeft
+              bottomRight: isAtEnd ? noRadius : bgradius.bottomRight
             }
           }
           left: PropertyChanges {
             target: solid
             radius {
-              topLeft: isAtStart ? 0 : bgradius.bottomLeft
-              topRight: isAtStart ? 0 : bgradius.topLeft
-              bottomLeft: isAtEnd ? 0 : bgradius.bottomRight
-              bottomRight: isAtEnd ? 0 : bgradius.topRight
+              topLeft: isAtStart ? noRadius : bgradius.bottomLeft
+              topRight: isAtStart ? noRadius : bgradius.topLeft
+              bottomLeft: isAtEnd ? noRadius : bgradius.bottomRight
+              bottomRight: isAtEnd ? noRadius : bgradius.topRight
             }
           }
         }

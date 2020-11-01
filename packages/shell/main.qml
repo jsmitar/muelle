@@ -154,9 +154,9 @@ Item {
 
   BehaviorManager {}
 
-  GeometryDebug {
-    visible: true
-  }
+  // GeometryDebug {
+  //   visible: true
+  // }
 
   // Item {
   //   id: mask

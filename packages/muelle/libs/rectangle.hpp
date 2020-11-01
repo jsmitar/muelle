@@ -22,8 +22,76 @@
 #include <QRegion>
 #include <QVariant>
 #include <QVector>
+#include <array>
 
 #include <memory>
+
+// switch (C) {
+// case Corner::BottomRight:
+//   return 0;
+// case Corner::BottomLeft:
+//   return 90;
+// case Corner::TopLeft:
+//   return 180;
+// case Corner::TopRight:
+//   return 270;
+// }
+enum Corner { TopLeft, TopRight, BottomLeft, BottomRight };
+/**
+ * @brief description: https://mathworld.wolfram.com/Superellipse.html
+ */
+template <Corner C> struct Superellipse {
+public:
+  Superellipse() { path.reserve(169); }
+
+  /** * @param curve common values: 4:squircle, 2:ellipse, 1:diamond
+   */
+  QPainterPath &operator()(qreal curve, qreal size) {
+    curve = clamp(0.5, curve, 100);
+    size = max(1, size);
+
+    if (r != curve || a != size) {
+      r = curve;
+      a = size;
+
+      constexpr auto deg_start{[]() {
+        if constexpr (C == Corner::BottomRight) {
+          return 0;
+        } else if (C == Corner::BottomLeft) {
+          return 90;
+        } else if (C == Corner::TopLeft) {
+          return 180;
+        } else if (C == Corner::TopRight) {
+          return 270;
+        }
+      }()};
+
+      path.clear();
+      path.moveTo(superellipse(deg_start));
+
+      for (int deg{deg_start + 1}; deg <= deg_start + 90; ++deg)
+        path.lineTo(superellipse(deg));
+    }
+    return path;
+  }
+
+  QPointF superellipse(qreal deg) {
+    constexpr auto radian{M_PI * 2 / 360};
+    const auto t{radian * deg};
+
+    const auto cos_t = std::cos(t);
+    const auto sin_t = std::sin(t);
+
+    return {sign(cos_t) * a * std::pow(std::abs(cos_t), 2 / r),
+            sign(sin_t) * a * std::pow(std::abs(sin_t), 2 / r)};
+  }
+
+private:
+  qreal a{-1};
+  qreal r{-1};
+
+  QPainterPath path;
+};
 
 namespace Muelle {
 
@@ -185,7 +253,7 @@ public:
 
   QRegion mask() const;
 
-  QPainterPath createPath(qreal border);
+  void createPath(qreal border);
 
   void updateMask();
 
@@ -208,6 +276,11 @@ private:
   QPainterPath m_box;
   QRegion m_region;
   bool m_maskEnabled{false};
+
+  Superellipse<Corner::BottomRight> m_br;
+  Superellipse<Corner::BottomLeft> m_bl;
+  Superellipse<Corner::TopLeft> m_tl;
+  Superellipse<Corner::TopRight> m_tr;
 };
 
 } // namespace Muelle

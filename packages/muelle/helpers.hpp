@@ -80,6 +80,10 @@ constexpr auto max(const L &l, const R &r, const Tail &... tail) {
   return max(l > r ? l : r, tail...);
 }
 
+template <typename V> constexpr auto sign(const V &v) -> int {
+  return std::signbit(v) ? -1 : 1;
+}
+
 template <typename B, typename V, typename T>
 constexpr V clamp(const B &b, const V &v, const T &t) {
   if (b > t)
