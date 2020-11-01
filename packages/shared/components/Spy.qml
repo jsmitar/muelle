@@ -11,7 +11,7 @@ QObject {
   function spy(strings, ...targets) {
     const properties = strings
       .filter(str => str)
-      .map(str => str.replace(/[\.\(\)\s]+/g, '').split(','))
+      .map(str => str.replace(/[\.\(\)\s]+/g, '').split(':'))
 
     if (targets.length === 0) {
       targets = [parentObject]
@@ -22,7 +22,7 @@ QObject {
 
   Instantiator {
     active: !_disableAll
-    model: F.flat(properties)
+    model: properties
 
     Instantiator {
       id: targets
