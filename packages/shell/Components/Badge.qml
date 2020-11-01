@@ -15,22 +15,38 @@ Rectangle {
   width: Math.max(m - m % 2, _label.contentWidth + 4)
   height: m - m % 2
   radius: height
-
-  color: theme.highlightColor
+  color: '#F23C34'
 
   Text {
     id: _label
     
     anchors.centerIn: badge
 
-    color: theme.highlightedTextColor
+    Behavior on text {
+      SequentialAnimation {
+        NumberAnimation {
+          target: badge
+          property: 'scale'
+          to: 1.4
+          duration: store.state.animation.duration / 4
+        }
+        NumberAnimation {
+          target: badge
+          property: 'scale'
+          to: 1
+          duration: store.state.animation.duration / 4
+        }
+      }
+    }
+
+    color: '#CFD8DC'
     horizontalAlignment: Text.AlignLeft
     verticalAlignment: Text.AlignVCenter
 
     font {
       weight: Font.Black
       bold: true
-      pixelSize: 10
+      pointSize: 10
     }
   }
 }
