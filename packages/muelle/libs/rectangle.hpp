@@ -104,7 +104,7 @@ private:
 
 class Border : public QObject {
   Q_OBJECT
-  Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
+  Q_PROPERTY(qreal width READ width WRITE setWidth NOTIFY widthChanged)
   Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
   Q_PROPERTY(Muelle::Gradient *gradient READ gradient)
 
@@ -113,14 +113,14 @@ public:
       : QObject(parent), m_gradient(new Gradient(this)) {}
   ~Border() noexcept override{};
 
-  inline void setWidth(int width) noexcept {
+  inline void setWidth(qreal width) noexcept {
     if (m_width != width) {
       m_width = max(0, width);
       emit widthChanged();
     }
   }
 
-  inline int width() const noexcept { return m_width; }
+  inline qreal width() const noexcept { return m_width; }
 
   inline QColor color() const noexcept { return m_color; }
 
@@ -138,7 +138,7 @@ signals:
   void colorChanged();
 
 private:
-  int m_width{0};
+  qreal m_width{0};
   QColor m_color;
   Gradient *m_gradient;
 };
@@ -204,8 +204,9 @@ private:
 
 class Rectangle : public QQuickPaintedItem {
   Q_OBJECT
-  Q_PROPERTY(Muelle::Radius *radius MEMBER m_radius)
-  Q_PROPERTY(Muelle::Border *border MEMBER m_border)
+  Q_PROPERTY(Muelle::Radius *radius READ radius)
+  Q_PROPERTY(Muelle::Border *border READ border)
+  Q_PROPERTY(Muelle::Border *outline READ outline)
   Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
   Q_PROPERTY(Muelle::Gradient *gradient READ gradient)
   Q_PROPERTY(QRegion mask READ mask NOTIFY maskChanged)
@@ -216,14 +217,16 @@ public:
   Rectangle(QQuickItem *parent = 0) noexcept;
   ~Rectangle() noexcept;
 
-  Radius *radius() noexcept;
+  Radius *radius() const noexcept;
 
-  Border *border() noexcept;
+  Border *border() const noexcept;
+
+  Border *outline() const noexcept;
 
   QColor color() const noexcept;
   void setColor(const QColor &color) noexcept;
 
-  inline Gradient *gradient() const noexcept { return m_gradient; }
+  Gradient *gradient() const noexcept;
 
   bool maskEnabled() const;
   void setMaskEnabled(bool enabled);
@@ -247,6 +250,7 @@ signals:
 
 private:
   Radius *m_radius;
+  Border *m_outline;
   Border *m_border;
   Gradient *m_gradient;
   QColor m_color;

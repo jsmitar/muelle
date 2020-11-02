@@ -27,10 +27,10 @@ QObject {
     paddingBottom: 0.02
     inset: 1
     style: 'solid'
-    radius.topLeft: 3
-    radius.topRight: 3
-    radius.bottomLeft: 3
-    radius.bottomRight: 3
+    radius.topLeft: 2
+    radius.topRight: 2
+    radius.bottomLeft: 8
+    radius.bottomRight: 8
     fill: false
   }
   

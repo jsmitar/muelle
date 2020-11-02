@@ -72,25 +72,38 @@ QVariant Gradient::stops() const noexcept {
 }
 
 //! BEGIN: Rectangle
-
 Rectangle::Rectangle(QQuickItem *parent) noexcept
     : QQuickPaintedItem(parent), m_radius(new Radius(this)),
-      m_border(new Border(this)), m_gradient(new Gradient(this)) {
+      m_outline(new Border(this)), m_border(new Border(this)),
+      m_gradient(new Gradient(this)) {
 
   setAntialiasing(true);
 
   m_box.reserve(365);
 
+  // UPDATE
+  connect(m_outline, &Border::colorChanged, this,
+          qOverload<>(&Rectangle::update), Qt::DirectConnection);
+  connect(m_outline->gradient(), &Gradient::changed, this,
+          qOverload<>(&Rectangle::update), Qt::DirectConnection);
+
   connect(m_border, &Border::colorChanged, this,
           qOverload<>(&Rectangle::update), Qt::DirectConnection);
   connect(m_border->gradient(), &Gradient::changed, this,
           qOverload<>(&Rectangle::update), Qt::DirectConnection);
+
+  // UPDATE POLISH
   connect(m_gradient, &Gradient::changed, this, qOverload<>(&Rectangle::update),
           Qt::DirectConnection);
+
   connect(m_radius, &Radius::changed, this, &Rectangle::updatePolish,
+          Qt::DirectConnection);
+
+  connect(m_outline, &Border::widthChanged, this, &Rectangle::updatePolish,
           Qt::DirectConnection);
   connect(m_border, &Border::widthChanged, this, &Rectangle::updatePolish,
           Qt::DirectConnection);
+
   connect(this, &Rectangle::widthChanged, this, &Rectangle::updatePolish,
           Qt::DirectConnection);
   connect(this, &Rectangle::heightChanged, this, &Rectangle::updatePolish,
@@ -99,18 +112,22 @@ Rectangle::Rectangle(QQuickItem *parent) noexcept
 
 Rectangle::~Rectangle() noexcept {};
 
-Radius *Rectangle::radius() noexcept { return m_radius; }
+Radius *Rectangle::radius() const noexcept { return m_radius; }
+
+Border *Rectangle::border() const noexcept { return m_border; }
+
+Border *Rectangle::outline() const noexcept { return m_outline; }
 
 void Rectangle::setColor(const QColor &color) noexcept {
   m_color = color;
   emit colorChanged();
   update();
 }
-
 QColor Rectangle::color() const noexcept { return m_color; };
 
-bool Rectangle::maskEnabled() const { return m_maskEnabled; }
+Gradient *Rectangle::gradient() const noexcept { return m_gradient; };
 
+bool Rectangle::maskEnabled() const { return m_maskEnabled; }
 void Rectangle::setMaskEnabled(bool enabled) {
   if (m_maskEnabled != enabled) {
     m_maskEnabled = enabled;
@@ -121,8 +138,8 @@ void Rectangle::setMaskEnabled(bool enabled) {
 QRegion Rectangle::mask() const { return m_region; }
 
 void Rectangle::createPath(qreal border) {
-  const auto w{width()};
-  const auto h{height()};
+  const auto w{width() - border * 2};
+  const auto h{height() - border * 2};
 
   const auto corner_size{min(w, h) / 2.0};
 
@@ -132,7 +149,7 @@ void Rectangle::createPath(qreal border) {
   const auto tr_superellipse{m_tr(m_radius->topRight(), corner_size)};
 
   m_box.clear();
-  m_box.moveTo({w, h - corner_size});
+  m_box.moveTo({border + w, border + h - corner_size});
 
   const auto addSuperellipse = [&](const auto &superellipse,
                                    const QPointF &start) {
@@ -140,10 +157,14 @@ void Rectangle::createPath(qreal border) {
       m_box.lineTo(start + point);
   };
 
-  addSuperellipse(br_superellipse, {w - corner_size, h - corner_size});
-  addSuperellipse(bl_superellipse, {corner_size, h - corner_size});
-  addSuperellipse(tl_superellipse, {corner_size, corner_size});
-  addSuperellipse(tr_superellipse, {w - corner_size, corner_size});
+  addSuperellipse(br_superellipse,
+                  {border + w - corner_size, border + h - corner_size});
+  addSuperellipse(bl_superellipse,
+                  {border + corner_size, border + h - corner_size});
+  addSuperellipse(tl_superellipse,
+                  {border + corner_size, border + corner_size});
+  addSuperellipse(tr_superellipse,
+                  {border + w - corner_size, border + corner_size});
 
   m_box.closeSubpath();
 }
@@ -171,7 +192,7 @@ void Rectangle::updateMask() {
 void Rectangle::update() { QQuickPaintedItem::update(); }
 
 void Rectangle::updatePolish() {
-  createPath(m_border->width());
+  createPath(m_outline->width() + m_border->width());
   update();
   if (m_maskEnabled) {
     updateMask();
@@ -179,22 +200,39 @@ void Rectangle::updatePolish() {
 }
 
 void Rectangle::paint(QPainter *paint) {
+  paint->setCompositionMode(QPainter::CompositionMode_Source);
   paint->setBackgroundMode(Qt::BGMode::TransparentMode);
+  paint->setPen(Qt::NoPen);
 
+  const auto &outline = *m_outline;
   const auto &border = *m_border;
 
+  // OUTLINE
+  if (outline.width() > 0) {
+    if (outline.gradient()->valid()) {
+      auto gradient = outline.gradient()->toQGradient(width(), height());
+      QPen pen{{*gradient}, outline.width() + border.width()};
+      paint->strokePath(m_box, pen);
+    } else {
+      QPen pen{outline.color(), outline.width() + border.width()};
+      paint->strokePath(m_box, pen);
+    }
+  }
+
+  // BORDER
   if (border.width() > 0) {
     if (border.gradient()->valid()) {
       auto gradient = border.gradient()->toQGradient(width(), height());
-      paint->setPen({{*gradient}, static_cast<qreal>(border.width())});
+      QPen pen{{*gradient}, border.width()};
+      paint->strokePath(m_box, pen);
     } else {
-      paint->setPen(
-          QPen(m_border->color(), static_cast<qreal>(m_border->width())));
+      QPen pen{border.color(), border.width()};
+      paint->strokePath(m_box, pen);
     }
-  } else {
-    paint->setPen(Qt::NoPen);
   }
 
+  // BACKGROUND
+  paint->setCompositionMode(QPainter::CompositionMode_Source);
   if (m_gradient->valid()) {
     paint->setBrush(*m_gradient->toQGradient(width(), height()));
   } else {

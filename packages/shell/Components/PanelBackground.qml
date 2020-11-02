@@ -98,15 +98,22 @@ Item {
           [Types.Left]: 90,
         })
 
-        border {
-          width: 0
+        outline {
+          width: 1
           gradient {
-            stops: ['#ff555555 0', '#ff333333 0.5']
+            stops: ['#50ffffff 0', '#20262F37 0.2']
+            degrees: edgeToDegrees[store.state.panel.edge]
+          }
+        }
+        border {
+          width: 3
+          gradient {
+            stops: ['#50000000 0', '#20262F37 0.2']
             degrees: edgeToDegrees[store.state.panel.edge]
           }
         }
         gradient {
-          stops: ['#EE263842 0']
+          stops: ['#20262F37 0']
           degrees: edgeToDegrees[store.state.panel.edge]
         }
 
