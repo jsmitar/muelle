@@ -159,7 +159,7 @@ private:
 
   QRegion mPanelGeometry;
   QRegion mInputMask;
-  int mFrameExtents;
+  int mFrameExtents{0};
 
   struct {
     xcb_atom_t gtk_frame_extents_atom;

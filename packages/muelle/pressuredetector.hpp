@@ -101,7 +101,7 @@ private:
   double mPressure = 0;
   QTimer mPressureTimer;
   xcb_xfixes_barrier_t mBarrier = 0;
-  Muelle::Types::Edge mEdge;
+  Muelle::Types::Edge mEdge{Types::Edge::Bottom};
   bool mEnabled = false;
   bool mBarrierSupport = false;
   bool mReached = false;
