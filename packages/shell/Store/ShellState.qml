@@ -22,15 +22,15 @@ QObject {
   readonly property Background background: Background {
     parentObject: state
     shadowBlur: 15
-    paddingX: 0.2
+    paddingX: 0.3
     paddingTop: 0
     paddingBottom: 0.02
-    inset: 1
+    inset: -2
     style: 'solid'
     radius.topLeft: 2
     radius.topRight: 2
-    radius.bottomLeft: 8
-    radius.bottomRight: 8
+    radius.bottomLeft: 150
+    radius.bottomRight: 150
     fill: false
   }
   

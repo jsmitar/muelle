@@ -37,7 +37,7 @@ public:
   using Path = std::array<QPointF, 91>;
 
   const Path &operator()(qreal curve, qreal size) {
-    curve = clamp(0.1, curve, 100.0);
+    curve = clamp(0.1, curve, 150.0);
     size = max(1.0, size);
 
     if (m_curve != curve || m_size != size) {
@@ -53,16 +53,27 @@ public:
   }
 
   QPointF superellipse(qreal deg) {
-    constexpr auto radian{M_PI * 2 / 360};
+    constexpr auto radian{M_PI / 180.0};
     const auto t{radian * deg};
 
-    const auto cos_t = std::cos(t);
-    const auto sin_t = std::sin(t);
-    const auto curve = 2 / m_curve;
+    const auto cos_t{std::cos(t)};
+    const auto sin_t{std::sin(t)};
+    const auto curve{2.0 / m_curve};
 
-    return {sign(cos_t) * m_size * std::pow(std::abs(cos_t), curve),
-            sign(sin_t) * m_size * std::pow(std::abs(sin_t), curve)};
-  }
+    const auto x{sign(cos_t) * m_size * std::pow(std::abs(cos_t), curve)};
+    const auto y{sign(sin_t) * m_size * std::pow(std::abs(sin_t), curve)};
+
+    if constexpr (C == BottomRight)
+      return {clamp(0, x, m_size), clamp(0, y, m_size)};
+    else if (C == BottomLeft)
+      return {clamp(-m_size, x, 0), clamp(0, y, m_size)};
+    else if (C == TopLeft)
+      return {clamp(-m_size, x, 0), clamp(-m_size, y, 0)};
+    else if (C == TopRight)
+      return {clamp(0, x, m_size), clamp(-m_size, y, 0)};
+
+    return {x, y};
+  };
 
 private:
   qreal m_size{-1};
@@ -233,7 +244,7 @@ public:
 
   QRegion mask() const;
 
-  void createPath(qreal border);
+  void createPath();
 
   void updateMask();
 

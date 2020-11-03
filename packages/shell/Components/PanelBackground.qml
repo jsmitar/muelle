@@ -101,26 +101,26 @@ Item {
         outline {
           width: 1
           gradient {
-            stops: ['#50ffffff 0', '#20262F37 0.2']
+            stops: ['#d535444A 0']
             degrees: edgeToDegrees[store.state.panel.edge]
           }
         }
         border {
-          width: 3
+          width: 1
           gradient {
-            stops: ['#50000000 0', '#20262F37 0.2']
+            stops: ['#55AAAAAA 0', '#d535444A 0.1']
             degrees: edgeToDegrees[store.state.panel.edge]
           }
         }
         gradient {
-          stops: ['#20262F37 0']
+          stops: ['#d535444A 0']
           degrees: edgeToDegrees[store.state.panel.edge]
         }
 
-        NumberBehavior on radius.topLeft {}
-        NumberBehavior on radius.topRight {}
-        NumberBehavior on radius.bottomLeft {}
-        NumberBehavior on radius.bottomRight {}
+        // NumberBehavior on radius.topLeft {}
+        // NumberBehavior on radius.topRight {}
+        // NumberBehavior on radius.bottomLeft {}
+        // NumberBehavior on radius.bottomRight {}
 
         layer.enabled: true
         layer.effect: DropShadow {

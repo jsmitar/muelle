@@ -137,7 +137,8 @@ void Rectangle::setMaskEnabled(bool enabled) {
 
 QRegion Rectangle::mask() const { return m_region; }
 
-void Rectangle::createPath(qreal border) {
+void Rectangle::createPath() {
+  const auto border{m_border->width() + m_outline->width()};
   const auto w{width() - border * 2};
   const auto h{height() - border * 2};
 
@@ -162,7 +163,7 @@ void Rectangle::createPath(qreal border) {
   addSuperellipse(bl_superellipse,
                   {border + corner_size, border + h - corner_size});
   addSuperellipse(tl_superellipse,
-                  {border + corner_size, border + corner_size});
+                  {corner_size + border, border + corner_size});
   addSuperellipse(tr_superellipse,
                   {border + w - corner_size, border + corner_size});
 
@@ -192,7 +193,7 @@ void Rectangle::updateMask() {
 void Rectangle::update() { QQuickPaintedItem::update(); }
 
 void Rectangle::updatePolish() {
-  createPath(m_outline->width() + m_border->width());
+  createPath();
   update();
   if (m_maskEnabled) {
     updateMask();
@@ -203,6 +204,7 @@ void Rectangle::paint(QPainter *paint) {
   paint->setCompositionMode(QPainter::CompositionMode_Source);
   paint->setBackgroundMode(Qt::BGMode::TransparentMode);
   paint->setPen(Qt::NoPen);
+  paint->setBrush(Qt::NoBrush);
 
   const auto &outline = *m_outline;
   const auto &border = *m_border;
@@ -211,10 +213,10 @@ void Rectangle::paint(QPainter *paint) {
   if (outline.width() > 0) {
     if (outline.gradient()->valid()) {
       auto gradient = outline.gradient()->toQGradient(width(), height());
-      QPen pen{{*gradient}, outline.width() + border.width()};
+      const QPen pen{{*gradient}, (outline.width() + border.width()) * 2};
       paint->strokePath(m_box, pen);
     } else {
-      QPen pen{outline.color(), outline.width() + border.width()};
+      const QPen pen{outline.color(), (outline.width() + border.width()) * 2};
       paint->strokePath(m_box, pen);
     }
   }
@@ -223,23 +225,20 @@ void Rectangle::paint(QPainter *paint) {
   if (border.width() > 0) {
     if (border.gradient()->valid()) {
       auto gradient = border.gradient()->toQGradient(width(), height());
-      QPen pen{{*gradient}, border.width()};
+      const QPen pen{{*gradient}, border.width() * 2};
       paint->strokePath(m_box, pen);
     } else {
-      QPen pen{border.color(), border.width()};
+      const QPen pen{border.color(), border.width() * 2};
       paint->strokePath(m_box, pen);
     }
   }
 
   // BACKGROUND
-  paint->setCompositionMode(QPainter::CompositionMode_Source);
   if (m_gradient->valid()) {
-    paint->setBrush(*m_gradient->toQGradient(width(), height()));
+    paint->fillPath(m_box, *m_gradient->toQGradient(width(), height()));
   } else {
-    paint->setBrush(m_color);
+    paint->fillPath(m_box, m_color);
   }
-
-  paint->drawPath(m_box);
 
   emit didPaint();
 }
