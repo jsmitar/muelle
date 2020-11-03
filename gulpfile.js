@@ -288,7 +288,7 @@ function _watch() {
 }
 
 function _build() {
-  return parallel(
+  return series(
     parallel(mkdir_build, clean_dist),
     series(run_CMake, run_Ninja),
     parallel(target_muelle, target_qml)
